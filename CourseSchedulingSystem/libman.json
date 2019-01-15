@@ -27,6 +27,10 @@
     {
       "library": "jquery-validation-unobtrusive@3.2.11",
       "destination": "wwwroot/lib/jquery-validation-unobtrusive"
+    },
+    {
+      "library": "qrcode-generator@1.4.1",
+      "destination": "wwwroot/lib/qrcode-generator/"
     }
   ]
 }
