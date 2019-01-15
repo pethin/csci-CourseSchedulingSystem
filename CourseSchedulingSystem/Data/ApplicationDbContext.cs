@@ -27,10 +27,11 @@ namespace CourseSchedulingSystem.Data
                     Id = AdminRoleId,
                     Name = "Administrator",
                     NormalizedName = "Administrator".ToUpper(),
-                    Description = "Grants all permissions"
+                    Description = "Grants all permissions",
+                    ConcurrencyStamp = "1348ef0a-5677-4733-8cfa-0a9095de0f28"
                 });
 
-            var hasher = new PasswordHasher<ApplicationUser>();
+            // Create admin user with UserName = "admin" and Password = "password"
             modelBuilder.Entity<ApplicationUser>().HasData(
                 new ApplicationUser
                 {
@@ -40,8 +41,9 @@ namespace CourseSchedulingSystem.Data
                     Email = "admin@winthrop.edu",
                     NormalizedEmail = "admin@winthrop.edu".ToUpper(),
                     EmailConfirmed = true,
-                    PasswordHash = hasher.HashPassword(null, "password"),
-                    SecurityStamp = string.Empty
+                    PasswordHash = "AQAAAAEAACcQAAAAEGmIQHSiQtppRL+j/nV+gfDyJo3BALbu1e6u+bg+RU/4bO7e2Iovgzw/oFVN5goYRw==",
+                    SecurityStamp = string.Empty,
+                    ConcurrencyStamp = "b5014cf6-cfb9-43d5-9bff-c9211fc5ce7d"
                 });
 
             modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(

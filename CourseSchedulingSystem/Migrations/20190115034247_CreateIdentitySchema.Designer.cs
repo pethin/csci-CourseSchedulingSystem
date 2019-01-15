@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourseSchedulingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190115021607_CreateIdentitySchema")]
+    [Migration("20190115034247_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
