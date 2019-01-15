@@ -1,4 +1,5 @@
 using System;
+using CourseSchedulingSystem.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -21,11 +22,11 @@ namespace CourseSchedulingSystem.Tests
 
                 // Add a database context (ApplicationDbContext) using an in-memory 
                 // database for testing.
-//                services.AddDbContext<ApplicationDbContext>(options => 
-//                {
-//                    options.UseInMemoryDatabase("InMemoryDbForTesting");
-//                    options.UseInternalServiceProvider(serviceProvider);
-//                });
+                services.AddDbContext<ApplicationDbContext>(options => 
+                {
+                    options.UseInMemoryDatabase("InMemoryDbForTesting");
+                    options.UseInternalServiceProvider(serviceProvider);
+                });
 
                 // Build the service provider.
                 var sp = services.BuildServiceProvider();
@@ -35,12 +36,12 @@ namespace CourseSchedulingSystem.Tests
                 using (var scope = sp.CreateScope())
                 {
                     var scopedServices = scope.ServiceProvider;
-//                    var db = scopedServices.GetRequiredService<ApplicationDbContext>();
+                    var db = scopedServices.GetRequiredService<ApplicationDbContext>();
                     var logger = scopedServices
                         .GetRequiredService<ILogger<CustomWebApplicationFactory<TStartup>>>();
 
                     // Ensure the database is created.
-//                    db.Database.EnsureCreated();
+                    db.Database.EnsureCreated();
 
                     try
                     {
