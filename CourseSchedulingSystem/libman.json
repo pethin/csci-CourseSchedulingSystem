@@ -31,6 +31,54 @@
     {
       "library": "qrcode-generator@1.4.1",
       "destination": "wwwroot/lib/qrcode-generator/"
+    },
+    {
+      "provider": "unpkg",
+      "library": "@fortawesome/fontawesome-free@5.6.3",
+      "destination": "wwwroot/lib/@fortawesome/fontawesome-free/",
+      "files": [
+        "css/all.css",
+        "css/all.min.css",
+        "webfonts/fa-brands-400.eot",
+        "webfonts/fa-brands-400.svg",
+        "webfonts/fa-brands-400.ttf",
+        "webfonts/fa-brands-400.woff",
+        "webfonts/fa-brands-400.woff2",
+        "webfonts/fa-regular-400.eot",
+        "webfonts/fa-regular-400.svg",
+        "webfonts/fa-regular-400.ttf",
+        "webfonts/fa-regular-400.woff",
+        "webfonts/fa-regular-400.woff2",
+        "webfonts/fa-solid-900.eot",
+        "webfonts/fa-solid-900.svg",
+        "webfonts/fa-solid-900.ttf",
+        "webfonts/fa-solid-900.woff",
+        "webfonts/fa-solid-900.woff2"
+      ]
+    },
+    {
+      "library": "moment.js@2.23.0",
+      "destination": "wwwroot/lib/moment.js/",
+      "files": [
+        "moment.min.js",
+        "moment.js"
+      ]
+    },
+    {
+      "library": "fullcalendar@3.10.0",
+      "destination": "wwwroot/lib/fullcalendar/",
+      "files": [
+        "fullcalendar.min.js",
+        "fullcalendar.min.css",
+        "fullcalendar.js",
+        "fullcalendar.css",
+        "fullcalendar.print.min.css",
+        "fullcalendar.print.css"
+      ]
+    },
+    {
+      "library": "fullcalendar-scheduler@1.9.4",
+      "destination": "wwwroot/lib/fullcalendar-scheduler/"
     }
   ]
 }
