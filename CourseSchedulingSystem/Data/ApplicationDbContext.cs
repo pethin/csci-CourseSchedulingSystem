@@ -1,57 +1,115 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using CourseSchedulingSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace CourseSchedulingSystem.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
+    public class ApplicationDbContext : DbContext
     {
-        public static readonly Guid AdminRoleId = new Guid("00000000-0000-0000-0000-000000000042");
-
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public DbSet<User> Users { get; set; }
+
+        public DbSet<UserClaim> UserClaims { get; set; }
+
+        public DbSet<ExternalUserLogin> ExternalUserLogins { get; set; }
+
+        public DbSet<UserRole> UserRoles { get; set; }
+
+        public DbSet<Role> Roles { get; set; }
+
+        public DbSet<RoleClaim> RoleClaims { get; set; }
+
+        private StoreOptions GetStoreOptions() => this.GetService<IDbContextOptions>()
+            .Extensions.OfType<CoreOptionsExtension>()
+            .FirstOrDefault()?.ApplicationServiceProvider
+            ?.GetService<IOptions<IdentityOptions>>()
+            ?.Value?.Stores;
+
+        private class PersonalDataConverter : ValueConverter<string, string>
         {
-            base.OnModelCreating(modelBuilder);
+            public PersonalDataConverter(IPersonalDataProtector protector) : base(s => protector.Protect(s),
+                s => protector.Unprotect(s), default(ConverterMappingHints))
+            {
+            }
+        }
 
-            modelBuilder.Entity<ApplicationRole>().HasData(
-                new ApplicationRole
-                {
-                    Id = AdminRoleId,
-                    Name = "Administrator",
-                    NormalizedName = "Administrator".ToUpper(),
-                    Description = "Grants all permissions",
-                    ConcurrencyStamp = "1348ef0a-5677-4733-8cfa-0a9095de0f28"
-                });
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
 
-            // Create admin user with UserName = "admin" and Password = "password"
-            modelBuilder.Entity<ApplicationUser>().HasData(
-                new ApplicationUser
-                {
-                    Id = AdminRoleId,
-                    UserName = "admin",
-                    NormalizedUserName = "admin".ToUpper(),
-                    Email = "admin@winthrop.edu",
-                    NormalizedEmail = "admin@winthrop.edu".ToUpper(),
-                    EmailConfirmed = true,
-                    PasswordHash = "AQAAAAEAACcQAAAAEGmIQHSiQtppRL+j/nV+gfDyJo3BALbu1e6u+bg+RU/4bO7e2Iovgzw/oFVN5goYRw==",
-                    SecurityStamp = string.Empty,
-                    ConcurrencyStamp = "b5014cf6-cfb9-43d5-9bff-c9211fc5ce7d"
-                });
+            var storeOptions = GetStoreOptions();
+            var maxKeyLength = storeOptions?.MaxLengthForKeys ?? 0;
+            var encryptPersonalData = storeOptions?.ProtectPersonalData ?? false;
+            PersonalDataConverter converter = null;
 
-            modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(
-                new IdentityUserRole<Guid>
+            builder.Entity<User>(b =>
+            {
+                b.HasIndex(u => u.NormalizedUserName).HasName("UserNameIndex").IsUnique();
+                b.Property(u => u.ConcurrencyStamp).IsConcurrencyToken();
+
+                b.Property(u => u.UserName).HasMaxLength(256);
+                b.Property(u => u.NormalizedUserName).HasMaxLength(256);
+
+                if (encryptPersonalData)
                 {
-                    RoleId = AdminRoleId,
-                    UserId = AdminRoleId
-                });
+                    converter = new PersonalDataConverter(this.GetService<IPersonalDataProtector>());
+
+                    var personalDataProps = typeof(User).GetProperties()
+                        .Where(prop => Attribute.IsDefined(prop, typeof(ProtectedPersonalDataAttribute)));
+
+                    foreach (var p in personalDataProps)
+                    {
+                        if (p.PropertyType != typeof(string))
+                        {
+                            throw new InvalidOperationException(
+                                "[ProtectedPersonalData] only works strings by default.");
+                        }
+
+                        b.Property(typeof(string), p.Name).HasConversion(converter);
+                    }
+                }
+
+                b.HasMany<UserRole>().WithOne().HasForeignKey(ur => ur.UserId).IsRequired();
+                b.HasMany<UserClaim>().WithOne().HasForeignKey(uc => uc.UserId).IsRequired();
+                b.HasMany<ExternalUserLogin>().WithOne().HasForeignKey(ul => ul.UserId).IsRequired();
+            });
+
+            builder.Entity<ExternalUserLogin>(b =>
+            {
+                b.HasKey(l => new {l.LoginProvider, l.ProviderKey});
+
+                if (maxKeyLength > 0)
+                {
+                    b.Property(l => l.LoginProvider).HasMaxLength(maxKeyLength);
+                    b.Property(l => l.ProviderKey).HasMaxLength(maxKeyLength);
+                }
+            });
+
+            builder.Entity<UserRole>(b => { b.HasKey(r => new {r.UserId, r.RoleId}); });
+
+            builder.Entity<Role>(b =>
+            {
+                b.HasIndex(r => r.NormalizedName).HasName("RoleNameIndex").IsUnique();
+                b.Property(r => r.ConcurrencyStamp).IsConcurrencyToken();
+
+                b.Property(u => u.Name).HasMaxLength(256);
+                b.Property(u => u.NormalizedName).HasMaxLength(256);
+
+                b.HasMany<UserRole>().WithOne().HasForeignKey(ur => ur.RoleId).IsRequired();
+                b.HasMany<RoleClaim>().WithOne().HasForeignKey(rc => rc.RoleId).IsRequired();
+            });
         }
     }
 }

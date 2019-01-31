@@ -1,0 +1,14 @@
+﻿@page
+@model ExternalLoginModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h4>Associate your @Model.LoginProvider account.</h4>
+<hr />
+
+<p>
+    <h1 class="text-danger">There was an error logging in. Please try again.</h1>
+    <div asp-validation-summary="All" class="text-danger"></div>
+</p>

@@ -29,10 +29,6 @@
       "destination": "wwwroot/lib/jquery-validation-unobtrusive"
     },
     {
-      "library": "qrcode-generator@1.4.1",
-      "destination": "wwwroot/lib/qrcode-generator/"
-    },
-    {
       "provider": "unpkg",
       "library": "@fortawesome/fontawesome-free@5.6.3",
       "destination": "wwwroot/lib/@fortawesome/fontawesome-free/",

@@ -2,15 +2,18 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
+        <RuntimeFrameworkVersion>2.1.1</RuntimeFrameworkVersion>
         <UserSecretsId>aspnet-CourseSchedulingSystem-FD153E06-399F-4410-A659-BB9CAE57A4E0</UserSecretsId>
         <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.WsFederation" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.1" />
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.0" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -47,7 +50,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Migrations\" />
       <Folder Include="wwwroot\lib" />
     </ItemGroup>
 
