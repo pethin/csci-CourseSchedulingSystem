@@ -12,9 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Models;
-using CourseSchedulingSystem.Services;
-using Microsoft.AspNetCore.Authentication.WsFederation;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,35 +32,14 @@ namespace CourseSchedulingSystem
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-
-            services.AddIdentity<User, Role>()
-                .AddUserStore<UserStore>()
-                .AddRoleStore<RoleStore>()
+            
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddDefaultUI(UIFramework.Bootstrap4)
+                .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthentication()
-                .AddWsFederation(WsFederationDefaults.AuthenticationScheme, "Sign in with Winthrop", options =>
-                {
-                    options.MetadataAddress = Configuration.GetValue<string>("WsFederation:MetadataAddress");
-                    options.Wtrealm = Configuration.GetValue<string>("WsFederation:Wtrealm");
-                });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddRazorPagesOptions(options =>
-                {
-                    options.AllowAreas = true;
-                    options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
-                    options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
-                });
-
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = $"/Identity/Account/Login";
-                options.LogoutPath = $"/Identity/Account/Logout";
-                options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
-            });
-
-            services.AddSingleton<IEmailSender, EmailSender>();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -82,8 +58,6 @@ namespace CourseSchedulingSystem
             }
 
             app.UseHttpsRedirection();
-
-            app.UseStatusCodePagesWithReExecute("/Errors/{0}");
             app.UseStaticFiles();
 
             app.UseAuthentication();
