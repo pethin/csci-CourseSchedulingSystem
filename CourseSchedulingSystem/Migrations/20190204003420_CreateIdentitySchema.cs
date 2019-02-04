@@ -154,21 +154,6 @@ namespace CourseSchedulingSystem.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Description", "Name", "NormalizedName" },
-                values: new object[] { new Guid("00000000-0000-0000-0000-000000000042"), "1348ef0a-5677-4733-8cfa-0a9095de0f28", "Grants all permissions", "Administrator", "ADMINISTRATOR" });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("00000000-0000-0000-0000-000000000042"), 0, "b5014cf6-cfb9-43d5-9bff-c9211fc5ce7d", "admin@winthrop.edu", true, false, null, "ADMIN@WINTHROP.EDU", "ADMIN", "AQAAAAEAACcQAAAAEGmIQHSiQtppRL+j/nV+gfDyJo3BALbu1e6u+bg+RU/4bO7e2Iovgzw/oFVN5goYRw==", null, false, "", false, "admin" });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUserRoles",
-                columns: new[] { "UserId", "RoleId" },
-                values: new object[] { new Guid("00000000-0000-0000-0000-000000000042"), new Guid("00000000-0000-0000-0000-000000000042") });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",

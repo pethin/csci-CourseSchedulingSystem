@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourseSchedulingSystem.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190115034247_CreateIdentitySchema")]
+    [Migration("20190204003420_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,16 +45,6 @@ namespace CourseSchedulingSystem.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000042"),
-                            ConcurrencyStamp = "1348ef0a-5677-4733-8cfa-0a9095de0f28",
-                            Description = "Grants all permissions",
-                            Name = "Administrator",
-                            NormalizedName = "ADMINISTRATOR"
-                        });
                 });
 
             modelBuilder.Entity("CourseSchedulingSystem.Models.ApplicationUser", b =>
@@ -106,24 +96,6 @@ namespace CourseSchedulingSystem.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000042"),
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "b5014cf6-cfb9-43d5-9bff-c9211fc5ce7d",
-                            Email = "admin@winthrop.edu",
-                            EmailConfirmed = true,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@WINTHROP.EDU",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGmIQHSiQtppRL+j/nV+gfDyJo3BALbu1e6u+bg+RU/4bO7e2Iovgzw/oFVN5goYRw==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "",
-                            TwoFactorEnabled = false,
-                            UserName = "admin"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -192,13 +164,6 @@ namespace CourseSchedulingSystem.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = new Guid("00000000-0000-0000-0000-000000000042"),
-                            RoleId = new Guid("00000000-0000-0000-0000-000000000042")
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
