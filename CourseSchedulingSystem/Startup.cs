@@ -32,7 +32,7 @@ namespace CourseSchedulingSystem
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            
+
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -57,6 +57,8 @@ namespace CourseSchedulingSystem
             }
 
             app.UseHttpsRedirection();
+
+            app.UseStatusCodePagesWithReExecute("/Errors/{0}");
             app.UseStaticFiles();
 
             app.UseAuthentication();
