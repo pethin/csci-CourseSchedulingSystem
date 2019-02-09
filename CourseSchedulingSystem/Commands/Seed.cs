@@ -53,13 +53,19 @@ Remarks:
                     throw new ArgumentException("Seeder not found.");
                 }
 
-                var seeder = (ISeeder) ActivatorUtilities.GetServiceOrCreateInstance(_serviceProvider, seederType);
-
-                await seeder.SeedAsync();
+                await RunSeederAsync(_serviceProvider, seederType);
             }
             else
             {
-                var seeder = ActivatorUtilities.GetServiceOrCreateInstance<DatabaseSeeder>(_serviceProvider);
+                await RunSeederAsync(_serviceProvider, typeof(DatabaseSeeder));
+            }
+        }
+
+        private async Task RunSeederAsync(IServiceProvider serviceProvider, Type seederType)
+        {
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var seeder = (ISeeder) ActivatorUtilities.CreateInstance(scope.ServiceProvider, seederType);
                 await seeder.SeedAsync();
             }
         }
