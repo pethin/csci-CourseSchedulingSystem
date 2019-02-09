@@ -96,7 +96,7 @@ namespace CourseSchedulingSystem.Commands
                     key = Console.ReadKey(true);
 
                     // Ignore any key out of range.
-                    if (((int) key.Key) >= 65 && ((int) key.Key <= 90))
+                    if (!char.IsControl(key.KeyChar))
                     {
                         // Append the character to the password.
                         password += key.KeyChar;
