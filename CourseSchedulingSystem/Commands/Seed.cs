@@ -11,7 +11,10 @@ using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem.Commands
 {
-    [Command("seed")]
+    [Command("seed", ExtendedHelpText = @"
+Remarks:
+  By default this command runs the DatabaseSeeder seeder.
+")]
     [HelpOption("--help")]
     public class Seed
     {

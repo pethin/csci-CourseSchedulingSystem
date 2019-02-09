@@ -12,8 +12,12 @@ using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem
 {
-    [Subcommand(typeof(Seed))]
+    [Command("CourseSchedulingSystem", ExtendedHelpText = @"
+Remarks:
+  The server will start if no sub-command is specified.
+")]
     [HelpOption("--help")]
+    [Subcommand(typeof(Seed))]
     public class Program
     {
         private static IWebHost _host;
