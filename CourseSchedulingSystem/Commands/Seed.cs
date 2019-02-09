@@ -27,7 +27,7 @@ Remarks:
             _logger = logger;
         }
 
-        [Argument(0, Name = "seeder", Description = "Run a specific seeder.")]
+        [Argument(0, "seeder", Description = "Run a specific seeder.")]
         public string Seeder { get; }
 
         [Option] public bool List { get; set; }

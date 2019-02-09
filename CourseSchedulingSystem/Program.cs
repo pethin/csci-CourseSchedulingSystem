@@ -17,7 +17,7 @@ Remarks:
   The server will start if no sub-command is specified.
 ")]
     [HelpOption("--help")]
-    [Subcommand(typeof(Seed), typeof(CreateAdminUser))]
+    [Subcommand(typeof(Migrate), typeof(Seed), typeof(CreateAdminUser))]
     public class Program
     {
         private static IWebHost _host;
