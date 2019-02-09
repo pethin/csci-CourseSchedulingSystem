@@ -14,14 +14,25 @@
 5. Double-click the repository
 6. Under the **Solutions** section, double-click the Project solution
 
-## Developing
+## Getting Started
+**NOTE:** The server project directory is not the solution directory.
+
 ### Running migrations (Creating the database)
-1. Open PowerShell in the project directory
-2. Run `dotnet ef database update`
-    * This will create the local database if it's not yet created
+In the server project directory, run:
+```sh
+dotnet ef database update
+```
+
+This will create the local database if it's not yet created.
+
+### Seed the database
+In the server project directory, run:
+```sh
+dotnet run seed
+```
 
 ### Starting the development server
-1. Open PowserShell in the project directory
+1. Open a terminal in the server project directory
 2. Run `dotnet watch run`
 3. The project will run at http://localhost:5000 and https://localhost:5001. It will automatically redirect to the HTTPS server.
 

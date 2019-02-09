@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Commands;
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -10,11 +12,26 @@ using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem
 {
+    [Subcommand(typeof(Seed))]
+    [HelpOption("--help")]
     public class Program
     {
-        public static void Main(string[] args)
+        private static IWebHost _host;
+
+        public static int Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            _host = CreateWebHostBuilder(args).Build();
+
+            var app = new CommandLineApplication<Program>();
+            app.Conventions
+                .UseDefaultConventions()
+                .UseConstructorInjection(_host.Services);
+            return app.Execute(args);
+        }
+
+        public async Task OnExecute()
+        {
+            await _host.RunAsync();
         }
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>

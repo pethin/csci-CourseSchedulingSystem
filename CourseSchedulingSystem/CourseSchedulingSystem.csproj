@@ -4,9 +4,11 @@
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <UserSecretsId>aspnet-CourseSchedulingSystem-FD153E06-399F-4410-A659-BB9CAE57A4E0</UserSecretsId>
         <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.2" />
         <PackageReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.1" />
