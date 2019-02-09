@@ -149,7 +149,7 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account.Manage
         {
             return string.Format(
                 AuthenticatorUriFormat,
-                _urlEncoder.Encode("Course Scheduling System"),
+                _urlEncoder.Encode("CourseSchedulingSystem"),
                 _urlEncoder.Encode(email),
                 unformattedKey);
         }
