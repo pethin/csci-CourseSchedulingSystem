@@ -30,21 +30,21 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
             _logger = logger;
         }
 
-        [BindProperty]
-        public InputModel Input { get; set; }
+        [BindProperty] public InputModel Input { get; set; }
 
         public string LoginProvider { get; set; }
 
         public string ReturnUrl { get; set; }
 
-        [TempData]
-        public string ErrorMessage { get; set; }
+        [TempData] public string ErrorMessage { get; set; }
+
+        [TempData] public string UserName { get; set; }
 
         public class InputModel
         {
             [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
         }
 
         public IActionResult OnGetAsync()
@@ -55,7 +55,7 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
         public IActionResult OnPost(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new {returnUrl});
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
         }
@@ -66,39 +66,86 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
             if (remoteError != null)
             {
                 ErrorMessage = $"Error from external provider: {remoteError}";
-                return RedirectToPage("./Login", new {ReturnUrl = returnUrl });
+                return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
             }
+
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
                 ErrorMessage = "Error loading external login information.";
-                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
             }
 
             // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor : true);
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
+                isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
-                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
+                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name,
+                    info.LoginProvider);
                 return LocalRedirect(returnUrl);
             }
+
             if (result.IsLockedOut)
             {
                 return RedirectToPage("./Lockout");
             }
             else
             {
+                IdentityResult identityResult;
+
                 // If the user does not have an account, then ask the user to create an account.
                 ReturnUrl = returnUrl;
                 LoginProvider = info.LoginProvider;
-                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+
+                UserName = GetUserNameFromInfo(info);
+
+                if (UserName == null)
                 {
-                    Input = new InputModel
-                    {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
-                    };
+                    ErrorMessage = "Could not determine user name.";
+                    return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
                 }
-                return Page();
+
+                // If a user already exists with the user name, prompt the user to validate the user's password
+                var existingUser = await _userManager.FindByNameAsync(UserName);
+                if (existingUser != null)
+                {
+                    if (await _userManager.HasPasswordAsync(existingUser))
+                    {
+                        return Page();
+                    }
+
+                    // If the user does not have a password, attach the external login to the user
+                    identityResult = await _userManager.AddLoginAsync(existingUser, info);
+                    if (identityResult.Succeeded)
+                    {
+                        await _signInManager.SignInAsync(existingUser, isPersistent: false);
+                        _logger.LogInformation("{Name} logged in with {LoginProvider} provider.",
+                            existingUser.UserName, info.LoginProvider);
+                        return LocalRedirect(returnUrl);
+                    }
+
+                    ErrorMessage = identityResult.Errors.First().Description;
+                    return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
+                }
+
+                // Create a user with the calculated username
+                var user = new ApplicationUser {UserName = UserName};
+                identityResult = await _userManager.CreateAsync(user);
+
+                if (identityResult.Succeeded)
+                {
+                    identityResult = await _userManager.AddLoginAsync(user, info);
+                    if (identityResult.Succeeded)
+                    {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+                        return LocalRedirect(returnUrl);
+                    }
+                }
+
+                ErrorMessage = identityResult.Errors.First().Description;
+                return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
             }
         }
 
@@ -110,32 +157,50 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
             if (info == null)
             {
                 ErrorMessage = "Error loading external login information during confirmation.";
-                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
             }
 
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
-                var result = await _userManager.CreateAsync(user);
-                if (result.Succeeded)
+                var user = await _userManager.FindByNameAsync(UserName);
+
+                if (user == null)
                 {
-                    result = await _userManager.AddLoginAsync(user, info);
+                    ErrorMessage = "Error finding user during confirmation.";
+                    return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                }
+
+                if (await _userManager.CheckPasswordAsync(user, Input.Password))
+                {
+                    var result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+                        _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", UserName,
+                            info.LoginProvider);
                         return LocalRedirect(returnUrl);
                     }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
                 }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+
+                ErrorMessage = "Wrong password.";
+                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 
             LoginProvider = info.LoginProvider;
             ReturnUrl = returnUrl;
             return Page();
+        }
+
+        private string GetUserNameFromInfo(ExternalLoginInfo info)
+        {
+            var userEmail = info.Principal.FindFirstValue(ClaimTypes.Email) ??
+                            info.Principal.FindFirstValue(ClaimTypes.Name);
+            return userEmail?.Split("@").FirstOrDefault();
         }
     }
 }

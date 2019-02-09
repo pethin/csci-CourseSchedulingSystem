@@ -97,5 +97,37 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account.Manage
 
             return RedirectToPage();
         }
+
+        public async Task<IActionResult> OnPostRemovePasswordAsync()
+        {
+            // Users cannot remove their password if no external login methods are available.
+            if (!(await _signInManager.GetExternalAuthenticationSchemesAsync()).Any())
+            {
+                ModelState.AddModelError(string.Empty, "Cannot remove password with no external login methods available.");
+                return Page();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            var result = await _userManager.RemovePasswordAsync(user);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return Page();
+            }
+
+            await _signInManager.RefreshSignInAsync(user);
+            _logger.LogInformation("User removed their password successfully.");
+            StatusMessage = "Your password has been removed.";
+
+            return RedirectToPage();
+        }
     }
 }

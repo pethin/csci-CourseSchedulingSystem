@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Models;
 using CourseSchedulingSystem.Services;
+using Microsoft.AspNetCore.Authentication.WsFederation;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,13 @@ namespace CourseSchedulingSystem
             services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddAuthentication()
+                .AddWsFederation("Winthrop", "Sign in with Winthrop", options =>
+                {
+                    options.MetadataAddress = Configuration.GetValue<string>("WsFederation:MetadataAddress");
+                    options.Wtrealm = Configuration.GetValue<string>("WsFederation:Wtrealm");
+                });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddRazorPagesOptions(options =>
