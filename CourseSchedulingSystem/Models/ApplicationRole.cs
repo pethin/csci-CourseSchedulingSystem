@@ -10,26 +10,11 @@ namespace CourseSchedulingSystem.Models
     public class ApplicationRole : IdentityRole<Guid>
     {
         [NotMapped]
-        public static class Roles
+        public static class RoleNames
         {
-            public static ApplicationRole Administrator = new ApplicationRole
-            {
-                Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                Name = "Administrator",
-                Description = "Grants all permissions."
-            };
-            public static ApplicationRole AssociateDean = new ApplicationRole
-            {
-                Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                Name = "Associate Dean",
-                Description = "An associate dean."
-            };
-            public static ApplicationRole DepartmentChair = new ApplicationRole
-            {
-                Id = new Guid("00000000-0000-0000-0000-000000000003"),
-                Name = "Department Chair",
-                Description = "A department chair."
-            };
+            public static string Administrator = "Administrator";
+            public static string AssociateDean = "Associate Dean";
+            public static string DepartmentChair = "Department Chair";
         }
 
         public string Description { get; set; }
