@@ -8,5 +8,6 @@ namespace CourseSchedulingSystem.Models
 {
     public class ApplicationUser : IdentityUser<Guid>
     {
+        public List<DepartmentUser> DepartmentUsers { get; set; }
     }
 }
