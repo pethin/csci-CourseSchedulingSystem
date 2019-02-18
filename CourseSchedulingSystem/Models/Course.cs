@@ -9,6 +9,9 @@ namespace CourseSchedulingSystem.Models
 {
     public class Course
     {
+        private string _level;
+        private string _title;
+
         public Guid Id { get; set; }
 
         public Guid DepartmentId { get; set; }
@@ -18,11 +21,24 @@ namespace CourseSchedulingSystem.Models
         public Subject Subject { get; set; }
 
         [Required]
-        public string Level { get; set; }
-        public string NormalizedLevel { get; set; }
+        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
+        public string Level
+        {
+            get => _level;
+            set => _level = value.Trim().ToUpper();
+        }
 
         [Required]
-        public string Title { get; set; }
+        [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only letters, numbers, and spaces are allowed.")]
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                _title = value.Trim();
+                NormalizedTitle = _title.ToUpper();
+            }
+        }
         public string NormalizedTitle { get; set; }
 
         [Required]

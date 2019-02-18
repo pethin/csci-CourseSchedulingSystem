@@ -129,8 +129,6 @@ namespace CourseSchedulingSystem.Migrations
                     b.Property<string>("Level")
                         .IsRequired();
 
-                    b.Property<string>("NormalizedLevel");
-
                     b.Property<string>("NormalizedTitle");
 
                     b.Property<Guid>("SubjectId");
@@ -142,10 +140,9 @@ namespace CourseSchedulingSystem.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.HasIndex("NormalizedLevel")
+                    b.HasIndex("Level")
                         .IsUnique()
-                        .HasName("LevelIndex")
-                        .HasFilter("[NormalizedLevel] IS NOT NULL");
+                        .HasName("LevelIndex");
 
                     b.HasIndex("NormalizedTitle")
                         .IsUnique()
@@ -194,16 +191,13 @@ namespace CourseSchedulingSystem.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<string>("NormalizedCode");
-
                     b.Property<string>("NormalizedName");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NormalizedCode")
+                    b.HasIndex("Code")
                         .IsUnique()
-                        .HasName("CodeIndex")
-                        .HasFilter("[NormalizedCode] IS NOT NULL");
+                        .HasName("CodeIndex");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
@@ -257,16 +251,13 @@ namespace CourseSchedulingSystem.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<string>("NormalizedCode");
-
                     b.Property<string>("NormalizedName");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NormalizedCode")
+                    b.HasIndex("Code")
                         .IsUnique()
-                        .HasName("CodeIndex")
-                        .HasFilter("[NormalizedCode] IS NOT NULL");
+                        .HasName("CodeIndex");
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()

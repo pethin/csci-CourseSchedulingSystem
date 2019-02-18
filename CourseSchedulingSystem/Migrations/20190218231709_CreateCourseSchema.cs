@@ -26,7 +26,6 @@ namespace CourseSchedulingSystem.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Code = table.Column<string>(nullable: false),
-                    NormalizedCode = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     NormalizedName = table.Column<string>(nullable: true)
                 },
@@ -54,7 +53,6 @@ namespace CourseSchedulingSystem.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Code = table.Column<string>(nullable: false),
-                    NormalizedCode = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: false),
                     NormalizedName = table.Column<string>(nullable: true)
                 },
@@ -95,7 +93,6 @@ namespace CourseSchedulingSystem.Migrations
                     DepartmentId = table.Column<Guid>(nullable: false),
                     SubjectId = table.Column<Guid>(nullable: false),
                     Level = table.Column<string>(nullable: false),
-                    NormalizedLevel = table.Column<string>(nullable: true),
                     Title = table.Column<string>(nullable: false),
                     NormalizedTitle = table.Column<string>(nullable: true),
                     CreditHours = table.Column<decimal>(type: "decimal(5, 3)", nullable: false)
@@ -185,9 +182,8 @@ namespace CourseSchedulingSystem.Migrations
             migrationBuilder.CreateIndex(
                 name: "LevelIndex",
                 table: "Courses",
-                column: "NormalizedLevel",
-                unique: true,
-                filter: "[NormalizedLevel] IS NOT NULL");
+                column: "Level",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "TitleIndex",
@@ -209,9 +205,8 @@ namespace CourseSchedulingSystem.Migrations
             migrationBuilder.CreateIndex(
                 name: "CodeIndex",
                 table: "Departments",
-                column: "NormalizedCode",
-                unique: true,
-                filter: "[NormalizedCode] IS NOT NULL");
+                column: "Code",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "NameIndex",
@@ -235,9 +230,8 @@ namespace CourseSchedulingSystem.Migrations
             migrationBuilder.CreateIndex(
                 name: "CodeIndex",
                 table: "Subjects",
-                column: "NormalizedCode",
-                unique: true,
-                filter: "[NormalizedCode] IS NOT NULL");
+                column: "Code",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "NameIndex",

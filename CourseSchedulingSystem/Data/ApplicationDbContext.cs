@@ -47,13 +47,13 @@ namespace CourseSchedulingSystem.Data
 
             builder.Entity<Department>(b =>
             {
-                b.HasIndex(d => d.NormalizedCode).HasName("CodeIndex").IsUnique();
+                b.HasIndex(d => d.Code).HasName("CodeIndex").IsUnique();
                 b.HasIndex(d => d.NormalizedName).HasName("NameIndex").IsUnique();
             });
 
             builder.Entity<Subject>(b =>
             {
-                b.HasIndex(s => s.NormalizedCode).HasName("CodeIndex").IsUnique();
+                b.HasIndex(s => s.Code).HasName("CodeIndex").IsUnique();
                 b.HasIndex(s => s.NormalizedName).HasName("NameIndex").IsUnique();
             });
 
@@ -69,7 +69,7 @@ namespace CourseSchedulingSystem.Data
 
             builder.Entity<Course>(b =>
             {
-                b.HasIndex(s => s.NormalizedLevel).HasName("LevelIndex").IsUnique();
+                b.HasIndex(s => s.Level).HasName("LevelIndex").IsUnique();
                 b.HasIndex(s => s.NormalizedTitle).HasName("TitleIndex").IsUnique();
             });
 
