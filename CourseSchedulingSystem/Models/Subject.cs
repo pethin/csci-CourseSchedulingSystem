@@ -47,10 +47,10 @@ namespace CourseSchedulingSystem.Models
 
         public List<Course> Courses { get; set; }
 
-        public async Task<IEnumerable<ValidationResult>> ValidateAsync(ApplicationDbContext context)
+        public async Task<IEnumerable<ValidationResult>> ValidateAsync(DbContext context)
         {
             var errors = new List<ValidationResult>();
-            var existingSubjects = await context.Subjects
+            var existingSubjects = await context.Set<Subject>()
                 .Where(d => d.Code == Code || d.NormalizedName == NormalizedName)
                 .ToListAsync();
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using CourseSchedulingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Models
@@ -49,10 +48,10 @@ namespace CourseSchedulingSystem.Models
         public List<DepartmentUser> DepartmentUsers { get; set; }
         public List<Course> Courses { get; set; }
 
-        public async Task<IEnumerable<ValidationResult>> ValidateAsync(ApplicationDbContext context)
+        public async Task<IEnumerable<ValidationResult>> ValidateAsync(DbContext context)
         {
             var errors = new List<ValidationResult>();
-            var existingDepartments = await context.Departments
+            var existingDepartments = await context.Set<Department>()
                 .Where(d => d.Code == Code || d.NormalizedName == NormalizedName)
                 .ToListAsync();
 
