@@ -29,7 +29,6 @@ namespace CourseSchedulingSystem.Models
         }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only letters, numbers, and spaces are allowed.")]
         public string Title
         {
             get => _title;
@@ -41,8 +40,14 @@ namespace CourseSchedulingSystem.Models
         }
         public string NormalizedTitle { get; set; }
 
+        [NotMapped]
+        public string Name => $"{Subject.Code}{Level}";
+
         [Required]
         [Column(TypeName = "decimal(5, 3)")]
+        [Range(0.000, double.MaxValue, ErrorMessage = "Credit hours must be between greater than or equal to zero.")]
+        [Display(Name = "Credit Hours")]
+        [DisplayFormat(DataFormatString = "{0:F3}", ApplyFormatInEditMode = true)]
         public decimal CreditHours { get; set; }
 
         public List<CourseScheduleType> CourseScheduleTypes { get; set; }
