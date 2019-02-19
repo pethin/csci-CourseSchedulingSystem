@@ -8,12 +8,20 @@ namespace CourseSchedulingSystem.Models
 {
     public class ScheduleType
     {
+        public ScheduleType()
+        {
+        }
+
+        public ScheduleType(string name)
+        {
+            Name = name;
+        }
+
         private string _name;
 
         public Guid Id { get; set; }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only letters, numbers, and spaces are allowed.")]
         public string Name
         {
             get => _name;

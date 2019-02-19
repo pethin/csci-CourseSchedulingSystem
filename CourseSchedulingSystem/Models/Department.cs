@@ -10,6 +10,16 @@ namespace CourseSchedulingSystem.Models
 {
     public class Department
     {
+        public Department()
+        {
+        }
+
+        public Department(string code, string name)
+        {
+            Code = code;
+            Name = name;
+        }
+
         private string _name;
         private string _code;
 
@@ -24,7 +34,6 @@ namespace CourseSchedulingSystem.Models
         }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only letters, numbers, and spaces are allowed.")]
         public string Name
         {
             get => _name;
@@ -34,6 +43,7 @@ namespace CourseSchedulingSystem.Models
                 NormalizedName = _name.ToUpper();
             }
         }
+
         public string NormalizedName { get; private set; }
 
         public List<DepartmentUser> DepartmentUsers { get; set; }
@@ -42,15 +52,18 @@ namespace CourseSchedulingSystem.Models
         public async Task<IEnumerable<ValidationResult>> ValidateAsync(ApplicationDbContext context)
         {
             var errors = new List<ValidationResult>();
+            var existingDepartments = await context.Departments
+                .Where(d => d.Code == Code || d.NormalizedName == NormalizedName)
+                .ToListAsync();
 
-            if (await context.Departments.FirstOrDefaultAsync(d => d.Code == Code) != null)
+            if (existingDepartments.Any(d => d.Code == Code))
             {
-                errors.Add(new ValidationResult($"A department already exists with the code {Code}.", new [] { "Code" }));
+                errors.Add(new ValidationResult($"A department already exists with the code {Code}.", new[] {"Code"}));
             }
 
-            if (await context.Departments.FirstOrDefaultAsync(d => d.NormalizedName == NormalizedName) != null)
+            if (existingDepartments.Any(d => d.NormalizedName == NormalizedName))
             {
-                errors.Add(new ValidationResult($"A department already exists with the name {Name}.", new[] { "Name" }));
+                errors.Add(new ValidationResult($"A department already exists with the name {Name}.", new[] {"Name"}));
             }
 
             return errors;

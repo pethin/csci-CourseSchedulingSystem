@@ -10,6 +10,16 @@ namespace CourseSchedulingSystem.Models
 {
     public class Subject
     {
+        public Subject()
+        {
+        }
+
+        public Subject(string code, string name)
+        {
+            Code = code;
+            Name = name;
+        }
+
         private string _name;
         private string _code;
 
@@ -24,7 +34,6 @@ namespace CourseSchedulingSystem.Models
         }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Z0-9\s]+$", ErrorMessage = "Only letters, numbers, and spaces are allowed.")]
         public string Name
         {
             get => _name;
@@ -41,13 +50,16 @@ namespace CourseSchedulingSystem.Models
         public async Task<IEnumerable<ValidationResult>> ValidateAsync(ApplicationDbContext context)
         {
             var errors = new List<ValidationResult>();
+            var existingSubjects = await context.Subjects
+                .Where(d => d.Code == Code || d.NormalizedName == NormalizedName)
+                .ToListAsync();
 
-            if (await context.Departments.FirstOrDefaultAsync(d => d.Code == Code) != null)
+            if (existingSubjects.Any(d => d.Code == Code))
             {
                 errors.Add(new ValidationResult($"A subject already exists with the code {Code}.", new[] { "Code" }));
             }
 
-            if (await context.Departments.FirstOrDefaultAsync(d => d.NormalizedName == NormalizedName) != null)
+            if (existingSubjects.Any(d => d.NormalizedName == NormalizedName))
             {
                 errors.Add(new ValidationResult($"A subject already exists with the name {Name}.", new[] { "Name" }));
             }
