@@ -51,8 +51,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
                 "subject",
                 s => s.Name))
             {
-                // Check if any subject has the same name
-                if (await _context.Subjects.AnyAsync(s => s.NormalizedName == subjectToUpdate.NormalizedName))
+                // Check if any other subject has the same name
+                if (await _context.Subjects.AnyAsync(s => s.Id != subjectToUpdate.Id && s.NormalizedName == subjectToUpdate.NormalizedName))
                 {
                     ModelState.AddModelError(string.Empty, $"A subject already exists with the name {subjectToUpdate.Name}.");
                 }
