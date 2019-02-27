@@ -46,25 +46,5 @@ namespace CourseSchedulingSystem.Models
         public string NormalizedName { get; private set; }
 
         public virtual ICollection<Course> Courses { get; set; }
-
-        public async Task<IEnumerable<ValidationResult>> ValidateAsync(DbContext context)
-        {
-            var errors = new List<ValidationResult>();
-            var existingSubjects = await context.Set<Subject>()
-                .Where(d => d.Code == Code || d.NormalizedName == NormalizedName)
-                .ToListAsync();
-
-            if (existingSubjects.Any(d => d.Code == Code))
-            {
-                errors.Add(new ValidationResult($"A subject already exists with the code {Code}.", new[] { "Code" }));
-            }
-
-            if (existingSubjects.Any(d => d.NormalizedName == NormalizedName))
-            {
-                errors.Add(new ValidationResult($"A subject already exists with the name {Name}.", new[] { "Name" }));
-            }
-
-            return errors;
-        }
     }
 }

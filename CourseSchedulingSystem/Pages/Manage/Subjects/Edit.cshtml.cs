@@ -28,7 +28,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
                 return NotFound();
             }
 
-            Subject = await _context.Subjects.FirstOrDefaultAsync(m => m.Id == id);
+            Subject = await _context.Subjects.FindAsync(id);
 
             if (Subject == null)
             {
@@ -37,35 +37,36 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Attach(Subject).State = EntityState.Modified;
+            var subjectToUpdate = await _context.Subjects.FindAsync(id);
 
-            try
+            if (await TryUpdateModelAsync<Subject>(
+                subjectToUpdate,
+                "subject",
+                s => s.Name))
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SubjectExists(Subject.Id))
+                // Check if any subject has the same name
+                if (await _context.Subjects.AnyAsync(s => s.NormalizedName == subjectToUpdate.NormalizedName))
                 {
-                    return NotFound();
+                    ModelState.AddModelError(string.Empty, $"A subject already exists with the name {subjectToUpdate.Name}.");
                 }
 
-                throw;
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
-        }
-
-        private bool SubjectExists(Guid id)
-        {
-            return _context.Subjects.Any(e => e.Id == id);
+            return Page();
         }
     }
 }

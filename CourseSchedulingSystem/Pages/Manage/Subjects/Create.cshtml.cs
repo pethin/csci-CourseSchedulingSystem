@@ -5,6 +5,7 @@ using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Subjects
 {
@@ -32,21 +33,36 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
                 return Page();
             }
 
-            var errors = (await Subject.ValidateAsync(_context)).Where(r => r != ValidationResult.Success);
-            foreach (var error in errors)
+            var newSubject = new Subject();
+
+            if (await TryUpdateModelAsync<Subject>(
+                newSubject,
+                "subject",
+                s => s.Code, s => s.Name))
             {
-                ModelState.AddModelError(string.Empty, error.ErrorMessage);
+                // Check if any subject has the same code
+                if (await _context.Subjects.AnyAsync(s => s.Code == newSubject.Code))
+                {
+                    ModelState.AddModelError(string.Empty, $"A subject already exists with the code {newSubject.Code}.");
+                }
+
+                // Check if any subject has the same name
+                if (await _context.Subjects.AnyAsync(s => s.NormalizedName == newSubject.NormalizedName))
+                {
+                    ModelState.AddModelError(string.Empty, $"A subject already exists with the name {newSubject.Name}.");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+
+                _context.Subjects.Add(newSubject);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            _context.Subjects.Add(Subject);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }
