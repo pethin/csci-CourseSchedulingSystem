@@ -35,7 +35,7 @@ namespace CourseSchedulingSystem.Models
 
         public string NormalizedName { get; private set; }
 
-        public List<CourseAttributeType> CourseAttributeTypes { get; set; }
+        public virtual ICollection<CourseAttributeType> CourseAttributeTypes { get; set; }
 
         public async Task<IEnumerable<ValidationResult>> ValidateAsync(DbContext context)
         {

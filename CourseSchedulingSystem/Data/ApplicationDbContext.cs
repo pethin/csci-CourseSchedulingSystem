@@ -25,7 +25,9 @@ namespace CourseSchedulingSystem.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseScheduleType> CourseScheduleTypes { get; set; }
         public DbSet<CourseAttributeType> CourseAttributeTypes { get; set; }
-        
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
+            .UseLazyLoadingProxies();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

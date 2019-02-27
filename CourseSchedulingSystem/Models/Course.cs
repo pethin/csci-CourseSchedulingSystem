@@ -15,10 +15,10 @@ namespace CourseSchedulingSystem.Models
         public Guid Id { get; set; }
 
         public Guid DepartmentId { get; set; }
-        public Department Department { get; set; }
+        public virtual Department Department { get; set; }
 
         public Guid SubjectId { get; set; }
-        public Subject Subject { get; set; }
+        public virtual Subject Subject { get; set; }
 
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
@@ -41,7 +41,7 @@ namespace CourseSchedulingSystem.Models
         public string NormalizedTitle { get; set; }
 
         [NotMapped]
-        public string Name => $"{Subject.Code}{Level}";
+        public string Identifier => $@"{Subject?.Code ?? $"{SubjectId.ToString()} - "}{Level}";
 
         [Required]
         [Column(TypeName = "decimal(5, 3)")]
@@ -50,7 +50,7 @@ namespace CourseSchedulingSystem.Models
         [DisplayFormat(DataFormatString = "{0:F3}", ApplyFormatInEditMode = true)]
         public decimal CreditHours { get; set; }
 
-        public List<CourseScheduleType> CourseScheduleTypes { get; set; }
-        public List<CourseAttributeType> CourseAttributeTypes { get; set; }
+        public virtual ICollection<CourseScheduleType> CourseScheduleTypes { get; set; }
+        public virtual ICollection<CourseAttributeType> CourseAttributeTypes { get; set; }
     }
 }

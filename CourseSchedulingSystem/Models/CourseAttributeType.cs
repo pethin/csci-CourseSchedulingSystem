@@ -8,9 +8,9 @@ namespace CourseSchedulingSystem.Models
     public class CourseAttributeType
     {
         public Guid CourseId { get; set; }
-        public Course Course { get; set; }
+        public virtual Course Course { get; set; }
 
         public Guid AttributeTypeId { get; set; }
-        public AttributeType AttributeType { get; set; }
+        public virtual AttributeType AttributeType { get; set; }
     }
 }

@@ -45,8 +45,8 @@ namespace CourseSchedulingSystem.Models
 
         public string NormalizedName { get; private set; }
 
-        public List<DepartmentUser> DepartmentUsers { get; set; }
-        public List<Course> Courses { get; set; }
+        public virtual ICollection<DepartmentUser> DepartmentUsers { get; set; }
+        public virtual ICollection<Course> Courses { get; set; }
 
         public async Task<IEnumerable<ValidationResult>> ValidateAsync(DbContext context)
         {
