@@ -69,8 +69,8 @@ namespace CourseSchedulingSystem.Data
 
             builder.Entity<Course>(b =>
             {
-                b.HasIndex(s => s.Level).HasName("LevelIndex").IsUnique();
-                b.HasIndex(s => s.NormalizedTitle).HasName("TitleIndex").IsUnique();
+                b.HasIndex(c => new { c.SubjectId, c.Level }).HasName("IdentifierIndex").IsUnique();
+                b.HasIndex(c => c.NormalizedTitle).HasName("TitleIndex").IsUnique();
             });
 
             // Course <<-->> ScheduleType
