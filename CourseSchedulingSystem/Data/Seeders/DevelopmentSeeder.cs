@@ -26,7 +26,11 @@ namespace CourseSchedulingSystem.Data.Seeders
 
         public async Task SeedAsync()
         {
-            if (!_env.IsDevelopment()) return;
+            if (!_env.IsDevelopment())
+            {
+                _logger.LogWarning("Skipping... This seeder can only be run in development env.");
+                return;
+            }
 
             await SeedDevelopmentUsers();
         }
