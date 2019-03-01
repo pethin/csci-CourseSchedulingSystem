@@ -28,9 +28,9 @@ namespace CourseSchedulingSystem.Tests
                 // Replace the database context (ApplicationDbContext) using an in-memory 
                 // database for testing.
                 services.AddDbContext<ApplicationDbContext>(options =>
-                {
-                    options.UseInMemoryDatabase("InMemoryDbForTesting");
-                });
+                    {
+                        options.UseSqlite("Data Source=:memory:;Version=3;New=True;");
+                    });
 
                 // Add ImpersonationController for authenticating test HTTP clients
                 services

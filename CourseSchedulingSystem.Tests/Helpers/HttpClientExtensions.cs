@@ -10,50 +10,12 @@ namespace CourseSchedulingSystem.Tests.Helpers
 {
     public static class HttpClientExtensions
     {
-        public enum UserType
+        public static async Task<HttpClient> ActAs(this HttpClient client, ApplicationUser user)
         {
-            Administrator,
-            AssociateDean,
-            DepartmentChair,
-            NoRole
-        }
-
-        public static async Task<HttpClient> ActingAs(this HttpClient client, UserType userType)
-        {
-            FormUrlEncodedContent formData;
-
-            switch (userType)
+            var response = await client.PostAsync("/api/Impersonation", new FormUrlEncodedContent(new[]
             {
-                case UserType.Administrator:
-                    formData = new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("UserName", "admin"),
-                        new KeyValuePair<string, string>("Roles[]", ApplicationRole.RoleNames.Administrator)
-                    });
-                    break;
-                case UserType.AssociateDean:
-                    formData = new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("UserName", "dean"),
-                        new KeyValuePair<string, string>("Roles[]", ApplicationRole.RoleNames.AssociateDean)
-                    });
-                    break;
-                case UserType.DepartmentChair:
-                    formData = new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("UserName", "chair"),
-                        new KeyValuePair<string, string>("Roles[]", ApplicationRole.RoleNames.DepartmentChair)
-                    });
-                    break;
-                default:
-                    formData = new FormUrlEncodedContent(new[]
-                    {
-                        new KeyValuePair<string, string>("UserName", "norole"),
-                    });
-                    break;
-            }
-
-            var response = await client.PostAsync("/api/Impersonation", formData);
+                new KeyValuePair<string, string>("Id", user.Id.ToString())
+            }));
             response.EnsureSuccessStatusCode();
 
             return client;

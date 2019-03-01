@@ -17,51 +17,34 @@ namespace CourseSchedulingSystem.Tests.Helpers
     [ApiController]
     public class ImpersonationController : ControllerBase
     {
-        private readonly IdentityOptions _options;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public ImpersonationController(IOptions<IdentityOptions> optionsAccessor)
+        public ImpersonationController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
-            _options = optionsAccessor.Value;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public class InputModel
         {
+            [BindRequired]
             public Guid Id { get; set; }
-
-            [BindRequired] public string UserName { get; set; }
-
-            public string[] Roles { get; set; }
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromForm] InputModel input)
         {
-            var claims = new List<Claim>
-            {
-                new Claim(_options.ClaimsIdentity.UserIdClaimType, input.Id.ToString()),
-                new Claim(_options.ClaimsIdentity.UserNameClaimType, input.UserName)
-            };
+            var user = await _userManager.FindByIdAsync(input.Id.ToString());
 
-            if (input.Roles != null)
+            if (user == null)
             {
-                foreach (var role in input.Roles)
-                {
-                    claims.Add(new Claim(_options.ClaimsIdentity.RoleClaimType, role));
-                }
+                return NotFound(new {message = "User not found"});
             }
 
-            var claimsIdentity = new ClaimsIdentity(
-                claims,
-                IdentityConstants.ApplicationScheme);
-
-            var authProperties = new AuthenticationProperties
-            {
-                IsPersistent = false
-            };
-
-            await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme,
-                new ClaimsPrincipal(claimsIdentity),
-                authProperties);
+            await _signInManager.SignInAsync(user, isPersistent: false);
 
             return Ok();
         }

@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Models;
+using CourseSchedulingSystem.Tests.Factories;
 using CourseSchedulingSystem.Tests.Helpers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -43,8 +46,18 @@ namespace CourseSchedulingSystem.Tests.IntegrationTests
         public async Task Get_RedirectsToManageIfAuthenticated(string url)
         {
             // Act
+            var user = new UserFactory().Generate();
+
+            // CreateClient instantiates _factory.Server
             var client = _factory.CreateClient();
-            await client.ActingAs(HttpClientExtensions.UserType.Administrator);
+            using (var scope = _factory.Server.Host.Services.CreateScope())
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var result = await userManager.CreateAsync(user);
+                Assert.True(result.Succeeded);
+            }
+
+            await client.ActAs(user);
 
             var response = await client.GetAsync(url);
 
