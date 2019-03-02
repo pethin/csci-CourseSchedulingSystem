@@ -39,10 +39,10 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
                 "AttributeType",
                 at => at.Name))
             {
-                // Check if any subject has the same name
+                // Check if any attribute type has the same name
                 if (await _context.AttributeTypes.AnyAsync(at => at.NormalizedName == newAttributeType.NormalizedName))
                 {
-                    ModelState.AddModelError(string.Empty, $"A subject already exists with the name {newAttributeType.Name}.");
+                    ModelState.AddModelError(string.Empty, $"An attribute type already exists with the name {newAttributeType.Name}.");
                 }
 
                 if (!ModelState.IsValid)
