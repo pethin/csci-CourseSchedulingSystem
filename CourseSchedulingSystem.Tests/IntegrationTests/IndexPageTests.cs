@@ -57,7 +57,7 @@ namespace CourseSchedulingSystem.Tests.IntegrationTests
                 Assert.True(result.Succeeded);
             }
 
-            await client.ActAs(user);
+            await client.ActAsAsync(user);
 
             var response = await client.GetAsync(url);
 
