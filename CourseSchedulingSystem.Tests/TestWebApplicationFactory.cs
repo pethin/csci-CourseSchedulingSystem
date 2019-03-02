@@ -6,6 +6,7 @@ using CourseSchedulingSystem.Tests.Helpers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,27 +16,32 @@ namespace CourseSchedulingSystem.Tests
     public class TestWebApplicationFactory<TStartup>
         : WebApplicationFactory<CourseSchedulingSystem.Startup>
     {
+        private readonly SqliteConnection _connection;
+
+        public TestWebApplicationFactory()
+        {
+            _connection = new SqliteConnection("DataSource=:memory:");
+            _connection.Open();
+        }
+
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             // Add services
             builder.ConfigureServices(services =>
             {
-            });
+                // Create a new service provider.
+                var serviceProvider = new ServiceCollection()
+                    .AddEntityFrameworkSqlite()
+                    .AddEntityFrameworkProxies()
+                    .BuildServiceProvider();
 
-            // Replace services
-            builder.ConfigureTestServices(services =>
-            {
-                // Replace the database context (ApplicationDbContext) using an in-memory 
+                // Add a database context (ApplicationDbContext) using an in-memory 
                 // database for testing.
                 services.AddDbContext<ApplicationDbContext>(options =>
-                    {
-                        options.UseSqlite("Data Source=:memory:;Version=3;New=True;");
-                    });
-
-                // Add ImpersonationController for authenticating test HTTP clients
-                services
-                    .AddMvcCore()
-                    .AddApplicationPart(typeof(ImpersonationController).GetTypeInfo().Assembly);
+                {
+                    options.UseSqlite(_connection);
+                    options.UseInternalServiceProvider(serviceProvider);
+                });
 
                 // Build the service provider.
                 var sp = services.BuildServiceProvider();
@@ -50,13 +56,14 @@ namespace CourseSchedulingSystem.Tests
                         .GetRequiredService<ILogger<TestWebApplicationFactory<TStartup>>>();
 
                     // Ensure the database is created.
+                    logger.LogError("Creating schema");
                     db.Database.EnsureCreated();
 
                     try
                     {
                         // Seed the database with test data.
-                        var seeder = ActivatorUtilities.GetServiceOrCreateInstance<DatabaseSeeder>(scopedServices);
-                        seeder.SeedAsync().GetAwaiter().GetResult();
+//                        var seeder = ActivatorUtilities.GetServiceOrCreateInstance<DatabaseSeeder>(scopedServices);
+//                        seeder.SeedAsync().GetAwaiter().GetResult();
                     }
                     catch (Exception ex)
                     {
@@ -66,7 +73,35 @@ namespace CourseSchedulingSystem.Tests
                 }
             });
 
+            // Replace services
+            builder.ConfigureTestServices(services =>
+            {
+                // Add ImpersonationController for authenticating test HTTP clients
+                services
+                    .AddMvcCore()
+                    .AddApplicationPart(typeof(ImpersonationController).GetTypeInfo().Assembly);
+            });
+
             base.ConfigureWebHost(builder);
+        }
+
+        // Flag: Has Dispose already been called?
+        bool _disposed = false;
+
+        // Protected implementation of Dispose pattern.
+        protected override void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                _connection.Close();
+            }
+
+            _disposed = true;
+            // Call base class implementation.
+            base.Dispose(disposing);
         }
     }
 }
