@@ -112,7 +112,6 @@ namespace CourseSchedulingSystem.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("NameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AttributeTypes");
@@ -143,12 +142,10 @@ namespace CourseSchedulingSystem.Migrations
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("Level")
-                        .IsUnique()
-                        .HasName("LevelIndex");
+                        .IsUnique();
 
                     b.HasIndex("NormalizedTitle")
                         .IsUnique()
-                        .HasName("TitleIndex")
                         .HasFilter("[NormalizedTitle] IS NOT NULL");
 
                     b.HasIndex("SubjectId");
@@ -198,12 +195,10 @@ namespace CourseSchedulingSystem.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
-                        .IsUnique()
-                        .HasName("CodeIndex");
+                        .IsUnique();
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("NameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Departments");
@@ -236,7 +231,6 @@ namespace CourseSchedulingSystem.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("NameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("ScheduleTypes");
@@ -258,12 +252,10 @@ namespace CourseSchedulingSystem.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
-                        .IsUnique()
-                        .HasName("CodeIndex");
+                        .IsUnique();
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("NameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Subjects");
