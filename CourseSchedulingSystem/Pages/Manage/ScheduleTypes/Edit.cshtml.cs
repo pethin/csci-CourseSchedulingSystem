@@ -37,35 +37,38 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Attach(ScheduleType).State = EntityState.Modified;
+            var scheduleTypeToUpdate = await _context.ScheduleTypes.FindAsync(id);
 
-            try
+            if (await TryUpdateModelAsync<ScheduleType>(
+                scheduleTypeToUpdate,
+                "ScheduleType",
+                st => st.Name))
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ScheduleTypeExists(ScheduleType.Id))
+                // Check if any other schedule type has the same name
+                if (await _context.ScheduleTypes.AnyAsync(at =>
+                    at.Id != scheduleTypeToUpdate.Id && at.NormalizedName == scheduleTypeToUpdate.NormalizedName))
                 {
-                    return NotFound();
+                    ModelState.AddModelError(string.Empty,
+                        $"A schedule type already exists with the name {scheduleTypeToUpdate.Name}.");
                 }
 
-                throw;
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
-        }
-
-        private bool ScheduleTypeExists(Guid id)
-        {
-            return _context.ScheduleTypes.Any(e => e.Id == id);
+            return Page();
         }
     }
 }

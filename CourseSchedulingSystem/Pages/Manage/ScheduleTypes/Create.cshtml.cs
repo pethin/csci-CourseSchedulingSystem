@@ -5,6 +5,7 @@ using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
 {
@@ -32,21 +33,30 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
                 return Page();
             }
 
-            var errors = (await ScheduleType.ValidateAsync(_context)).Where(r => r != ValidationResult.Success);
-            foreach (var error in errors)
+            var newScheduleType = new ScheduleType();
+
+            if (await TryUpdateModelAsync<ScheduleType>(
+                newScheduleType,
+                "ScheduleType",
+                st => st.Name))
             {
-                ModelState.AddModelError(string.Empty, error.ErrorMessage);
+                // Check if any schedule type has the same name
+                if (await _context.ScheduleTypes.AnyAsync(st => st.NormalizedName == newScheduleType.NormalizedName))
+                {
+                    ModelState.AddModelError(string.Empty, $"A schedule type already exists with the name {newScheduleType.Name}.");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+
+                _context.ScheduleTypes.Add(newScheduleType);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            _context.ScheduleTypes.Add(ScheduleType);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }
