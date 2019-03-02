@@ -163,7 +163,7 @@ namespace CourseSchedulingSystem.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "NameIndex",
+                name: "IX_AttributeTypes_NormalizedName",
                 table: "AttributeTypes",
                 column: "NormalizedName",
                 unique: true,
@@ -180,22 +180,17 @@ namespace CourseSchedulingSystem.Migrations
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "LevelIndex",
+                name: "IX_Courses_SubjectId_Level",
                 table: "Courses",
-                column: "Level",
+                columns: new[] { "SubjectId", "Level" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "TitleIndex",
+                name: "IX_Courses_NormalizedTitle",
                 table: "Courses",
                 column: "NormalizedTitle",
                 unique: true,
                 filter: "[NormalizedTitle] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Courses_SubjectId",
-                table: "Courses",
-                column: "SubjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseScheduleTypes_ScheduleTypeId",
@@ -203,13 +198,13 @@ namespace CourseSchedulingSystem.Migrations
                 column: "ScheduleTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "CodeIndex",
+                name: "IX_Departments_Code",
                 table: "Departments",
                 column: "Code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "NameIndex",
+                name: "IX_Departments_NormalizedName",
                 table: "Departments",
                 column: "NormalizedName",
                 unique: true,
@@ -221,20 +216,20 @@ namespace CourseSchedulingSystem.Migrations
                 column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
-                name: "NameIndex",
+                name: "IX_ScheduleTypes_NormalizedName",
                 table: "ScheduleTypes",
                 column: "NormalizedName",
                 unique: true,
                 filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "CodeIndex",
+                name: "IX_Subjects_Code",
                 table: "Subjects",
                 column: "Code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "NameIndex",
+                name: "IX_Subjects_NormalizedName",
                 table: "Subjects",
                 column: "NormalizedName",
                 unique: true,

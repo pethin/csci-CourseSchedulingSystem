@@ -15,7 +15,7 @@ namespace CourseSchedulingSystem.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
+                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -110,7 +110,6 @@ namespace CourseSchedulingSystem.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("NameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AttributeTypes");
@@ -142,12 +141,10 @@ namespace CourseSchedulingSystem.Migrations
 
                     b.HasIndex("NormalizedTitle")
                         .IsUnique()
-                        .HasName("TitleIndex")
                         .HasFilter("[NormalizedTitle] IS NOT NULL");
 
                     b.HasIndex("SubjectId", "Level")
-                        .IsUnique()
-                        .HasName("IdentifierIndex");
+                        .IsUnique();
 
                     b.ToTable("Courses");
                 });
@@ -194,12 +191,10 @@ namespace CourseSchedulingSystem.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
-                        .IsUnique()
-                        .HasName("CodeIndex");
+                        .IsUnique();
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("NameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Departments");
@@ -232,7 +227,6 @@ namespace CourseSchedulingSystem.Migrations
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("NameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("ScheduleTypes");
@@ -254,12 +248,10 @@ namespace CourseSchedulingSystem.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
-                        .IsUnique()
-                        .HasName("CodeIndex");
+                        .IsUnique();
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
-                        .HasName("NameIndex")
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Subjects");

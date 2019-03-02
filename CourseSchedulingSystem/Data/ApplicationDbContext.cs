@@ -49,30 +49,28 @@ namespace CourseSchedulingSystem.Data
 
             builder.Entity<Department>(b =>
             {
-                b.HasIndex(d => d.Code).HasName("CodeIndex").IsUnique();
-                b.HasIndex(d => d.NormalizedName).HasName("NameIndex").IsUnique();
+                b.HasIndex(d => d.Code).IsUnique();
+                b.HasIndex(d => d.NormalizedName).IsUnique();
             });
 
             builder.Entity<Subject>(b =>
             {
-                b.HasIndex(s => s.Code).HasName("CodeIndex").IsUnique();
-                b.HasIndex(s => s.NormalizedName).HasName("NameIndex").IsUnique();
+                b.HasIndex(s => s.Code).IsUnique();
+                b.HasIndex(s => s.NormalizedName).IsUnique();
             });
 
             builder.Entity<ScheduleType>()
                 .HasIndex(st => st.NormalizedName)
-                .HasName("NameIndex")
                 .IsUnique();
 
             builder.Entity<AttributeType>()
                 .HasIndex(at => at.NormalizedName)
-                .HasName("NameIndex")
                 .IsUnique();
 
             builder.Entity<Course>(b =>
             {
-                b.HasIndex(c => new { c.SubjectId, c.Level }).HasName("IdentifierIndex").IsUnique();
-                b.HasIndex(c => c.NormalizedTitle).HasName("TitleIndex").IsUnique();
+                b.HasIndex(c => new { c.SubjectId, c.Level }).IsUnique();
+                b.HasIndex(c => c.NormalizedTitle).IsUnique();
             });
 
             // Course <<-->> ScheduleType
