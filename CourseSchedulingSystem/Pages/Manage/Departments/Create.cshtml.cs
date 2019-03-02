@@ -5,6 +5,7 @@ using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Departments
 {
@@ -32,21 +33,36 @@ namespace CourseSchedulingSystem.Pages.Manage.Departments
                 return Page();
             }
 
-            var errors = (await Department.ValidateAsync(_context)).Where(r => r != ValidationResult.Success);
-            foreach (var error in errors)
+            var newDepartment = new Department();
+
+            if (await TryUpdateModelAsync<Department>(
+                newDepartment,
+                "Department",
+                d => d.Code, d => d.Name))
             {
-                ModelState.AddModelError(string.Empty, error.ErrorMessage);
+                // Check if any department has the same code
+                if (await _context.Departments.AnyAsync(d => d.Code == newDepartment.Code))
+                {
+                    ModelState.AddModelError(string.Empty, $"A department already exists with the code {newDepartment.Code}.");
+                }
+
+                // Check if any subject has the same name
+                if (await _context.Departments.AnyAsync(d => d.NormalizedName == newDepartment.NormalizedName))
+                {
+                    ModelState.AddModelError(string.Empty, $"A department already exists with the name {newDepartment.Name}.");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+
+                _context.Departments.Add(newDepartment);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            _context.Departments.Add(Department);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }

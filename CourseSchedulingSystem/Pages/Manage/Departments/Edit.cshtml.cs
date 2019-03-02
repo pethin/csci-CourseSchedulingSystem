@@ -37,35 +37,38 @@ namespace CourseSchedulingSystem.Pages.Manage.Departments
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Attach(Department).State = EntityState.Modified;
+            var departmentToUpdate = await _context.Departments.FindAsync(id);
 
-            try
+            if (await TryUpdateModelAsync<Department>(
+                departmentToUpdate,
+                "Department",
+                d => d.Code, d => d.Name))
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DepartmentExists(Department.Id))
+                // Check if any other department has the same name
+                if (await _context.Departments.AnyAsync(d =>
+                    d.Id != departmentToUpdate.Id && d.NormalizedName == departmentToUpdate.NormalizedName))
                 {
-                    return NotFound();
+                    ModelState.AddModelError(string.Empty,
+                        $"A department already exists with the name {departmentToUpdate.Name}.");
                 }
 
-                throw;
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
-        }
-
-        private bool DepartmentExists(Guid id)
-        {
-            return _context.Departments.Any(e => e.Id == id);
+            return Page();
         }
     }
 }
