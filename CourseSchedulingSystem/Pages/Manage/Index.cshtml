@@ -5,163 +5,40 @@
 }
 
 <h1>Administration</h1>
-<hr />
-<div class="card mb-4">
-    <div class="card-header bg-info text-white">
-        Scheduling
+<hr/>
+@foreach (var panelSection in IndexSections.Sections)
+{
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            @panelSection.Title
+        </div>
+        <ul class="list-group list-group-flush">
+            @foreach (var row in panelSection.Rows)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="mb-0">@row.Title</p>
+                        @if (row.Description != null)
+                        {
+                            <small>@row.Description</small>
+                        }
+                    </div>
+                    @if (row.Link != null)
+                    {
+                        <span>
+                            <a asp-page="@row.Link/Create" class="btn btn-outline-success"><i class="fa fa-plus"></i> Add</a>
+                            <a asp-page="@row.Link/Index" class="btn btn-outline-primary"><i class="fa fa-pencil-alt"></i> Change</a>
+                        </span>
+                    }
+                    else
+                    {
+                        <span>
+                            <a href="#" class="btn btn-outline-success disabled"><i class="fa fa-plus"></i> Add</a>
+                            <a href="#" class="btn btn-outline-primary disabled"><i class="fa fa-pencil-alt"></i> Change</a>
+                        </span>
+                    }
+                </li>
+            }
+        </ul>
     </div>
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Instructional Methods</p>
-                <small>Instructional methods for course sections. E.g., Classroom, Hybrid, Online.</small>
-            </div>
-            <span>
-                <a href="#" class="btn btn-outline-success disabled"><i class="fa fa-plus"></i> Add</a>
-                <a href="#" class="btn btn-outline-primary disabled"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Terms</p>
-                <small>Course sections are grouped by terms. E.g., Spring @DateTime.Now.Year, Fall @DateTime.Now.Year.</small>
-            </div>
-            <span>
-                <a href="#" class="btn btn-outline-success disabled"><i class="fa fa-plus"></i> Add</a>
-                <a href="#" class="btn btn-outline-primary disabled"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-    </ul>
-</div>
-
-<div class="card mb-4">
-    <div class="card-header bg-info text-white">
-        Course Management
-    </div>
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Subjects</p>
-                <small>Subjects are assigned to courses.</small>
-            </div>
-            <span>
-                <a asp-page="./Subjects/Create" class="btn btn-outline-success"><i class="fa fa-plus"></i> Add</a>
-                <a asp-page="./Subjects/Index" class="btn btn-outline-primary"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Attribute Types</p>
-                <small>Additional attributes that can be added to courses or course sections. E.g., Intensive Writing, Oral Communication.</small>
-            </div>
-            <span>
-                <a asp-page="./AttributeTypes/Create" class="btn btn-outline-success"><i class="fa fa-plus"></i> Add</a>
-                <a asp-page="./AttributeTypes/Index" class="btn btn-outline-primary"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Schedule Types</p>
-                <small>Additional attributes that can be added to courses. E.g., Independent Study/Research, Lecture.</small>
-            </div>
-            <span>
-                <a asp-page="./ScheduleTypes/Create" class="btn btn-outline-success"><i class="fa fa-plus"></i> Add</a>
-                <a asp-page="./ScheduleTypes/Index" class="btn btn-outline-primary"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Courses</p>
-                <small>Courses are scheduled as course sections. A course includes a subject, level, and credit hours.</small>
-            </div>
-            <span>
-                <a asp-page="./Courses/Create" class="btn btn-outline-success"><i class="fa fa-plus"></i> Add</a>
-                <a asp-page="./Courses/Index" class="btn btn-outline-primary"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-    </ul>
-</div>
-
-<div class="card mb-4">
-    <div class="card-header bg-info text-white">
-        Department Management
-    </div>
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Departments</p>
-                <small>Courses and instructors are grouped by departments.</small>
-            </div>
-            <span>
-                <a asp-page="./Departments/Create" class="btn btn-outline-success"><i class="fa fa-plus"></i> Add</a>
-                <a asp-page="./Departments/Index" class="btn btn-outline-primary"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Instructors</p>
-                <small>Instructors are assigned to course sections.</small>
-            </div>
-            <span>
-                <a href="#" class="btn btn-outline-success disabled"><i class="fa fa-plus"></i> Add</a>
-                <a href="#" class="btn btn-outline-primary disabled"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-    </ul>
-</div>
-
-<div class="card mb-4">
-    <div class="card-header bg-info text-white">
-        Infrastructure
-    </div>
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Buildings</p>
-                <small>Buildings contain rooms.</small>
-            </div>
-            <span>
-                <a href="#" class="btn btn-outline-success disabled"><i class="fa fa-plus"></i> Add</a>
-                <a href="#" class="btn btn-outline-primary disabled"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Rooms</p>
-                <small>A room has a capacity and can have additional capabilities noted.</small>
-            </div>
-            <span>
-                <a href="#" class="btn btn-outline-success disabled"><i class="fa fa-plus"></i> Add</a>
-                <a href="#" class="btn btn-outline-primary disabled"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-    </ul>
-</div>
-
-<div class="card mb-4">
-    <div class="card-header bg-info text-white">
-        Authentication and Authorization
-    </div>
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Users</p>
-                <small>Not related to instructors. Users for this course scheduling system.</small>
-            </div>
-            <span>
-                <a asp-page="./Users/Create" class="btn btn-outline-success"><i class="fa fa-plus"></i> Add</a>
-                <a asp-page="./Users/Index" class="btn btn-outline-primary"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div>
-                <p class="mb-0">Groups</p>
-                <small>User groups are used to manage permissions.</small>
-            </div>
-            <span>
-                <a href="#" class="btn btn-outline-success disabled"><i class="fa fa-plus"></i> Add</a>
-                <a href="#" class="btn btn-outline-primary disabled"><i class="fa fa-pencil-alt"></i> Change</a>
-            </span>
-        </li>
-    </ul>
-</div>
+}
