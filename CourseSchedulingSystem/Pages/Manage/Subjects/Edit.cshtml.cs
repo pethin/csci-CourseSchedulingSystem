@@ -48,7 +48,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
 
             if (await TryUpdateModelAsync<Subject>(
                 subjectToUpdate,
-                "subject",
+                "Subject",
                 s => s.Name))
             {
                 // Check if any other subject has the same name

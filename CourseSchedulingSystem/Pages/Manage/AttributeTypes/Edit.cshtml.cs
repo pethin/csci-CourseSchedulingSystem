@@ -18,8 +18,7 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
             _context = context;
         }
 
-        [BindProperty]
-        public AttributeType AttributeType { get; set; }
+        [BindProperty] public AttributeType AttributeType { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -34,38 +33,42 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
             {
                 return NotFound();
             }
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Attach(AttributeType).State = EntityState.Modified;
+            var attributeTypeToUpdate = await _context.AttributeTypes.FindAsync(id);
 
-            try
+            if (await TryUpdateModelAsync<AttributeType>(
+                attributeTypeToUpdate,
+                "AttributeType",
+                at => at.Name))
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AttributeTypeExists(AttributeType.Id))
+                // Check if any other subject has the same name
+                if (await _context.AttributeTypes.AnyAsync(at =>
+                    at.Id != attributeTypeToUpdate.Id && at.NormalizedName == attributeTypeToUpdate.NormalizedName))
                 {
-                    return NotFound();
+                    ModelState.AddModelError(string.Empty,
+                        $"A subject already exists with the name {attributeTypeToUpdate.Name}.");
                 }
 
-                throw;
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
-        }
-
-        private bool AttributeTypeExists(Guid id)
-        {
-            return _context.AttributeTypes.Any(e => e.Id == id);
+            return Page();
         }
     }
 }

@@ -37,7 +37,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
 
             if (await TryUpdateModelAsync<Subject>(
                 newSubject,
-                "subject",
+                "Subject",
                 s => s.Code, s => s.Name))
             {
                 // Check if any subject has the same code

@@ -5,6 +5,7 @@ using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
 {
@@ -31,21 +32,30 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
                 return Page();
             }
 
-            var errors = (await AttributeType.ValidateAsync(_context)).Where(r => r != ValidationResult.Success);
-            foreach (var error in errors)
+            var newAttributeType = new AttributeType();
+
+            if (await TryUpdateModelAsync<AttributeType>(
+                newAttributeType,
+                "AttributeType",
+                at => at.Name))
             {
-                ModelState.AddModelError(string.Empty, error.ErrorMessage);
+                // Check if any subject has the same name
+                if (await _context.AttributeTypes.AnyAsync(at => at.NormalizedName == newAttributeType.NormalizedName))
+                {
+                    ModelState.AddModelError(string.Empty, $"A subject already exists with the name {newAttributeType.Name}.");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+
+                _context.AttributeTypes.Add(newAttributeType);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
 
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            _context.AttributeTypes.Add(AttributeType);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }
