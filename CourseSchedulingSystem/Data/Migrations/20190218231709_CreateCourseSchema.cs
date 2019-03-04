@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace CourseSchedulingSystem.Migrations
+namespace CourseSchedulingSystem.Data.Migrations
 {
     public partial class CreateCourseSchema : Migration
     {
