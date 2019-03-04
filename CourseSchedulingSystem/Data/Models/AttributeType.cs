@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using CourseSchedulingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace CourseSchedulingSystem.Models
+namespace CourseSchedulingSystem.Data.Models
 {
     public class AttributeType
     {

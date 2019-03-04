@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Models;
+using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace CourseSchedulingSystem.Pages.Manage.Users

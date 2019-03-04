@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Models;
+using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Services;
 using Microsoft.AspNetCore.Authentication.WsFederation;
 using Microsoft.AspNetCore.Identity.UI.Services;

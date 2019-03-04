@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CourseSchedulingSystem.Models;
+using CourseSchedulingSystem.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Seeders

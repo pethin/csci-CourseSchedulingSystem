@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AngleSharp.Html.Dom;
-using CourseSchedulingSystem.Models;
+using CourseSchedulingSystem.Data.Models;
 using Xunit;
 
 namespace CourseSchedulingSystem.Tests.Helpers

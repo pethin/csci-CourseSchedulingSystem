@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using CourseSchedulingSystem.Models;
+using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Tests.Factories;
 using CourseSchedulingSystem.Tests.Helpers;
 using Microsoft.AspNetCore.Identity;

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace CourseSchedulingSystem.Models
+namespace CourseSchedulingSystem.Data.Models
 {
     public class DepartmentUser
     {
