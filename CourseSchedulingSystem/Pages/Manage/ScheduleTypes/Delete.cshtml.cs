@@ -17,31 +17,21 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
             _context = context;
         }
 
-        [BindProperty]
-        public ScheduleType ScheduleType { get; set; }
+        [BindProperty] public ScheduleType ScheduleType { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             ScheduleType = await _context.ScheduleTypes.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (ScheduleType == null)
-            {
-                return NotFound();
-            }
+            if (ScheduleType == null) return NotFound();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             ScheduleType = await _context.ScheduleTypes.FindAsync(id);
 

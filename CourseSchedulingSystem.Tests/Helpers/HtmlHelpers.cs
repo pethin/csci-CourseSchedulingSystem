@@ -15,7 +15,7 @@ namespace CourseSchedulingSystem.Tests.Helpers
             var content = await response.Content.ReadAsStringAsync();
             var document = await BrowsingContext.New()
                 .OpenAsync(ResponseFactory, CancellationToken.None);
-            return (IHtmlDocument)document;
+            return (IHtmlDocument) document;
 
             void ResponseFactory(VirtualResponse htmlResponse)
             {
@@ -31,12 +31,8 @@ namespace CourseSchedulingSystem.Tests.Helpers
                 void MapHeaders(HttpHeaders headers)
                 {
                     foreach (var (key, values) in headers)
-                    {
-                        foreach (var value in values)
-                        {
-                            htmlResponse.Header(key, value);
-                        }
-                    }
+                    foreach (var value in values)
+                        htmlResponse.Header(key, value);
                 }
             }
         }

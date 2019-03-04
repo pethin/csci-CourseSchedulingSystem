@@ -21,17 +21,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Departments
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Department = await _context.Departments.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Department == null)
-            {
-                return NotFound();
-            }
+            if (Department == null) return NotFound();
             return Page();
         }
     }

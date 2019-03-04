@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Options;
 
 namespace CourseSchedulingSystem.Tests.Helpers
 {
@@ -17,8 +11,8 @@ namespace CourseSchedulingSystem.Tests.Helpers
     [ApiController]
     public class ImpersonationController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public ImpersonationController(
             UserManager<ApplicationUser> userManager,
@@ -28,25 +22,21 @@ namespace CourseSchedulingSystem.Tests.Helpers
             _signInManager = signInManager;
         }
 
-        public class InputModel
-        {
-            [BindRequired]
-            public Guid Id { get; set; }
-        }
-
         [HttpPost]
         public async Task<IActionResult> Post([FromForm] InputModel input)
         {
             var user = await _userManager.FindByIdAsync(input.Id.ToString());
 
-            if (user == null)
-            {
-                return NotFound(new {message = "User not found"});
-            }
+            if (user == null) return NotFound(new {message = "User not found"});
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            await _signInManager.SignInAsync(user, false);
 
             return Ok();
+        }
+
+        public class InputModel
+        {
+            [BindRequired] public Guid Id { get; set; }
         }
     }
 }

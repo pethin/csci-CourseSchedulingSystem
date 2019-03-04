@@ -7,8 +7,8 @@ namespace CourseSchedulingSystem.Data.Seeders
 {
     public class DatabaseSeeder : ISeeder
     {
-        private readonly IServiceProvider _provider;
         private readonly ILogger _logger;
+        private readonly IServiceProvider _provider;
 
         public DatabaseSeeder(IServiceProvider provider, ILogger<DatabaseSeeder> logger)
         {
@@ -23,7 +23,7 @@ namespace CourseSchedulingSystem.Data.Seeders
         }
 
         /// <summary>
-        /// Runs a seeder.
+        ///     Runs a seeder.
         /// </summary>
         /// <param name="seeder"></param>
         /// <returns></returns>

@@ -1,16 +1,10 @@
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Tests.Factories;
 using CourseSchedulingSystem.Tests.Helpers;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using HttpClientExtensions = CourseSchedulingSystem.Tests.Helpers.HttpClientExtensions;
 
 namespace CourseSchedulingSystem.Tests.IntegrationTests
 {

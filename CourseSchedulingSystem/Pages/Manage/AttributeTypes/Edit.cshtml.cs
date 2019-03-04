@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -22,31 +21,22 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             AttributeType = await _context.AttributeTypes.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (AttributeType == null)
-            {
-                return NotFound();
-            }
+            if (AttributeType == null) return NotFound();
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
             var attributeTypeToUpdate = await _context.AttributeTypes.FindAsync(id);
 
-            if (await TryUpdateModelAsync<AttributeType>(
+            if (await TryUpdateModelAsync(
                 attributeTypeToUpdate,
                 "AttributeType",
                 at => at.Name))
@@ -54,15 +44,10 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
                 // Check if any other attribute type has the same name
                 if (await _context.AttributeTypes.AnyAsync(at =>
                     at.Id != attributeTypeToUpdate.Id && at.NormalizedName == attributeTypeToUpdate.NormalizedName))
-                {
                     ModelState.AddModelError(string.Empty,
                         $"An attribute type already exists with the name {attributeTypeToUpdate.Name}.");
-                }
 
-                if (!ModelState.IsValid)
-                {
-                    return Page();
-                }
+                if (!ModelState.IsValid) return Page();
 
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");

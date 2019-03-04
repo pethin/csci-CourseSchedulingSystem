@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -18,37 +16,30 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
             _context = context;
         }
 
+        [BindProperty] public AttributeType AttributeType { get; set; }
+
         public IActionResult OnGet()
         {
             return Page();
         }
 
-        [BindProperty] public AttributeType AttributeType { get; set; }
-
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
             var newAttributeType = new AttributeType();
 
-            if (await TryUpdateModelAsync<AttributeType>(
+            if (await TryUpdateModelAsync(
                 newAttributeType,
                 "AttributeType",
                 at => at.Name))
             {
                 // Check if any attribute type has the same name
                 if (await _context.AttributeTypes.AnyAsync(at => at.NormalizedName == newAttributeType.NormalizedName))
-                {
-                    ModelState.AddModelError(string.Empty, $"An attribute type already exists with the name {newAttributeType.Name}.");
-                }
+                    ModelState.AddModelError(string.Empty,
+                        $"An attribute type already exists with the name {newAttributeType.Name}.");
 
-                if (!ModelState.IsValid)
-                {
-                    return Page();
-                }
+                if (!ModelState.IsValid) return Page();
 
                 _context.AttributeTypes.Add(newAttributeType);
                 await _context.SaveChangesAsync();

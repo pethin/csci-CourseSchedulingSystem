@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using CourseSchedulingSystem.Data;
+﻿using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CourseSchedulingSystem.Pages.Manage.Users
 {
@@ -20,39 +15,29 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
             _userManager = userManager;
         }
 
+        [BindProperty] public ApplicationUser ApplicationUser { get; set; }
+
         public IActionResult OnGet()
         {
             return Page();
         }
 
-        [BindProperty]
-        public ApplicationUser ApplicationUser { get; set; }
-
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
             var newUser = new ApplicationUser();
 
-            if (await TryUpdateModelAsync<ApplicationUser>(
+            if (await TryUpdateModelAsync(
                 newUser,
                 "ApplicationUser",
                 u => u.UserName))
             {
                 var result = await _userManager.CreateAsync(newUser);
 
-                if (result.Succeeded)
-                {
-                    return RedirectToPage("./Index");
-                }
+                if (result.Succeeded) return RedirectToPage("./Index");
 
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
             }
 
             return Page();

@@ -17,26 +17,22 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             _context = context;
         }
 
+        [BindProperty] public Course Course { get; set; }
+
         public IActionResult OnGet()
         {
             ViewData["DepartmentId"] = _context.Departments
-                .Select(d => new SelectListItem { Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}" });
-            
+                .Select(d => new SelectListItem {Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}"});
+
             ViewData["SubjectId"] = _context.Subjects
-                .Select(d => new SelectListItem { Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}" });
+                .Select(d => new SelectListItem {Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}"});
 
             return Page();
         }
 
-        [BindProperty]
-        public Course Course { get; set; }
-
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
             _context.Courses.Add(Course);
             await _context.SaveChangesAsync();

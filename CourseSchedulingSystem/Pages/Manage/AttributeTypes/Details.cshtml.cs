@@ -21,17 +21,11 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             AttributeType = await _context.AttributeTypes.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (AttributeType == null)
-            {
-                return NotFound();
-            }
+            if (AttributeType == null) return NotFound();
             return Page();
         }
     }

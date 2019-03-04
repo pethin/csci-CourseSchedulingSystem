@@ -16,7 +16,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Departments
             _context = context;
         }
 
-        public IList<Department> Departments { get;set; }
+        public IList<Department> Departments { get; set; }
 
         public async Task OnGetAsync()
         {

@@ -17,33 +17,23 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             _context = context;
         }
 
-        [BindProperty]
-        public Course Course { get; set; }
+        [BindProperty] public Course Course { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Course = await _context.Courses
                 .Include(c => c.Department)
                 .Include(c => c.Subject).FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Course == null)
-            {
-                return NotFound();
-            }
+            if (Course == null) return NotFound();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Course = await _context.Courses.FindAsync(id);
 

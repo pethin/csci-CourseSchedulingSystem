@@ -13,15 +13,16 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ScheduleTypes[0].Name)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ScheduleTypes[0].Name)
+        </th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.ScheduleTypes) {
+    @foreach (var item in Model.ScheduleTypes)
+    {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
@@ -32,6 +33,6 @@
                 <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>

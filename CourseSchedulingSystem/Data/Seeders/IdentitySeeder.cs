@@ -8,15 +8,8 @@ namespace CourseSchedulingSystem.Data.Seeders
 {
     public class IdentitySeeder : ISeeder
     {
-        private readonly RoleManager<ApplicationRole> _roleManager;
-
-        public IdentitySeeder(RoleManager<ApplicationRole> roleManager)
-        {
-            _roleManager = roleManager;
-        }
-
         /// <summary>
-        /// Template for creating roles.
+        ///     Template for creating roles.
         /// </summary>
         private static readonly List<ApplicationRole> RoleTemplates = new List<ApplicationRole>
         {
@@ -40,25 +33,28 @@ namespace CourseSchedulingSystem.Data.Seeders
             }
         };
 
+        private readonly RoleManager<ApplicationRole> _roleManager;
+
+        public IdentitySeeder(RoleManager<ApplicationRole> roleManager)
+        {
+            _roleManager = roleManager;
+        }
+
         public async Task SeedAsync()
         {
             await SeedRolesAsync();
         }
 
         /// <summary>
-        /// Create default roles if they do not exist.
+        ///     Create default roles if they do not exist.
         /// </summary>
         /// <returns></returns>
         private async Task SeedRolesAsync()
         {
             // Create roles that have not been created
             foreach (var role in RoleTemplates)
-            {
                 if (!await _roleManager.RoleExistsAsync(role.Name))
-                {
                     await _roleManager.CreateAsync(role);
-                }
-            }
         }
     }
 }

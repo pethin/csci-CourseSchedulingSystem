@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-using System.Security;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
-using CourseSchedulingSystem.Data.Seeders;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,8 +13,8 @@ namespace CourseSchedulingSystem.Commands
     [HelpOption("--help")]
     public class CreateAdminUser
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
+        private readonly IServiceProvider _serviceProvider;
 
         public CreateAdminUser(IServiceProvider serviceProvider, ILogger<Seed> logger)
         {
@@ -50,16 +45,10 @@ namespace CourseSchedulingSystem.Commands
                     var result = await userManager.CreateAsync(new ApplicationUser {UserName = Username}, password);
 
                     if (result.Succeeded)
-                    {
                         _logger.LogInformation("User successfully created!");
-                    }
                     else
-                    {
                         foreach (var error in result.Errors)
-                        {
                             _logger.LogError(error.Description);
-                        }
-                    }
                 }
             }
         }
@@ -73,10 +62,7 @@ namespace CourseSchedulingSystem.Commands
                 password = ReadPassword("New password: ");
                 confirmPassword = ReadPassword("Retype new password: ");
 
-                if (password != confirmPassword)
-                {
-                    Console.WriteLine("Passwords do not match!");
-                }
+                if (password != confirmPassword) Console.WriteLine("Passwords do not match!");
             } while (password != confirmPassword);
 
             return password;
@@ -85,7 +71,7 @@ namespace CourseSchedulingSystem.Commands
         private string ReadPassword(string prompt = "Password: ")
         {
             // Instantiate the secure string.
-            string password = "";
+            var password = "";
             ConsoleKeyInfo key;
 
             while (password.Length == 0)

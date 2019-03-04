@@ -9,6 +9,10 @@ namespace CourseSchedulingSystem.Data.Models
 {
     public class Department
     {
+        private string _code;
+
+        private string _name;
+
         public Department()
         {
         }
@@ -18,9 +22,6 @@ namespace CourseSchedulingSystem.Data.Models
             Code = code;
             Name = name;
         }
-
-        private string _name;
-        private string _code;
 
         public Guid Id { get; set; }
 
@@ -56,14 +57,10 @@ namespace CourseSchedulingSystem.Data.Models
                 .ToListAsync();
 
             if (existingDepartments.Any(d => d.Code == Code))
-            {
                 errors.Add(new ValidationResult($"A department already exists with the code {Code}.", new[] {"Code"}));
-            }
 
             if (existingDepartments.Any(d => d.NormalizedName == NormalizedName))
-            {
                 errors.Add(new ValidationResult($"A department already exists with the name {Name}.", new[] {"Name"}));
-            }
 
             return errors;
         }

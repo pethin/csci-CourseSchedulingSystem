@@ -1,31 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Seeders
 {
     public class CourseSchemaSeeder : ISeeder
     {
-        private readonly ApplicationDbContext _context;
-
-        public CourseSchemaSeeder(ApplicationDbContext context)
-        {
-            _context = context;
-        }
-
-        public async Task SeedAsync()
-        {
-            await SeedDepartmentsAsync();
-            await SeedSubjectsAsync();
-            await SeedScheduleTypesAsync();
-            await SeedAttributeTypesAsync();
-        }
-
         /// <summary>
-        /// Template for creating departments.
+        ///     Template for creating departments.
         /// </summary>
         private static readonly List<Department> DepartmentTemplates = new List<Department>
         {
@@ -35,7 +18,7 @@ namespace CourseSchedulingSystem.Data.Seeders
         };
 
         /// <summary>
-        /// Template for creating subjects.
+        ///     Template for creating subjects.
         /// </summary>
         private static readonly List<Subject> SubjectTemplates = new List<Subject>
         {
@@ -53,7 +36,7 @@ namespace CourseSchedulingSystem.Data.Seeders
         };
 
         /// <summary>
-        /// List of schedule types to seed.
+        ///     List of schedule types to seed.
         /// </summary>
         private static readonly List<ScheduleType> ScheduleTypes = new List<ScheduleType>
         {
@@ -72,7 +55,7 @@ namespace CourseSchedulingSystem.Data.Seeders
         };
 
         /// <summary>
-        /// List of attribute types to seed.
+        ///     List of attribute types to seed.
         /// </summary>
         private static readonly List<AttributeType> AttributeTypes = new List<AttributeType>
         {
@@ -93,6 +76,21 @@ namespace CourseSchedulingSystem.Data.Seeders
             new AttributeType("Technology Requirement")
         };
 
+        private readonly ApplicationDbContext _context;
+
+        public CourseSchemaSeeder(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task SeedAsync()
+        {
+            await SeedDepartmentsAsync();
+            await SeedSubjectsAsync();
+            await SeedScheduleTypesAsync();
+            await SeedAttributeTypesAsync();
+        }
+
         private async Task SeedDepartmentsAsync()
         {
             var departmentCodes = DepartmentTemplates.Select(d => d.Code).ToHashSet();
@@ -102,10 +100,7 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .ToHashSet();
 
             var departments = DepartmentTemplates.Where(dt => !createdCodes.Contains(dt.Code));
-            foreach (var department in departments)
-            {
-                await _context.Departments.AddAsync(department);
-            }
+            foreach (var department in departments) await _context.Departments.AddAsync(department);
 
             await _context.SaveChangesAsync();
         }
@@ -119,10 +114,7 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .ToHashSet();
 
             var subjects = SubjectTemplates.Where(dt => !createdCodes.Contains(dt.Code));
-            foreach (var subject in subjects)
-            {
-                await _context.Subjects.AddAsync(subject);
-            }
+            foreach (var subject in subjects) await _context.Subjects.AddAsync(subject);
 
             await _context.SaveChangesAsync();
         }
@@ -136,10 +128,7 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .ToHashSet();
 
             var scheduleTypes = ScheduleTypes.Where(st => !createdCodes.Contains(st.NormalizedName));
-            foreach (var scheduleType in scheduleTypes)
-            {
-                await _context.ScheduleTypes.AddAsync(scheduleType);
-            }
+            foreach (var scheduleType in scheduleTypes) await _context.ScheduleTypes.AddAsync(scheduleType);
 
             await _context.SaveChangesAsync();
         }
@@ -153,10 +142,7 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .ToHashSet();
 
             var attributeTypes = AttributeTypes.Where(st => !createdCodes.Contains(st.NormalizedName));
-            foreach (var attributeType in attributeTypes)
-            {
-                await _context.AttributeTypes.AddAsync(attributeType);
-            }
+            foreach (var attributeType in attributeTypes) await _context.AttributeTypes.AddAsync(attributeType);
 
             await _context.SaveChangesAsync();
         }

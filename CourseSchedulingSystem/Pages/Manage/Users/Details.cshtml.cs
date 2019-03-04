@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CourseSchedulingSystem.Pages.Manage.Users
 {
@@ -24,17 +20,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             ApplicationUser = await _userManager.FindByIdAsync(id.ToString());
 
-            if (ApplicationUser == null)
-            {
-                return NotFound();
-            }
+            if (ApplicationUser == null) return NotFound();
             return Page();
         }
     }

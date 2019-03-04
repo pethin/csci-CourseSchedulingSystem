@@ -36,10 +36,10 @@ namespace CourseSchedulingSystem.Data.Models
                 NormalizedTitle = _title.ToUpper();
             }
         }
+
         public string NormalizedTitle { get; set; }
 
-        [NotMapped]
-        public string Identifier => $@"{Subject?.Code ?? $"{SubjectId.ToString()} - "}{Level}";
+        [NotMapped] public string Identifier => $@"{Subject?.Code ?? $"{SubjectId.ToString()} - "}{Level}";
 
         [Required]
         [Column(TypeName = "decimal(5, 3)")]

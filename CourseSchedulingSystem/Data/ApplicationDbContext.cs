@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using CourseSchedulingSystem.Data.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +15,7 @@ namespace CourseSchedulingSystem.Data
         public DbSet<Department> Departments { get; set; }
         public DbSet<DepartmentUser> DepartmentUsers { get; set; }
         public DbSet<Subject> Subjects { get; set; }
-        
+
         public DbSet<ScheduleType> ScheduleTypes { get; set; }
         public DbSet<AttributeType> AttributeTypes { get; set; }
 
@@ -26,8 +23,11 @@ namespace CourseSchedulingSystem.Data
         public DbSet<CourseScheduleType> CourseScheduleTypes { get; set; }
         public DbSet<CourseAttributeType> CourseAttributeTypes { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder
-            .UseLazyLoadingProxies();
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder
+                .UseLazyLoadingProxies();
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -69,7 +69,7 @@ namespace CourseSchedulingSystem.Data
 
             builder.Entity<Course>(b =>
             {
-                b.HasIndex(c => new { c.SubjectId, c.Level }).IsUnique();
+                b.HasIndex(c => new {c.SubjectId, c.Level}).IsUnique();
                 b.HasIndex(c => c.NormalizedTitle).IsUnique();
             });
 

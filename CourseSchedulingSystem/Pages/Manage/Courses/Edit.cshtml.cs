@@ -19,40 +19,30 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             _context = context;
         }
 
-        [BindProperty]
-        public Course Course { get; set; }
+        [BindProperty] public Course Course { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Course = await _context.Courses
                 .Include(c => c.Department)
                 .Include(c => c.Subject).FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Course == null)
-            {
-                return NotFound();
-            }
-            
+            if (Course == null) return NotFound();
+
             ViewData["DepartmentId"] = _context.Departments
-                .Select(d => new SelectListItem { Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}" });
+                .Select(d => new SelectListItem {Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}"});
 
             ViewData["SubjectId"] = _context.Subjects
-                .Select(d => new SelectListItem { Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}" });
+                .Select(d => new SelectListItem {Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}"});
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
             _context.Attach(Course).State = EntityState.Modified;
 
@@ -62,10 +52,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CourseExists(Course.Id))
-                {
-                    return NotFound();
-                }
+                if (!CourseExists(Course.Id)) return NotFound();
 
                 throw;
             }

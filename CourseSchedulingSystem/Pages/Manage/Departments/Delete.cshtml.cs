@@ -17,31 +17,21 @@ namespace CourseSchedulingSystem.Pages.Manage.Departments
             _context = context;
         }
 
-        [BindProperty]
-        public Department Department { get; set; }
+        [BindProperty] public Department Department { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Department = await _context.Departments.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Department == null)
-            {
-                return NotFound();
-            }
+            if (Department == null) return NotFound();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Department = await _context.Departments.FindAsync(id);
 

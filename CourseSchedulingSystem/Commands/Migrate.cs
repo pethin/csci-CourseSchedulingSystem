@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Seeders;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -18,8 +13,8 @@ namespace CourseSchedulingSystem.Commands
     [HelpOption("--help")]
     public class Migrate
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
+        private readonly IServiceProvider _serviceProvider;
 
         public Migrate(IServiceProvider serviceProvider, ILogger<Migrate> logger)
         {
@@ -33,13 +28,16 @@ namespace CourseSchedulingSystem.Commands
         [Option("--seed", Description = "Seed the database after migrations are run.")]
         public bool Seed { get; set; }
 
-        [Option("--script", Description = "Generate migrations script. Use --from and --to to select specific migrations.")]
+        [Option("--script", Description =
+            "Generate migrations script. Use --from and --to to select specific migrations.")]
         public bool Script { get; set; }
 
-        [Option("--from", Description = "Used when generating an SQL script. The migration to start from. Defaults to the empty database.")]
+        [Option("--from", Description =
+            "Used when generating an SQL script. The migration to start from. Defaults to the empty database.")]
         public string From { get; }
 
-        [Option("--to", Description = "Used when generating an SQL script. The target migration to migrate the database. Defaults to the latest migration.")]
+        [Option("--to", Description =
+            "Used when generating an SQL script. The target migration to migrate the database. Defaults to the latest migration.")]
         public string To { get; }
 
         [Option("--idempotent", Description =

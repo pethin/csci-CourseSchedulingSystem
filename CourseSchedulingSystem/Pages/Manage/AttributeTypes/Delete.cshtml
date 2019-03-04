@@ -11,7 +11,7 @@
 <h3>Are you sure you want to delete this?</h3>
 <div>
     <h4>Attribute Type</h4>
-    <hr />
+    <hr/>
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.AttributeType.Name)
@@ -20,10 +20,10 @@
             @Html.DisplayFor(model => model.AttributeType.Name)
         </dd>
     </dl>
-    
+
     <form method="post">
-        <input type="hidden" asp-for="AttributeType.Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="hidden" asp-for="AttributeType.Id"/>
+        <input type="submit" value="Delete" class="btn btn-danger"/> |
         <a asp-page="./Index">Back to List</a>
     </form>
 </div>

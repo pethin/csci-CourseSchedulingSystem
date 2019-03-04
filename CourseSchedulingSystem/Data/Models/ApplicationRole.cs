@@ -6,6 +6,8 @@ namespace CourseSchedulingSystem.Data.Models
 {
     public class ApplicationRole : IdentityRole<Guid>
     {
+        public string Description { get; set; }
+
         [NotMapped]
         public static class RoleNames
         {
@@ -13,7 +15,5 @@ namespace CourseSchedulingSystem.Data.Models
             public static string AssociateDean = "Associate Dean";
             public static string DepartmentChair = "Department Chair";
         }
-
-        public string Description { get; set; }
     }
 }

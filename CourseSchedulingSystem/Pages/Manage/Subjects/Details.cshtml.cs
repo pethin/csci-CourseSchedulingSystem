@@ -21,17 +21,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Subject = await _context.Subjects.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Subject == null)
-            {
-                return NotFound();
-            }
+            if (Subject == null) return NotFound();
             return Page();
         }
     }

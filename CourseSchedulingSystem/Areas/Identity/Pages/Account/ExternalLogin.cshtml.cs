@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -16,9 +14,9 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
+        private readonly ILogger<ExternalLoginModel> _logger;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ILogger<ExternalLoginModel> _logger;
 
         public ExternalLoginModel(
             SignInManager<ApplicationUser> signInManager,
@@ -40,13 +38,6 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
 
         [TempData] public string UserName { get; set; }
 
-        public class InputModel
-        {
-            [Required]
-            [DataType(DataType.Password)]
-            public string Password { get; set; }
-        }
-
         public IActionResult OnGetAsync()
         {
             return RedirectToPage("./Login");
@@ -55,7 +46,7 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
         public IActionResult OnPost(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new {returnUrl});
+            var redirectUrl = Url.Page("./ExternalLogin", "Callback", new {returnUrl});
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
         }
@@ -78,7 +69,7 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
 
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
-                isPersistent: false, bypassTwoFactor: true);
+                false, true);
             if (result.Succeeded)
             {
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name,
@@ -90,63 +81,58 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
             {
                 return RedirectToPage("./Lockout");
             }
-            else
+
+            IdentityResult identityResult;
+
+            // If the user does not have an account, then ask the user to create an account.
+            ReturnUrl = returnUrl;
+            LoginProvider = info.LoginProvider;
+
+            UserName = GetUserNameFromInfo(info);
+
+            if (UserName == null)
             {
-                IdentityResult identityResult;
+                ErrorMessage = "Could not determine user name.";
+                return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
+            }
 
-                // If the user does not have an account, then ask the user to create an account.
-                ReturnUrl = returnUrl;
-                LoginProvider = info.LoginProvider;
+            // If a user already exists with the user name, prompt the user to validate the user's password
+            var existingUser = await _userManager.FindByNameAsync(UserName);
+            if (existingUser != null)
+            {
+                if (await _userManager.HasPasswordAsync(existingUser)) return Page();
 
-                UserName = GetUserNameFromInfo(info);
-
-                if (UserName == null)
-                {
-                    ErrorMessage = "Could not determine user name.";
-                    return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
-                }
-
-                // If a user already exists with the user name, prompt the user to validate the user's password
-                var existingUser = await _userManager.FindByNameAsync(UserName);
-                if (existingUser != null)
-                {
-                    if (await _userManager.HasPasswordAsync(existingUser))
-                    {
-                        return Page();
-                    }
-
-                    // If the user does not have a password, attach the external login to the user
-                    identityResult = await _userManager.AddLoginAsync(existingUser, info);
-                    if (identityResult.Succeeded)
-                    {
-                        await _signInManager.SignInAsync(existingUser, isPersistent: false);
-                        _logger.LogInformation("{Name} logged in with {LoginProvider} provider.",
-                            existingUser.UserName, info.LoginProvider);
-                        return LocalRedirect(returnUrl);
-                    }
-
-                    ErrorMessage = identityResult.Errors.First().Description;
-                    return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
-                }
-
-                // Create a user with the calculated username
-                var user = new ApplicationUser {UserName = UserName};
-                identityResult = await _userManager.CreateAsync(user);
-
+                // If the user does not have a password, attach the external login to the user
+                identityResult = await _userManager.AddLoginAsync(existingUser, info);
                 if (identityResult.Succeeded)
                 {
-                    identityResult = await _userManager.AddLoginAsync(user, info);
-                    if (identityResult.Succeeded)
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-                        return LocalRedirect(returnUrl);
-                    }
+                    await _signInManager.SignInAsync(existingUser, false);
+                    _logger.LogInformation("{Name} logged in with {LoginProvider} provider.",
+                        existingUser.UserName, info.LoginProvider);
+                    return LocalRedirect(returnUrl);
                 }
 
                 ErrorMessage = identityResult.Errors.First().Description;
                 return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
             }
+
+            // Create a user with the calculated username
+            var user = new ApplicationUser {UserName = UserName};
+            identityResult = await _userManager.CreateAsync(user);
+
+            if (identityResult.Succeeded)
+            {
+                identityResult = await _userManager.AddLoginAsync(user, info);
+                if (identityResult.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, false);
+                    _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+                    return LocalRedirect(returnUrl);
+                }
+            }
+
+            ErrorMessage = identityResult.Errors.First().Description;
+            return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
         }
 
         public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
@@ -167,7 +153,7 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
                 if (user == null)
                 {
                     ErrorMessage = "Error finding user during confirmation.";
-                    return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                    return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
                 }
 
                 if (await _userManager.CheckPasswordAsync(user, Input.Password))
@@ -175,20 +161,17 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
                     var result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        await _signInManager.SignInAsync(user, false);
                         _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", UserName,
                             info.LoginProvider);
                         return LocalRedirect(returnUrl);
                     }
 
-                    foreach (var error in result.Errors)
-                    {
-                        ModelState.AddModelError(string.Empty, error.Description);
-                    }
+                    foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
                 }
 
                 ErrorMessage = "Wrong password.";
-                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
             }
 
             LoginProvider = info.LoginProvider;
@@ -201,6 +184,13 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
             var userEmail = info.Principal.FindFirstValue(ClaimTypes.Email) ??
                             info.Principal.FindFirstValue(ClaimTypes.Name);
             return userEmail?.Split("@").FirstOrDefault();
+        }
+
+        public class InputModel
+        {
+            [Required]
+            [DataType(DataType.Password)]
+            public string Password { get; set; }
         }
     }
 }

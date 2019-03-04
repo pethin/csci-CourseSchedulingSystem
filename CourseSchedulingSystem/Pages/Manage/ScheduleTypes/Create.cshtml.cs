@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -18,38 +16,30 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
             _context = context;
         }
 
+        [BindProperty] public ScheduleType ScheduleType { get; set; }
+
         public IActionResult OnGet()
         {
             return Page();
         }
 
-        [BindProperty]
-        public ScheduleType ScheduleType { get; set; }
-
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
             var newScheduleType = new ScheduleType();
 
-            if (await TryUpdateModelAsync<ScheduleType>(
+            if (await TryUpdateModelAsync(
                 newScheduleType,
                 "ScheduleType",
                 st => st.Name))
             {
                 // Check if any schedule type has the same name
                 if (await _context.ScheduleTypes.AnyAsync(st => st.NormalizedName == newScheduleType.NormalizedName))
-                {
-                    ModelState.AddModelError(string.Empty, $"A schedule type already exists with the name {newScheduleType.Name}.");
-                }
+                    ModelState.AddModelError(string.Empty,
+                        $"A schedule type already exists with the name {newScheduleType.Name}.");
 
-                if (!ModelState.IsValid)
-                {
-                    return Page();
-                }
+                if (!ModelState.IsValid) return Page();
 
                 _context.ScheduleTypes.Add(newScheduleType);
                 await _context.SaveChangesAsync();

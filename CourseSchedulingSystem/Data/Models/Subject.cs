@@ -6,6 +6,10 @@ namespace CourseSchedulingSystem.Data.Models
 {
     public class Subject
     {
+        private string _code;
+
+        private string _name;
+
         public Subject()
         {
         }
@@ -15,9 +19,6 @@ namespace CourseSchedulingSystem.Data.Models
             Code = code;
             Name = name;
         }
-
-        private string _name;
-        private string _code;
 
         public Guid Id { get; set; }
 
@@ -39,6 +40,7 @@ namespace CourseSchedulingSystem.Data.Models
                 NormalizedName = _name.ToUpper();
             }
         }
+
         public string NormalizedName { get; private set; }
 
         public virtual ICollection<Course> Courses { get; set; }

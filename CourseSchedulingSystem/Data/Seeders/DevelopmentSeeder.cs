@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem.Data.Seeders
@@ -36,8 +35,8 @@ namespace CourseSchedulingSystem.Data.Seeders
         }
 
         /// <summary>
-        /// Creates a user with the specified user name if it does not exist and adds the user
-        /// to the specified role.
+        ///     Creates a user with the specified user name if it does not exist and adds the user
+        ///     to the specified role.
         /// </summary>
         /// <param name="userName"></param>
         /// <param name="roleName"></param>
@@ -68,7 +67,7 @@ namespace CourseSchedulingSystem.Data.Seeders
         }
 
         /// <summary>
-        /// Seeds one of each type of user: admin, associate dean, department chair, and role-less.
+        ///     Seeds one of each type of user: admin, associate dean, department chair, and role-less.
         /// </summary>
         /// <returns></returns>
         private async Task SeedDevelopmentUsers()
@@ -91,15 +90,12 @@ namespace CourseSchedulingSystem.Data.Seeders
         }
 
         /// <summary>
-        /// Logs identity errors to error level.
+        ///     Logs identity errors to error level.
         /// </summary>
         /// <param name="errors"></param>
         private void LogIdentityResultErrors(IEnumerable<IdentityError> errors)
         {
-            foreach (var error in errors)
-            {
-                _logger.LogError(error.Description, error);
-            }
+            foreach (var error in errors) _logger.LogError(error.Description, error);
         }
     }
 }

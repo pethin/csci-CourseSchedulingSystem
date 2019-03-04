@@ -53,12 +53,13 @@ namespace CourseSchedulingSystem.Tests.Helpers
             }
 
             var submit = form.GetSubmission(submitButton);
-            var target = (Uri)submit.Target;
+            var target = (Uri) submit.Target;
             if (submitButton.HasAttribute("formaction"))
             {
                 var formAction = submitButton.GetAttribute("formaction");
                 target = new Uri(formAction, UriKind.Relative);
             }
+
             var submission = new HttpRequestMessage(new HttpMethod(submit.Method.ToString()), target)
             {
                 Content = new StreamContent(submit.Body)
@@ -71,6 +72,6 @@ namespace CourseSchedulingSystem.Tests.Helpers
             }
 
             return client.SendAsync(submission);
-}
+        }
     }
 }

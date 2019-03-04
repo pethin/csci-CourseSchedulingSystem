@@ -16,7 +16,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             _context = context;
         }
 
-        public IList<Course> Course { get;set; }
+        public IList<Course> Course { get; set; }
 
         public async Task OnGetAsync()
         {

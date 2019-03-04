@@ -8,6 +8,8 @@ namespace CourseSchedulingSystem.Data.Models
 {
     public class AttributeType
     {
+        private string _name;
+
         public AttributeType()
         {
         }
@@ -16,8 +18,6 @@ namespace CourseSchedulingSystem.Data.Models
         {
             Name = name;
         }
-
-        private string _name;
 
         public Guid Id { get; set; }
 
@@ -41,9 +41,8 @@ namespace CourseSchedulingSystem.Data.Models
             var errors = new List<ValidationResult>();
 
             if (await context.Set<Subject>().AnyAsync(at => at.NormalizedName == NormalizedName))
-            {
-                errors.Add(new ValidationResult($"An attribute type already exists with the name {Name}.", new[] { "Name" }));
-            }
+                errors.Add(new ValidationResult($"An attribute type already exists with the name {Name}.",
+                    new[] {"Name"}));
 
             return errors;
         }

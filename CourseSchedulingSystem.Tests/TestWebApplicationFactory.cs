@@ -1,7 +1,6 @@
 using System;
 using System.Reflection;
 using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Seeders;
 using CourseSchedulingSystem.Tests.Helpers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -14,9 +13,12 @@ using Microsoft.Extensions.Logging;
 namespace CourseSchedulingSystem.Tests
 {
     public class TestWebApplicationFactory<TStartup>
-        : WebApplicationFactory<CourseSchedulingSystem.Startup>
+        : WebApplicationFactory<Startup>
     {
         private readonly SqliteConnection _connection;
+
+        // Flag: Has Dispose already been called?
+        private bool _disposed;
 
         public TestWebApplicationFactory()
         {
@@ -85,19 +87,13 @@ namespace CourseSchedulingSystem.Tests
             base.ConfigureWebHost(builder);
         }
 
-        // Flag: Has Dispose already been called?
-        bool _disposed = false;
-
         // Protected implementation of Dispose pattern.
         protected override void Dispose(bool disposing)
         {
             if (_disposed)
                 return;
 
-            if (disposing)
-            {
-                _connection.Close();
-            }
+            if (disposing) _connection.Close();
 
             _disposed = true;
             // Call base class implementation.

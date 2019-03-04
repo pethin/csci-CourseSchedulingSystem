@@ -17,31 +17,21 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
             _context = context;
         }
 
-        [BindProperty]
-        public AttributeType AttributeType { get; set; }
+        [BindProperty] public AttributeType AttributeType { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             AttributeType = await _context.AttributeTypes.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (AttributeType == null)
-            {
-                return NotFound();
-            }
+            if (AttributeType == null) return NotFound();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             AttributeType = await _context.AttributeTypes.FindAsync(id);
 

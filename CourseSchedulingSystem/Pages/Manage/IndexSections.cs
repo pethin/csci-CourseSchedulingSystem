@@ -1,25 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CourseSchedulingSystem.Pages.Manage
 {
     public static class IndexSections
     {
-        public class Section
-        {
-            public string Title { get; set; }
-            public IList<Row> Rows { get; set; } = new List<Row>();
-        }
-
-        public class Row
-        {
-            public string Title { get; set; }
-            public string Description { get; set; }
-            public string Link { get; set; }
-        }
-
         public static IList<Section> Sections = new List<Section>
         {
             new Section
@@ -37,7 +22,7 @@ namespace CourseSchedulingSystem.Pages.Manage
                         Title = "Terms",
                         Description =
                             $"Course sections are grouped by terms. E.g., Spring {DateTime.Now.Year}, Fall {DateTime.Now.Year}."
-                    },
+                    }
                 }
             },
             new Section
@@ -88,7 +73,7 @@ namespace CourseSchedulingSystem.Pages.Manage
                     new Row
                     {
                         Title = "Instructors",
-                        Description = "Instructors are assigned to course sections.",
+                        Description = "Instructors are assigned to course sections."
                     }
                 }
             },
@@ -100,12 +85,12 @@ namespace CourseSchedulingSystem.Pages.Manage
                     new Row
                     {
                         Title = "Buildings",
-                        Description = "Buildings contain rooms.",
+                        Description = "Buildings contain rooms."
                     },
                     new Row
                     {
                         Title = "Rooms",
-                        Description = "Rooms are assigned to applicable course sections.",
+                        Description = "Rooms are assigned to applicable course sections."
                     }
                 }
             },
@@ -128,5 +113,18 @@ namespace CourseSchedulingSystem.Pages.Manage
                 }
             }
         };
+
+        public class Section
+        {
+            public string Title { get; set; }
+            public IList<Row> Rows { get; set; } = new List<Row>();
+        }
+
+        public class Row
+        {
+            public string Title { get; set; }
+            public string Description { get; set; }
+            public string Link { get; set; }
+        }
     }
 }

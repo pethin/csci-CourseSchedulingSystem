@@ -9,12 +9,12 @@
 <h1>Edit</h1>
 
 <h4>Course</h4>
-<hr />
+<hr/>
 <div class="row">
     <div class="col-md-6">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Course.Id" />
+            <input type="hidden" asp-for="Course.Id"/>
             <div class="form-group">
                 <label asp-for="Course.DepartmentId" class="control-label">Department</label>
                 <select asp-for="Course.DepartmentId" class="form-control" asp-items="ViewBag.DepartmentId"></select>
@@ -27,12 +27,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Course.Level" class="control-label"></label>
-                <input asp-for="Course.Level" class="form-control" />
+                <input asp-for="Course.Level" class="form-control"/>
                 <span asp-validation-for="Course.Level" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Course.Title" class="control-label"></label>
-                <input asp-for="Course.Title" class="form-control" />
+                <input asp-for="Course.Title" class="form-control"/>
                 <span asp-validation-for="Course.Title" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -41,7 +41,7 @@
                 <span asp-validation-for="Course.CreditHours" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary"/>
             </div>
         </form>
     </div>
@@ -52,5 +52,5 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

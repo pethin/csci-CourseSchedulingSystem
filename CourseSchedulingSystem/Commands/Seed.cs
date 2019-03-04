@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -18,8 +16,8 @@ Remarks:
     [HelpOption("--help")]
     public class Seed
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
+        private readonly IServiceProvider _serviceProvider;
 
         public Seed(IServiceProvider serviceProvider, ILogger<Seed> logger)
         {

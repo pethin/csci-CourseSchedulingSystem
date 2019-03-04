@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -14,8 +11,8 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class LogoutModel : PageModel
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LogoutModel> _logger;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
         public LogoutModel(SignInManager<ApplicationUser> signInManager, ILogger<LogoutModel> logger)
         {
@@ -23,7 +20,10 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
             _logger = logger;
         }
 
-        public IActionResult OnGet() => NotFound();
+        public IActionResult OnGet()
+        {
+            return NotFound();
+        }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
@@ -31,7 +31,7 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
 
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
-            
+
             return LocalRedirect(returnUrl);
         }
     }

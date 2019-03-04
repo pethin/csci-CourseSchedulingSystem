@@ -16,7 +16,7 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
             _context = context;
         }
 
-        public IList<ScheduleType> ScheduleTypes { get;set; }
+        public IList<ScheduleType> ScheduleTypes { get; set; }
 
         public async Task OnGetAsync()
         {

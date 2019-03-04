@@ -1,8 +1,8 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - CourseSchedulingSystem</title>
 
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,700" rel="stylesheet">
@@ -14,98 +14,98 @@
         <link rel="stylesheet" href="~/lib/@@fortawesome/fontawesome-free/css/all.min.css"/>
     </environment>
     <environment exclude="Development">
-        <link rel="stylesheet" href="~/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.css"
               asp-fallback-href="~/lib/fullcalendar/fullcalendar.min.css"
               asp-fallback-test-class="fc" asp-fallback-test-property="direction" asp-fallback-test-value="ltr"
               integrity="sha256-9VgA72/TnFndEp685+regIGSD6voLveO2iDuWhqTY3g="
-              crossorigin="anonymous" />
+              crossorigin="anonymous"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.print.min.css" media="print"
               asp-fallback-href="~/lib/fullcalendar/fullcalendar.print.min.css"
               asp-fallback-test-class="fc-event" asp-fallback-test-property="color" asp-fallback-test-value="#000 !important"
               integrity="sha256-JYJWCNB1pXBwUngem7hITwB6SdmCGkhewhKS8NL1A8A="
-              crossorigin="anonymous" />
+              crossorigin="anonymous"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar-scheduler/1.9.4/scheduler.min.css"
               asp-fallback-href="~/lib/fullcalendar-scheduler/scheduler.min.css"
               asp-fallback-test-class="fc-resource-area" asp-fallback-test-property="width" asp-fallback-test-value="30%"
               integrity="sha256-Q+1wmNxEFwFGUEPMOacFkcN6ySL3ERaUVG6rQZ4v0b4="
-              crossorigin="anonymous" />
+              crossorigin="anonymous"/>
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
               asp-fallback-href="~/lib/@@fortawesome/fontawesome-free/css/all.min.css"
               asp-fallback-test-class="fa" asp-fallback-test-property="font-variant" asp-fallback-test-value="normal"
               crossorigin="anonymous"
-              integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" />
+              integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"/>
     </environment>
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/site.css"/>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Course Scheduling System</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <partial name="_LoginPartial" />
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            @* <a class="nav-link text-light" asp-area="" asp-page="/Index">Home</a> *@
-                        </li>
-                    </ul>
-                </div>
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-primary border-bottom box-shadow mb-3">
+        <div class="container">
+            <a class="navbar-brand" asp-area="" asp-page="/Index">Course Scheduling System</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                <partial name="_LoginPartial"/>
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        @* <a class="nav-link text-light" asp-area="" asp-page="/Index">Home</a> *@
+                    </li>
+                </ul>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <partial name="_CookieConsentPartial" />
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+        </div>
+    </nav>
+</header>
+<div class="container">
+    <partial name="_CookieConsentPartial"/>
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
 
-    <environment include="Development">
-        <script src="~/lib/jquery/jquery.js"></script>
-        <script src="~/lib/moment.js/moment.js"></script>
-        <script src="~/lib/bootstrap/js/bootstrap.bundle.js"></script>
-        <script src="~/lib/fullcalendar/fullcalendar.js"></script>
-        <script src="~/lib/fullcalendar-scheduler/scheduler.js"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
-                asp-fallback-src="~/lib/jquery/jquery.min.js"
-                asp-fallback-test="window.jQuery"
-                crossorigin="anonymous"
-                integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"
-                asp-fallback-src="~/lib/moment.js/moment.min.js"
-                asp-fallback-test="window.moment"
-                integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA="
-                crossorigin="anonymous">
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.bundle.min.js"
-                asp-fallback-src="~/lib/bootstrap/js/bootstrap.bundle.min.js"
-                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
-                crossorigin="anonymous"
-                integrity="sha256-MSYVjWgrr6UL/9eQfQvOyt6/gsxb6dpwI1zqM5DbLCs=">
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.js"
-                asp-fallback-src="~/lib/fullcalendar/fullcalendar.min.js"
-                asp-fallback-test="window.FullCalendar"
-                integrity="sha256-4+rW6N5lf9nslJC6ut/ob7fCY2Y+VZj2Pw/2KdmQjR0="
-                crossorigin="anonymous">
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar-scheduler/1.9.4/scheduler.min.js"
-                asp-fallback-src="~/lib/fullcalendar-scheduler/scheduler.min.js"
-                asp-fallback-test="window.FullCalendar && window.FullCalendar.TimelineView"
-                integrity="sha256-JTkf/VqMYSupIx3Nvfy6pKiJsS27lO0MN1v9seFY9uo="
-                crossorigin="anonymous">
-        </script>
-    </environment>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+<environment include="Development">
+    <script src="~/lib/jquery/jquery.js"></script>
+    <script src="~/lib/moment.js/moment.js"></script>
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="~/lib/fullcalendar/fullcalendar.js"></script>
+    <script src="~/lib/fullcalendar-scheduler/scheduler.js"></script>
+</environment>
+<environment exclude="Development">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+            asp-fallback-src="~/lib/jquery/jquery.min.js"
+            asp-fallback-test="window.jQuery"
+            crossorigin="anonymous"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"
+            asp-fallback-src="~/lib/moment.js/moment.min.js"
+            asp-fallback-test="window.moment"
+            integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA="
+            crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.2.1/js/bootstrap.bundle.min.js"
+            asp-fallback-src="~/lib/bootstrap/js/bootstrap.bundle.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+            crossorigin="anonymous"
+            integrity="sha256-MSYVjWgrr6UL/9eQfQvOyt6/gsxb6dpwI1zqM5DbLCs=">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.js"
+            asp-fallback-src="~/lib/fullcalendar/fullcalendar.min.js"
+            asp-fallback-test="window.FullCalendar"
+            integrity="sha256-4+rW6N5lf9nslJC6ut/ob7fCY2Y+VZj2Pw/2KdmQjR0="
+            crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar-scheduler/1.9.4/scheduler.min.js"
+            asp-fallback-src="~/lib/fullcalendar-scheduler/scheduler.min.js"
+            asp-fallback-test="window.FullCalendar && window.FullCalendar.TimelineView"
+            integrity="sha256-JTkf/VqMYSupIx3Nvfy6pKiJsS27lO0MN1v9seFY9uo="
+            crossorigin="anonymous">
+    </script>
+</environment>
+<script src="~/js/site.js" asp-append-version="true"></script>
 
-    @RenderSection("Scripts", required: false)
+@RenderSection("Scripts", false)
 </body>
 </html>

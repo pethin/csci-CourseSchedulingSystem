@@ -16,7 +16,7 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
             _context = context;
         }
 
-        public IList<AttributeType> AttributeTypes { get;set; }
+        public IList<AttributeType> AttributeTypes { get; set; }
 
         public async Task OnGetAsync()
         {

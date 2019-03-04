@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using CourseSchedulingSystem.Data.Models;
-using Microsoft.AspNetCore.Identity;
 
 namespace CourseSchedulingSystem.Tests.Factories
 {

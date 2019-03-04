@@ -17,31 +17,21 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
             _context = context;
         }
 
-        [BindProperty]
-        public Subject Subject { get; set; }
+        [BindProperty] public Subject Subject { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Subject = await _context.Subjects.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Subject == null)
-            {
-                return NotFound();
-            }
+            if (Subject == null) return NotFound();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Subject = await _context.Subjects.FindAsync(id);
 
