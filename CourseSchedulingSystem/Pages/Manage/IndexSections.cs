@@ -21,7 +21,8 @@ namespace CourseSchedulingSystem.Pages.Manage
                     {
                         Title = "Terms",
                         Description =
-                            $"Course sections are grouped by terms. E.g., Spring {DateTime.Now.Year}, Fall {DateTime.Now.Year}."
+                            $"Course sections are grouped by terms. E.g., Spring {DateTime.Now.Year}, Fall {DateTime.Now.Year}.",
+                        Link = "./Terms"
                     }
                 }
             },

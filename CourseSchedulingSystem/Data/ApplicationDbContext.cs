@@ -23,6 +23,9 @@ namespace CourseSchedulingSystem.Data
         public DbSet<CourseScheduleType> CourseScheduleTypes { get; set; }
         public DbSet<CourseAttributeType> CourseAttributeTypes { get; set; }
 
+        public DbSet<Term> Terms { get; set; }
+        public DbSet<TermPart> TermParts { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder
@@ -33,7 +36,7 @@ namespace CourseSchedulingSystem.Data
         {
             base.OnModelCreating(builder);
 
-            // User <<-->> Department
+            // User >>--<< Department
             builder.Entity<DepartmentUser>(b =>
             {
                 b.HasKey(t => new {t.UserId, t.DepartmentId});
@@ -47,33 +50,39 @@ namespace CourseSchedulingSystem.Data
                     .HasForeignKey(du => du.DepartmentId);
             });
 
+            // Department
             builder.Entity<Department>(b =>
             {
                 b.HasIndex(d => d.Code).IsUnique();
                 b.HasIndex(d => d.NormalizedName).IsUnique();
             });
 
+            // Subject
             builder.Entity<Subject>(b =>
             {
                 b.HasIndex(s => s.Code).IsUnique();
                 b.HasIndex(s => s.NormalizedName).IsUnique();
             });
 
+            // Schedule Type
             builder.Entity<ScheduleType>()
                 .HasIndex(st => st.NormalizedName)
                 .IsUnique();
 
+            // Attribute Type
             builder.Entity<AttributeType>()
                 .HasIndex(at => at.NormalizedName)
                 .IsUnique();
 
+            // Course
             builder.Entity<Course>(b =>
             {
+                // Course >>-- Subject
                 b.HasIndex(c => new {c.SubjectId, c.Level}).IsUnique();
                 b.HasIndex(c => c.NormalizedTitle).IsUnique();
             });
 
-            // Course <<-->> ScheduleType
+            // Course >>--<< ScheduleType
             builder.Entity<CourseScheduleType>(b =>
             {
                 b.HasKey(t => new {t.CourseId, t.ScheduleTypeId});
@@ -87,7 +96,7 @@ namespace CourseSchedulingSystem.Data
                     .HasForeignKey(cst => cst.ScheduleTypeId);
             });
 
-            // Course <<-->> AttributeType
+            // Course >>--<< AttributeType
             builder.Entity<CourseAttributeType>(b =>
             {
                 b.HasKey(t => new {t.CourseId, t.AttributeTypeId});
@@ -100,6 +109,15 @@ namespace CourseSchedulingSystem.Data
                     .WithMany(at => at.CourseAttributeTypes)
                     .HasForeignKey(cat => cat.AttributeTypeId);
             });
+
+            // Term
+            builder.Entity<Term>()
+                .HasIndex(t => t.NormalizedName)
+                .IsUnique();
+
+            // TermPart >>-- Term
+            builder.Entity<TermPart>()
+                .HasIndex(c => new {c.TermId, c.NormalizedName}).IsUnique();
         }
     }
 }
