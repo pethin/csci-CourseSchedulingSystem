@@ -14,12 +14,12 @@ Remarks:
   By default this command runs the DatabaseSeeder seeder.
 ")]
     [HelpOption("--help")]
-    public class Seed
+    public class SeedCommand
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
 
-        public Seed(IServiceProvider serviceProvider, ILogger<Seed> logger)
+        public SeedCommand(IServiceProvider serviceProvider, ILogger<SeedCommand> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;

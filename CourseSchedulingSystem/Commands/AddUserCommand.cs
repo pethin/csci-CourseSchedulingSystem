@@ -11,12 +11,12 @@ namespace CourseSchedulingSystem.Commands
 {
     [Command("adduser", Description = "Add a user with no password.")]
     [HelpOption("--help")]
-    public class AddUser
+    public class AddUserCommand
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
 
-        public AddUser(IServiceProvider serviceProvider, ILogger<Seed> logger)
+        public AddUserCommand(IServiceProvider serviceProvider, ILogger<AddUserCommand> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;

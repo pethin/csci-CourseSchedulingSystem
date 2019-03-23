@@ -11,12 +11,12 @@ namespace CourseSchedulingSystem.Commands
 {
     [Command("migrate", Description = "Updates the database to a specified migration.")]
     [HelpOption("--help")]
-    public class Migrate
+    public class MigrateCommand
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
 
-        public Migrate(IServiceProvider serviceProvider, ILogger<Migrate> logger)
+        public MigrateCommand(IServiceProvider serviceProvider, ILogger<MigrateCommand> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
@@ -65,7 +65,7 @@ namespace CourseSchedulingSystem.Commands
                     _logger.LogInformation("Seeding database.");
                     if (Seed)
                     {
-                        var seedCommand = ActivatorUtilities.CreateInstance<Seed>(serviceScope.ServiceProvider);
+                        var seedCommand = ActivatorUtilities.CreateInstance<SeedCommand>(serviceScope.ServiceProvider);
                         await seedCommand.OnExecute();
                     }
                 }

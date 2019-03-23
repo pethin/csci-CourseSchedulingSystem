@@ -11,12 +11,12 @@ namespace CourseSchedulingSystem.Commands
 {
     [Command("createadminuser", Description = "Create an Administrator user")]
     [HelpOption("--help")]
-    public class CreateAdminUser
+    public class CreateAdminUserCommand
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
 
-        public CreateAdminUser(IServiceProvider serviceProvider, ILogger<Seed> logger)
+        public CreateAdminUserCommand(IServiceProvider serviceProvider, ILogger<CreateAdminUserCommand> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
