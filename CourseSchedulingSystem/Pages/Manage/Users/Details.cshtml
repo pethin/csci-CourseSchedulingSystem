@@ -18,6 +18,12 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ApplicationUser.UserName)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ApplicationUser.IsLockedOut)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ApplicationUser.IsLockedOut)
+        </dd>
     </dl>
 </div>
 <div>

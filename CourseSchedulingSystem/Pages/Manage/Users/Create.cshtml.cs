@@ -31,7 +31,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
             if (await TryUpdateModelAsync(
                 newUser,
                 "ApplicationUser",
-                u => u.UserName))
+                u => u.UserName, u => u.IsLockedOut))
             {
                 var result = await _userManager.CreateAsync(newUser);
 

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -14,6 +16,8 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
+        delegate Task<IActionResult> OnExternalLoginFail(ExternalLoginInfo info, string returnUrl);
+
         private readonly ILogger<ExternalLoginModel> _logger;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -67,72 +71,8 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
                 return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
             }
 
-            // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
-                false, true);
-            if (result.Succeeded)
-            {
-                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name,
-                    info.LoginProvider);
-                return LocalRedirect(returnUrl);
-            }
-
-            if (result.IsLockedOut)
-            {
-                return RedirectToPage("./Lockout");
-            }
-
-            IdentityResult identityResult;
-
-            // If the user does not have an account, then ask the user to create an account.
-            ReturnUrl = returnUrl;
-            LoginProvider = info.LoginProvider;
-
-            UserName = GetUserNameFromInfo(info);
-
-            if (UserName == null)
-            {
-                ErrorMessage = "Could not determine user name.";
-                return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
-            }
-
-            // If a user already exists with the user name, prompt the user to validate the user's password
-            var existingUser = await _userManager.FindByNameAsync(UserName);
-            if (existingUser != null)
-            {
-                if (await _userManager.HasPasswordAsync(existingUser)) return Page();
-
-                // If the user does not have a password, attach the external login to the user
-                identityResult = await _userManager.AddLoginAsync(existingUser, info);
-                if (identityResult.Succeeded)
-                {
-                    await _signInManager.SignInAsync(existingUser, false);
-                    _logger.LogInformation("{Name} logged in with {LoginProvider} provider.",
-                        existingUser.UserName, info.LoginProvider);
-                    return LocalRedirect(returnUrl);
-                }
-
-                ErrorMessage = identityResult.Errors.First().Description;
-                return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
-            }
-
-            // Create a user with the calculated username
-            var user = new ApplicationUser {UserName = UserName};
-            identityResult = await _userManager.CreateAsync(user);
-
-            if (identityResult.Succeeded)
-            {
-                identityResult = await _userManager.AddLoginAsync(user, info);
-                if (identityResult.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, false);
-                    _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-                    return LocalRedirect(returnUrl);
-                }
-            }
-
-            ErrorMessage = identityResult.Errors.First().Description;
-            return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
+            // Sign in the user with this external login provider if the user already has a login. If external login does not exist call OnExternalLoginDoesNotExist.
+            return await LogInWithExternalProvider(info, false, true, returnUrl, OnExternalLoginDoesNotExist);
         }
 
         public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
@@ -158,16 +98,14 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
 
                 if (await _userManager.CheckPasswordAsync(user, Input.Password))
                 {
-                    var result = await _userManager.AddLoginAsync(user, info);
-                    if (result.Succeeded)
+                    var addLoginResult = await _userManager.AddLoginAsync(user, info);
+                    if (addLoginResult.Succeeded)
                     {
-                        await _signInManager.SignInAsync(user, false);
-                        _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", UserName,
-                            info.LoginProvider);
-                        return LocalRedirect(returnUrl);
+                        return await LogInWithExternalProvider(info, false, true, returnUrl, OnExternalLoginFailed);
                     }
 
-                    foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+                    foreach (var error in addLoginResult.Errors)
+                        ModelState.AddModelError(string.Empty, error.Description);
                 }
 
                 ErrorMessage = "Wrong password.";
@@ -177,6 +115,87 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
             LoginProvider = info.LoginProvider;
             ReturnUrl = returnUrl;
             return Page();
+        }
+
+        private async Task<IActionResult> LogInWithExternalProvider(ExternalLoginInfo info, bool isPersistent,
+            bool bypassTwoFactor, string returnUrl, OnExternalLoginFail onFailure)
+        {
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey,
+                isPersistent, bypassTwoFactor);
+
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name,
+                    info.LoginProvider);
+                return LocalRedirect(returnUrl);
+            }
+
+            if (result.IsLockedOut)
+            {
+                return RedirectToPage("./Lockout");
+            }
+
+            return await onFailure(info, returnUrl);
+        }
+
+        private async Task<IActionResult> OnExternalLoginDoesNotExist(ExternalLoginInfo info, string returnUrl)
+        {
+            ReturnUrl = returnUrl;
+            LoginProvider = info.LoginProvider;
+
+            UserName = GetUserNameFromInfo(info);
+
+            if (UserName == null)
+            {
+                ErrorMessage = "Could not determine user name.";
+                return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
+            }
+
+            // If a user already exists with the user name.
+            var existingUser = await _userManager.FindByNameAsync(UserName);
+            if (existingUser != null)
+            {
+                // If the user has a password, prompt the user to validate the user's password.
+                if (await _userManager.HasPasswordAsync(existingUser)) return Page();
+
+                // If the user does not have a password, attach the external login to the user
+                var addLoginResult = await _userManager.AddLoginAsync(existingUser, info);
+
+                if (addLoginResult.Succeeded)
+                {
+                    // Sign in the user with this external login provider if the user already has a login.
+                    return await LogInWithExternalProvider(info, false, true, returnUrl, OnExternalLoginFailed);
+                }
+
+                return OnIdentityError(addLoginResult, returnUrl);
+            }
+
+            // If the user does not have an account, then create an account.
+            var user = new ApplicationUser {UserName = UserName, IsLockedOut = true};
+            var createUserResult = await _userManager.CreateAsync(user);
+
+            if (createUserResult.Succeeded)
+            {
+                var addLoginResult = await _userManager.AddLoginAsync(user, info);
+                if (addLoginResult.Succeeded)
+                {
+                    return await LogInWithExternalProvider(info, false, true, returnUrl, OnExternalLoginFailed);
+                }
+            }
+
+            return OnIdentityError(createUserResult, returnUrl);
+        }
+
+        private IActionResult OnIdentityError(IdentityResult result, string returnUrl)
+        {
+            ErrorMessage = result.Errors.First().Description;
+            return RedirectToPage("./Login", new {ReturnUrl = returnUrl});
+        }
+
+        private Task<IActionResult> OnExternalLoginFailed(ExternalLoginInfo info, string returnUrl)
+        {
+            ErrorMessage = "There was an error adding your external login.";
+            return Task.FromResult<IActionResult>(RedirectToPage("./Login", new {ReturnUrl = returnUrl}));
         }
 
         private string GetUserNameFromInfo(ExternalLoginInfo info)

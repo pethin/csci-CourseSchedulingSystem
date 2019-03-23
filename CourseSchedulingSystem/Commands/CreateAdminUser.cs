@@ -9,14 +9,14 @@ using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem.Commands
 {
-    [Command("createadminuser", Description = "Create an Administrator user")]
+    [Command("adduser", Description = "Add a user with no password.")]
     [HelpOption("--help")]
-    public class CreateAdminUser
+    public class AddUser
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
 
-        public CreateAdminUser(IServiceProvider serviceProvider, ILogger<Seed> logger)
+        public AddUser(IServiceProvider serviceProvider, ILogger<Seed> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
@@ -41,8 +41,7 @@ namespace CourseSchedulingSystem.Commands
                 // Create the new user
                 else
                 {
-                    var password = ReadPasswordWithConfirm();
-                    var result = await userManager.CreateAsync(new ApplicationUser {UserName = Username}, password);
+                    var result = await userManager.CreateAsync(new ApplicationUser {UserName = Username});
 
                     if (result.Succeeded)
                         _logger.LogInformation("User successfully created!");
@@ -51,59 +50,6 @@ namespace CourseSchedulingSystem.Commands
                             _logger.LogError(error.Description);
                 }
             }
-        }
-
-        private string ReadPasswordWithConfirm()
-        {
-            string password, confirmPassword;
-
-            do
-            {
-                password = ReadPassword("New password: ");
-                confirmPassword = ReadPassword("Retype new password: ");
-
-                if (password != confirmPassword) Console.WriteLine("Passwords do not match!");
-            } while (password != confirmPassword);
-
-            return password;
-        }
-
-        private string ReadPassword(string prompt = "Password: ")
-        {
-            // Instantiate the secure string.
-            var password = "";
-            ConsoleKeyInfo key;
-
-            while (password.Length == 0)
-            {
-                Console.Write(prompt);
-                do
-                {
-                    key = Console.ReadKey(true);
-
-                    // Ignore any key out of range.
-                    if (!char.IsControl(key.KeyChar))
-                    {
-                        // Append the character to the password.
-                        password += key.KeyChar;
-                        Console.Write("*");
-                    }
-                    else if (key.Key == ConsoleKey.Backspace)
-                    {
-                        if (password.Length > 0)
-                        {
-                            password = password.Remove(password.Length - 1);
-                            Console.Write("\b \b");
-                        }
-                    }
-
-                    // Exit if Enter key is pressed.
-                } while (key.Key != ConsoleKey.Enter);
-            }
-
-            Console.WriteLine();
-
-            return password;
         }
     }
 }

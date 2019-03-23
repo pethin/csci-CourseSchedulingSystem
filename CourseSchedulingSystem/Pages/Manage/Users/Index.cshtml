@@ -17,6 +17,9 @@
         <th>
             @Html.DisplayNameFor(model => model.ApplicationUser[0].UserName)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ApplicationUser[0].IsLockedOut)
+        </th>
         <th></th>
     </tr>
     </thead>
@@ -26,6 +29,9 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsLockedOut)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
