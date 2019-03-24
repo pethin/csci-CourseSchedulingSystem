@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem.Commands
 {
-    [Command("adduser", Description = "Add a user with no password.")]
+    [Command("adduser", Description = "Add a user with no password. If the user exists, the user lockout will be removed.")]
     [HelpOption("--help")]
     public class AddUserCommand
     {
@@ -36,7 +36,21 @@ namespace CourseSchedulingSystem.Commands
                 // Check if user already exists
                 if (user != null)
                 {
-                    _logger.LogError($"User with user name, {Username}, already exists!");
+                    user.IsLockedOut = false;
+                    var result = await userManager.UpdateAsync(user);
+
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation($"User lockout disabled for {user.UserName}.");
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            _logger.LogError(error.Description);
+                        }
+                    }
+
                 }
                 // Create the new user
                 else
