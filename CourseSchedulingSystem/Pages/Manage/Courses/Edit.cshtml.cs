@@ -40,29 +40,49 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
             if (!ModelState.IsValid) return Page();
 
-            _context.Attach(Course).State = EntityState.Modified;
+            var courseToUpdate = await _context.Courses.FindAsync(id);
 
-            try
+            if (await TryUpdateModelAsync(
+                courseToUpdate,
+                "Course",
+                c => c.DepartmentId, c => c.SubjectId, c => c.Level, c => c.Title, c => c.CreditHours))
             {
+                // Check if any course has the same subject and level
+                if (await _context.Courses.AnyAsync(c =>
+                    c.Id != courseToUpdate.Id && c.SubjectId == courseToUpdate.SubjectId && c.Level == courseToUpdate.Level))
+                {
+                    var subject = await _context.Subjects.FirstOrDefaultAsync(s => s.Id == courseToUpdate.SubjectId);
+
+                    if (subject == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid subject selected.");
+                        return Page();
+                    }
+
+                    courseToUpdate.Subject = subject;
+                    ModelState.AddModelError(string.Empty,
+                        $"A course already exists with the identifier {courseToUpdate.Identifier}.");
+                }
+
+                // Check if any course has the same title
+                if (await _context.Courses.AnyAsync(c => c.Id != courseToUpdate.Id && c.Title == courseToUpdate.Title))
+                {
+                    ModelState.AddModelError(string.Empty,
+                        $"A course already exists with the title {courseToUpdate.Title}.");
+                }
+
+
+                if (!ModelState.IsValid) return Page();
+
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CourseExists(Course.Id)) return NotFound();
-
-                throw;
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
-        }
-
-        private bool CourseExists(Guid id)
-        {
-            return _context.Courses.Any(e => e.Id == id);
+            return Page();
         }
     }
 }
