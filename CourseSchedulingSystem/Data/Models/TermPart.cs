@@ -9,7 +9,6 @@ namespace CourseSchedulingSystem.Data.Models
     public class TermPart
     {
         private string _name;
-        private DateTime? _startDate, _endDate;
 
         public TermPart()
         {
@@ -40,36 +39,25 @@ namespace CourseSchedulingSystem.Data.Models
             }
         }
 
-        [Required]
-        public DateTime? StartDate
-        {
-            get => _startDate;
-            set
-            {
-                if (EndDate != null && value >= EndDate)
-                {
-                    throw new ArgumentException("StartDate must be less than EndDate");
-                }
-
-                _startDate = value;
-            }
-        }
-
-        [Required]
-        public DateTime? EndDate
-        {
-            get => _endDate;
-            set
-            {
-                if (StartDate != null && value <= StartDate)
-                {
-                    throw new ArgumentException("EndDate must be greater than StartDate");
-                }
-
-                _endDate = value;
-            }
-        }
-
         public string NormalizedName { get; private set; }
+
+        [Required]
+        [Display(Name = "Start Date")]
+        [DataType(DataType.Date)]
+        public DateTime StartDate { get; set; }
+
+        [Required]
+        [Display(Name = "End Date")]
+        [DataType(DataType.Date)]
+        public DateTime EndDate { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (StartDate >= EndDate)
+            {
+                yield return new ValidationResult("Start date must be before end date.", new[] { "StartDate" });
+                yield return new ValidationResult("End date must be after start date.", new[] { "EndDate" });
+            }
+        }
     }
 }
