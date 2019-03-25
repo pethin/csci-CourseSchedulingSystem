@@ -26,6 +26,9 @@ namespace CourseSchedulingSystem.Data
         public DbSet<Term> Terms { get; set; }
         public DbSet<TermPart> TermParts { get; set; }
 
+        public DbSet<Instructor> Instructors { get; set; }
+        public DbSet<InstructionalMethod> InstructionalMethods { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder
@@ -117,7 +120,18 @@ namespace CourseSchedulingSystem.Data
 
             // TermPart >>-- Term
             builder.Entity<TermPart>()
-                .HasIndex(c => new {c.TermId, c.NormalizedName}).IsUnique();
+                .HasIndex(c => new {c.TermId, c.NormalizedName})
+                .IsUnique();
+
+            // Instructor
+            builder.Entity<Instructor>()
+                .HasIndex(i => i.NormalizedName)
+                .IsUnique();
+
+            // InstructionalMethod
+            builder.Entity<InstructionalMethod>()
+                .HasIndex(im => im.NormalizedName)
+                .IsUnique();
         }
     }
 }

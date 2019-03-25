@@ -15,7 +15,8 @@ namespace CourseSchedulingSystem.Pages.Manage
                     new Row
                     {
                         Title = "Instructional Methods",
-                        Description = "Instructional methods for course sections. E.g., Classroom, Hybrid, Online."
+                        Description = "Instructional methods for course sections. E.g., Classroom, Hybrid, Online.",
+                        Link = "./InstructionalMethods"
                     },
                     new Row
                     {
@@ -74,7 +75,8 @@ namespace CourseSchedulingSystem.Pages.Manage
                     new Row
                     {
                         Title = "Instructors",
-                        Description = "Instructors are assigned to course sections."
+                        Description = "Instructors are assigned to course sections.",
+                        Link = "./Instructors"
                     }
                 }
             },

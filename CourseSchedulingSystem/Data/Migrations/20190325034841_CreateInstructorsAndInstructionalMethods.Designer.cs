@@ -4,14 +4,16 @@ using CourseSchedulingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CourseSchedulingSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190325034841_CreateInstructorsAndInstructionalMethods")]
+    partial class CreateInstructorsAndInstructionalMethods
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,13 +250,17 @@ namespace CourseSchedulingSystem.Data.Migrations
 
                     b.Property<string>("Middle");
 
-                    b.Property<string>("NormalizedName");
+                    b.Property<string>("NormalizedFirstName");
+
+                    b.Property<string>("NormalizedLastName");
+
+                    b.Property<string>("NormalizedMiddle");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("NormalizedName")
+                    b.HasIndex("NormalizedFirstName", "NormalizedMiddle", "NormalizedLastName")
                         .IsUnique()
-                        .HasFilter("[NormalizedName] IS NOT NULL");
+                        .HasFilter("[NormalizedFirstName] IS NOT NULL AND [NormalizedMiddle] IS NOT NULL AND [NormalizedLastName] IS NOT NULL");
 
                     b.ToTable("Instructors");
                 });
