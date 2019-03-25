@@ -69,7 +69,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 }
 
                 // Check if any course has the same title
-                if (await _context.Courses.AnyAsync(c => c.Id != courseToUpdate.Id && c.Title == courseToUpdate.Title))
+                if (await _context.Courses.AnyAsync(c => c.Id != courseToUpdate.Id && c.NormalizedTitle == courseToUpdate.NormalizedTitle))
                 {
                     ModelState.AddModelError(string.Empty,
                         $"A course already exists with the title {courseToUpdate.Title}.");

@@ -55,7 +55,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
             {
                 // Check if any term part has the same name
                 if (await _context.TermParts.AnyAsync(tp =>
-                    tp.TermId == newTermPart.TermId && tp.Name == newTermPart.Name))
+                    tp.TermId == newTermPart.TermId && tp.NormalizedName == newTermPart.NormalizedName))
                     ModelState.AddModelError(string.Empty,
                         $"A part of term already exists with the name {newTermPart.Name}.");
 

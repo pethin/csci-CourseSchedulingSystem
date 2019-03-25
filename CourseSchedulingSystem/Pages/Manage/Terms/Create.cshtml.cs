@@ -40,7 +40,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
                 t => t.Name, t => t.StartDate, t => t.EndDate))
             {
                 // Check if any term has the same name
-                if (await _context.Terms.AnyAsync(t => t.Name == newTerm.Name))
+                if (await _context.Terms.AnyAsync(t => t.NormalizedName == newTerm.NormalizedName))
                     ModelState.AddModelError(string.Empty,
                         $"A term already exists with the name {newTerm.Name}.");
 
