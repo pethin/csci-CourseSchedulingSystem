@@ -35,16 +35,5 @@ namespace CourseSchedulingSystem.Data.Models
         public string NormalizedName { get; private set; }
 
         public virtual ICollection<CourseScheduleType> CourseScheduleTypes { get; set; }
-
-        public async Task<IEnumerable<ValidationResult>> ValidateAsync(DbContext context)
-        {
-            var errors = new List<ValidationResult>();
-
-            if (await context.Set<ScheduleType>().AnyAsync(at => at.NormalizedName == NormalizedName))
-                errors.Add(new ValidationResult($"An attribute type already exists with the name {Name}.",
-                    new[] {"Name"}));
-
-            return errors;
-        }
     }
 }

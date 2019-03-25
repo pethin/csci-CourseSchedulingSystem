@@ -48,21 +48,5 @@ namespace CourseSchedulingSystem.Data.Models
 
         public virtual ICollection<DepartmentUser> DepartmentUsers { get; set; }
         public virtual ICollection<Course> Courses { get; set; }
-
-        public async Task<IEnumerable<ValidationResult>> ValidateAsync(DbContext context)
-        {
-            var errors = new List<ValidationResult>();
-            var existingDepartments = await context.Set<Department>()
-                .Where(d => d.Code == Code || d.NormalizedName == NormalizedName)
-                .ToListAsync();
-
-            if (existingDepartments.Any(d => d.Code == Code))
-                errors.Add(new ValidationResult($"A department already exists with the code {Code}.", new[] {"Code"}));
-
-            if (existingDepartments.Any(d => d.NormalizedName == NormalizedName))
-                errors.Add(new ValidationResult($"A department already exists with the name {Name}.", new[] {"Name"}));
-
-            return errors;
-        }
     }
 }
