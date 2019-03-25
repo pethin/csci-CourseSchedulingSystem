@@ -39,37 +39,29 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
-            _context.Attach(Term).State = EntityState.Modified;
+            var termToUpdate = await _context.Terms.FindAsync(id);
 
-            try
+            if (await TryUpdateModelAsync(
+                termToUpdate,
+                "Term",
+                t => t.Name, t => t.StartDate, t => t.EndDate))
             {
+                // Check if any other term has the same name
+                if (await _context.Terms.AnyAsync(t => t.Id != termToUpdate.Id && t.Name == termToUpdate.Name))
+                    ModelState.AddModelError(string.Empty,
+                        $"A term already exists with the name {termToUpdate.Name}.");
+
+                if (!ModelState.IsValid) return Page();
+
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TermExists(Term.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
-        }
-
-        private bool TermExists(Guid id)
-        {
-            return _context.Terms.Any(e => e.Id == id);
+            return Page();
         }
     }
 }
