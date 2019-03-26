@@ -88,7 +88,8 @@ namespace CourseSchedulingSystem.Pages.Manage
                     new Row
                     {
                         Title = "Buildings",
-                        Description = "Buildings contain rooms."
+                        Description = "Buildings contain rooms.",
+                        Link = "./Buildings"
                     },
                     new Row
                     {

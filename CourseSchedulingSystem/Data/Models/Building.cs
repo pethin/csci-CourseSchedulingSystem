@@ -15,11 +15,11 @@ namespace CourseSchedulingSystem.Data.Models
         {
         }
 
-        public Building(string name, string code, bool is_enabled)
+        public Building(string name, string code, bool isEnabled)
         {
             Name = name;
             Code = code;
-            Is_Enabled = is_enabled;
+            IsEnabled = isEnabled;
         }
 
         public Guid Id { get; set; }
@@ -44,11 +44,10 @@ namespace CourseSchedulingSystem.Data.Models
         }
 
         [Required]
-        [Display(Name = "Building Enabled")]
-        public bool Is_Enabled { get; set; }
+        [Display (Name = "Building Enabled")]
+        public bool IsEnabled { get; set; }
 
         public string NormalizedName { get; private set; }
 
-        //public virtual ICollection<Building> Buildings { get; set; }
     }
 }
