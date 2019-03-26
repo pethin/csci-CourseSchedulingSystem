@@ -28,6 +28,7 @@ namespace CourseSchedulingSystem.Data
 
         public DbSet<Instructor> Instructors { get; set; }
         public DbSet<InstructionalMethod> InstructionalMethods { get; set; }
+        public DbSet<Building> Building { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -125,6 +126,12 @@ namespace CourseSchedulingSystem.Data
             builder.Entity<InstructionalMethod>()
                 .HasIndex(im => im.NormalizedName)
                 .IsUnique();
+
+            // Building
+            builder.Entity<Building>()
+                .HasIndex(bd => bd.NormalizedName)
+                .IsUnique();
         }
+
     }
 }
