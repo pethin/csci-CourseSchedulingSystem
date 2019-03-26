@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Buildings
 {
@@ -33,11 +34,27 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
             {
                 return Page();
             }
+            
+            var newBuilding = new Building();
 
-            _context.Building.Add(Building);
-            await _context.SaveChangesAsync();
+            if (await TryUpdateModelAsync(newBuilding, "Building", bd => bd.Name, bd => bd.Code))
+            {
+                //Check if any other building has the same name
+                if(await _context.Building.AnyAsync(bd => bd.NormalizedName == newBuilding.NormalizedName))
+                    ModelState.AddModelError(string.Empty, $"A building already exists with the name {newBuilding.Name}.");
+                
+                //Check if any other building has the same code
+                if(await _context.Building.AnyAsync(bd => bd.Code == newBuilding.Code))
+                    ModelState.AddModelError(string.Empty, $"A building already exists with the building code {newBuilding.Code}.");
 
-            return RedirectToPage("./Index");
+                if (!ModelState.IsValid) return Page();
+                
+                _context.Building.Add(Building);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
+
+            return Page();
         }
     }
 }
