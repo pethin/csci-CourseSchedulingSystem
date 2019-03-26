@@ -49,11 +49,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             if (await TryUpdateModelAsync(
                 courseToUpdate,
                 "Course",
-                c => c.DepartmentId, c => c.SubjectId, c => c.Level, c => c.Title, c => c.CreditHours))
+                c => c.DepartmentId, c => c.SubjectId, c => c.Number, c => c.Title, c => c.CreditHours))
             {
                 // Check if any course has the same subject and level
                 if (await _context.Courses.AnyAsync(c =>
-                    c.Id != courseToUpdate.Id && c.SubjectId == courseToUpdate.SubjectId && c.Level == courseToUpdate.Level))
+                    c.Id != courseToUpdate.Id && c.SubjectId == courseToUpdate.SubjectId && c.Number == courseToUpdate.Number))
                 {
                     var subject = await _context.Subjects.FirstOrDefaultAsync(s => s.Id == courseToUpdate.SubjectId);
 
@@ -67,14 +67,6 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                     ModelState.AddModelError(string.Empty,
                         $"A course already exists with the identifier {courseToUpdate.Identifier}.");
                 }
-
-                // Check if any course has the same title
-                if (await _context.Courses.AnyAsync(c => c.Id != courseToUpdate.Id && c.NormalizedTitle == courseToUpdate.NormalizedTitle))
-                {
-                    ModelState.AddModelError(string.Empty,
-                        $"A course already exists with the title {courseToUpdate.Title}.");
-                }
-
 
                 if (!ModelState.IsValid) return Page();
 

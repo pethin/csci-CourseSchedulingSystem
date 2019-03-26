@@ -11,7 +11,11 @@ Remarks:
   The server will start if no sub-command is specified.
 ")]
     [HelpOption("--help")]
-    [Subcommand(typeof(MigrateCommand), typeof(SeedCommand), typeof(CreateAdminUserCommand), typeof(AddUserCommand))]
+    [Subcommand(typeof(MigrateCommand),
+        typeof(SeedCommand),
+        typeof(CreateAdminUserCommand),
+        typeof(AddUserCommand),
+        typeof(LoadCoursesCommand))]
     public class Program
     {
         private static IWebHost _host;

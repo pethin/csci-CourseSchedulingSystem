@@ -4,14 +4,16 @@ using CourseSchedulingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CourseSchedulingSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190325235831_UpdateCoursesAddCourseLevels")]
+    partial class UpdateCoursesAddCourseLevels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,6 +132,8 @@ namespace CourseSchedulingSystem.Data.Migrations
 
                     b.Property<bool>("IsUndergraduate");
 
+                    b.Property<string>("NormalizedTitle");
+
                     b.Property<string>("Number")
                         .IsRequired();
 
@@ -141,6 +145,10 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("NormalizedTitle")
+                        .IsUnique()
+                        .HasFilter("[NormalizedTitle] IS NOT NULL");
 
                     b.HasIndex("SubjectId", "Number")
                         .IsUnique();

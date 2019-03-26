@@ -12,9 +12,9 @@ namespace CourseSchedulingSystem.Data.Seeders
         /// </summary>
         private static readonly List<Department> DepartmentTemplates = new List<Department>
         {
-            new Department("AFE", "Accounting, Finance, and Economics"),
+            new Department("ACFN", "Accounting, Finance, and Economics"),
             new Department("CSQM", "Computer Science & Quantitative Methods"),
-            new Department("MM", "Management & Marketing")
+            new Department("MGMK", "Management & Marketing")
         };
 
         /// <summary>
@@ -32,7 +32,8 @@ namespace CourseSchedulingSystem.Data.Seeders
             new Subject("HCMT", "Health Care Management"),
             new Subject("MGMT", "Management"),
             new Subject("MKTG", "Marketing"),
-            new Subject("QMTH", "Quantitative Methods")
+            new Subject("QMTH", "Quantitative Methods"),
+            new Subject("SUBU", "Sustainability Studies")
         };
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace CourseSchedulingSystem.Data.Seeders
             new ScheduleType("Lecture"),
             new ScheduleType("Lecture/Lab-Clinical"),
             new ScheduleType("Practice Teaching"),
-            new ScheduleType("Practice Cooperative edu"),
+            new ScheduleType("Practicum/Cooperative edu"),
             new ScheduleType("Private Instruction"),
             new ScheduleType("Seminar/Recitation"),
             new ScheduleType("Studio/PE"),
