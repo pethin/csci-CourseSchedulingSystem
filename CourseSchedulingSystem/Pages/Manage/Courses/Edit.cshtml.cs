@@ -49,7 +49,13 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             if (await TryUpdateModelAsync(
                 courseToUpdate,
                 "Course",
-                c => c.DepartmentId, c => c.SubjectId, c => c.Number, c => c.Title, c => c.CreditHours))
+                c => c.DepartmentId,
+                c => c.SubjectId,
+                c => c.Number,
+                c => c.Title,
+                c => c.CreditHours,
+                c => c.IsUndergraduate,
+                c => c.IsGraduate))
             {
                 // Check if any course has the same subject and level
                 if (await _context.Courses.AnyAsync(c =>

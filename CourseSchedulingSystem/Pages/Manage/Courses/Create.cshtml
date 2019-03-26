@@ -1,4 +1,5 @@
 ﻿@page
+@using CourseSchedulingSystem.Data.Models
 @model CourseSchedulingSystem.Pages.Manage.Courses.CreateModel
 
 @{
@@ -24,21 +25,34 @@
             </div>
             <div class="form-group">
                 <label asp-for="Course.Number" class="control-label"></label>
-                <input asp-for="Course.Number" class="form-control"/>
+                <input asp-for="Course.Number" class="form-control" />
                 <span asp-validation-for="Course.Number" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Course.Title" class="control-label"></label>
-                <input asp-for="Course.Title" class="form-control"/>
+                <input asp-for="Course.Title" class="form-control" />
                 <span asp-validation-for="Course.Title" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Course.CreditHours" class="control-label"></label>
-                <input asp-for="Course.CreditHours" class="form-control" type="number" step="0.001"/>
+                <input asp-for="Course.CreditHours" class="form-control" type="number" step="0.001" />
                 <span asp-validation-for="Course.CreditHours" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary"/>
+                <label class="control-label">Course Levels</label>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="Course.IsUndergraduate"/> @Html.DisplayNameFor(model => model.Course.IsUndergraduate)
+                    </label>
+                </div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" asp-for="Course.IsGraduate"/> @Html.DisplayNameFor(model => model.Course.IsGraduate)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>

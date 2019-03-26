@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -40,7 +41,13 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             if (await TryUpdateModelAsync(
                 newCourse,
                 "Course",
-                c => c.DepartmentId, c => c.SubjectId, c => c.Number, c => c.Title, c => c.CreditHours))
+                c => c.DepartmentId,
+                c => c.SubjectId,
+                c => c.Number,
+                c => c.Title,
+                c => c.CreditHours,
+                c => c.IsUndergraduate,
+                c => c.IsGraduate))
             {
                 // Check if any course has the same subject and level
                 if (await _context.Courses.AnyAsync(c =>

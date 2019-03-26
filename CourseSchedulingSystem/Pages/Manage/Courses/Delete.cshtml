@@ -43,6 +43,18 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Course.CreditHours)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Course.IsUndergraduate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Course.IsUndergraduate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Course.IsGraduate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Course.IsGraduate)
+        </dd>
     </dl>
 
     <form method="post">
