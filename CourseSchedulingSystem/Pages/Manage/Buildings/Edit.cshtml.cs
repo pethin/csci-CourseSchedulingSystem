@@ -39,37 +39,35 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Attach(Building).State = EntityState.Modified;
+            var buildingToUpdate = await _context.Building.FindAsync(id);
 
-            try
+            if (await TryUpdateModelAsync(buildingToUpdate, "Building", bd => bd.Code, bd => bd.Name))
             {
+                //Check if any other building has the same name
+                if (await _context.Building.AnyAsync(bd =>
+                    bd.Id != buildingToUpdate.Id && bd.NormalizedName == buildingToUpdate.NormalizedName))
+                    ModelState.AddModelError(string.Empty,
+                        $"A building already exists with the name {buildingToUpdate.Name}.");
+
+                //Check if any other building has the same code
+                if (await _context.Building.AnyAsync(bd =>
+                    bd.Id != buildingToUpdate.Id && bd.Code == buildingToUpdate.Code))
+                    ModelState.AddModelError(string.Empty,
+                        $"A building already exists with the building code {buildingToUpdate.Code}.");
+
+                if (!ModelState.IsValid) return Page();
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BuildingExists(Building.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
-        }
-
-        private bool BuildingExists(Guid id)
-        {
-            return _context.Building.Any(e => e.Id == id);
+            return Page();
         }
     }
 }
