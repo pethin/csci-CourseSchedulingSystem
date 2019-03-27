@@ -1,44 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Async;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
 {
     public class EditModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public EditModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        [BindProperty]
-        public TermPart TermPart { get; set; }
+        [BindProperty] public TermPart TermPart { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             TermPart = await _context.TermParts
-                .Include(t => t.Term)
+                .Include(tp => tp.Term)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (TermPart == null)
-            {
-                return NotFound();
-            }
-            
+            if (TermPart == null) return NotFound();
+
             return Page();
         }
 
@@ -46,23 +37,24 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
         {
             if (!ModelState.IsValid) return Page();
 
-            var termPartToUpdate = await _context.TermParts.FindAsync(id);
+            var termPart = await _context.TermParts
+                .Include(tp => tp.Term)
+                .FirstOrDefaultAsync(tp => tp.Id == id);
 
             if (await TryUpdateModelAsync(
-                termPartToUpdate,
+                termPart,
                 "TermPart",
                 tp => tp.Name, tp => tp.StartDate, tp => tp.EndDate))
             {
-                // Check if any term part has the same name
-                if (await _context.TermParts.AnyAsync(tp =>
-                    tp.Id != termPartToUpdate.Id && tp.NormalizedName == termPartToUpdate.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"A part of term already exists with the name {termPartToUpdate.Name}.");
+                await termPart.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 
                 await _context.SaveChangesAsync();
-                return RedirectToPage("./Index", new { termId = termPartToUpdate.TermId });
+                return RedirectToPage("./Index", new {termId = termPart.TermId});
             }
 
             return Page();

@@ -11,7 +11,7 @@
 <div>
     <h4>@Model.TermPart.Term.Name</h4>
     <h4>Part of Term</h4>
-    <hr />
+    <hr/>
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.TermPart.Name)
@@ -34,8 +34,8 @@
     </dl>
 
     <form method="post">
-        <input type="hidden" asp-for="TermPart.Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="hidden" asp-for="TermPart.Id"/>
+        <input type="submit" value="Delete" class="btn btn-danger"/> |
         <a asp-page="./Index" asp-route-termId="@Model.TermPart.TermId">Back to List</a>
     </form>
 </div>

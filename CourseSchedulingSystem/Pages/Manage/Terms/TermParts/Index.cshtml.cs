@@ -21,7 +21,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
 
         public Term Term { get; set; }
 
-        public IList<TermPart> TermPart { get;set; }
+        public IList<TermPart> TermPart { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? termId)
         {

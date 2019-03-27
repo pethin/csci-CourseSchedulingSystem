@@ -16,7 +16,7 @@ namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
             _context = context;
         }
 
-        public IList<InstructionalMethod> InstructionalMethod { get;set; }
+        public IList<InstructionalMethod> InstructionalMethod { get; set; }
 
         public async Task OnGetAsync()
         {

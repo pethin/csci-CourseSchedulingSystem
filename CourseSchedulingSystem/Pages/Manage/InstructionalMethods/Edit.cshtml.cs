@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -22,17 +22,11 @@ namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             InstructionalMethod = await _context.InstructionalMethods.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (InstructionalMethod == null)
-            {
-                return NotFound();
-            }
+            if (InstructionalMethod == null) return NotFound();
 
             return Page();
         }
@@ -48,11 +42,10 @@ namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
                 "InstructionalMethod",
                 im => im.Name, im => im.IsRoomRequired))
             {
-                // Check if any instructional method has the same name
-                if (await _context.InstructionalMethods.AnyAsync(im =>
-                    im.Id != instructionalMethod.Id && im.NormalizedName == instructionalMethod.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"An instructional methods already exists with the name {instructionalMethod.Name}.");
+                await instructionalMethod.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 

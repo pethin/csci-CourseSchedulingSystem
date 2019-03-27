@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
@@ -48,5 +48,27 @@ namespace CourseSchedulingSystem.Data.Models
 
         public virtual ICollection<DepartmentUser> DepartmentUsers { get; set; }
         public virtual ICollection<Course> Courses { get; set; }
+
+        public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
+            ApplicationDbContext context
+        )
+        {
+            return new AsyncEnumerable<ValidationResult>(async yield =>
+            {
+                // Check if any department has the same code
+                if (await context.Departments
+                    .Where(d => d.Id != Id)
+                    .Where(d => d.Code == Code)
+                    .AnyAsync())
+                    await yield.ReturnAsync(new ValidationResult($"A department already exists with the code {Code}."));
+
+                // Check if any department has the same name
+                if (await context.Departments
+                    .Where(d => d.Id != Id)
+                    .Where(d => d.NormalizedName == NormalizedName)
+                    .AnyAsync())
+                    await yield.ReturnAsync(new ValidationResult($"A department already exists with the name {Name}."));
+            });
+        }
     }
 }

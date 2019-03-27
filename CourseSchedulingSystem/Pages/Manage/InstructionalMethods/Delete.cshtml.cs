@@ -17,31 +17,21 @@ namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
             _context = context;
         }
 
-        [BindProperty]
-        public InstructionalMethod InstructionalMethod { get; set; }
+        [BindProperty] public InstructionalMethod InstructionalMethod { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             InstructionalMethod = await _context.InstructionalMethods.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (InstructionalMethod == null)
-            {
-                return NotFound();
-            }
+            if (InstructionalMethod == null) return NotFound();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             InstructionalMethod = await _context.InstructionalMethods.FindAsync(id);
 

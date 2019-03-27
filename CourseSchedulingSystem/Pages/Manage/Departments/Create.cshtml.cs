@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Async;
+using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Departments
 {
@@ -27,26 +27,21 @@ namespace CourseSchedulingSystem.Pages.Manage.Departments
         {
             if (!ModelState.IsValid) return Page();
 
-            var newDepartment = new Department();
+            var department = new Department();
 
             if (await TryUpdateModelAsync(
-                newDepartment,
+                department,
                 "Department",
                 d => d.Code, d => d.Name))
             {
-                // Check if any department has the same code
-                if (await _context.Departments.AnyAsync(d => d.Code == newDepartment.Code))
-                    ModelState.AddModelError(string.Empty,
-                        $"A department already exists with the code {newDepartment.Code}.");
-
-                // Check if any subject has the same name
-                if (await _context.Departments.AnyAsync(d => d.NormalizedName == newDepartment.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"A department already exists with the name {newDepartment.Name}.");
+                await department.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.Departments.Add(newDepartment);
+                _context.Departments.Add(department);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }

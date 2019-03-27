@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
@@ -55,9 +56,24 @@ namespace CourseSchedulingSystem.Data.Models
         {
             if (StartDate >= EndDate)
             {
-                yield return new ValidationResult("Start date must be before end date.", new[] { "StartDate" });
-                yield return new ValidationResult("End date must be after start date.", new[] { "EndDate" });
+                yield return new ValidationResult("Start date must be before end date.", new[] {"StartDate"});
+                yield return new ValidationResult("End date must be after start date.", new[] {"EndDate"});
             }
+        }
+
+        public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
+            ApplicationDbContext context
+        )
+        {
+            return new AsyncEnumerable<ValidationResult>(async yield =>
+            {
+                // Check if any term part has the same name
+                if (await context.TermParts
+                    .Where(tp => tp.Id != Id)
+                    .Where(tp => tp.NormalizedName == NormalizedName)
+                    .AnyAsync())
+                    await yield.ReturnAsync(new ValidationResult($"A term part already exists with the name {Name}."));
+            });
         }
     }
 }

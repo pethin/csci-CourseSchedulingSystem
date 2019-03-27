@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
-    public class Course
+    public class Course : IValidatableObject
     {
         private string _number;
         private string _title;
@@ -52,5 +55,41 @@ namespace CourseSchedulingSystem.Data.Models
 
         public virtual ICollection<CourseScheduleType> CourseScheduleTypes { get; set; }
         public virtual ICollection<CourseAttributeType> CourseAttributeTypes { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (!IsUndergraduate && !IsGraduate)
+                yield return new ValidationResult(
+                    "A level must be selected.",
+                    new[] {"IsUndergraduate", "IsGraduate"});
+        }
+
+        public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
+            ApplicationDbContext context
+        )
+        {
+            return new AsyncEnumerable<ValidationResult>(async yield =>
+            {
+                // Check if department ID is valid
+                if (!await context.Departments.AnyAsync(s => s.Id == DepartmentId))
+                    await yield.ReturnAsync(new ValidationResult("Invalid department selected."));
+
+                // Check if subject ID is valid
+                var subject = await context.Subjects.FirstOrDefaultAsync(s => s.Id == SubjectId);
+                if (subject == null)
+                    await yield.ReturnAsync(new ValidationResult("Invalid subject selected."));
+                else
+                    Subject = subject;
+
+                // Check if any course has the same subject and level
+                if (await context.Courses
+                    .Where(c => c.Id != Id)
+                    .Where(c => c.SubjectId == SubjectId)
+                    .Where(c => c.Number == Number)
+                    .AnyAsync())
+                    await yield.ReturnAsync(
+                        new ValidationResult($"A course already exists with the identifier {Identifier}."));
+            });
+        }
     }
 }

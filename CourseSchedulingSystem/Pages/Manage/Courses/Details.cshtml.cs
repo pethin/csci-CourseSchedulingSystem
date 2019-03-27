@@ -3,18 +3,14 @@ using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Courses
 {
-    public class DetailsModel : PageModel
+    public class DetailsModel : CoursesPageModel
     {
-        private readonly ApplicationDbContext _context;
-
-        public DetailsModel(ApplicationDbContext context)
+        public DetailsModel(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
 
         public Course Course { get; set; }
@@ -23,9 +19,10 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         {
             if (id == null) return NotFound();
 
-            Course = await _context.Courses
+            Course = await Context.Courses
                 .Include(c => c.Department)
-                .Include(c => c.Subject).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(c => c.Subject)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Course == null) return NotFound();
             return Page();

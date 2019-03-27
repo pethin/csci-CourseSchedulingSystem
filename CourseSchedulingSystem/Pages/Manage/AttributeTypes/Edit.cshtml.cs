@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -34,18 +35,18 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
         {
             if (!ModelState.IsValid) return Page();
 
-            var attributeTypeToUpdate = await _context.AttributeTypes.FindAsync(id);
+
+            var attributeType = await _context.AttributeTypes.FindAsync(id);
 
             if (await TryUpdateModelAsync(
-                attributeTypeToUpdate,
+                attributeType,
                 "AttributeType",
                 at => at.Name))
             {
-                // Check if any other attribute type has the same name
-                if (await _context.AttributeTypes.AnyAsync(at =>
-                    at.Id != attributeTypeToUpdate.Id && at.NormalizedName == attributeTypeToUpdate.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"An attribute type already exists with the name {attributeTypeToUpdate.Name}.");
+                await attributeType.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 

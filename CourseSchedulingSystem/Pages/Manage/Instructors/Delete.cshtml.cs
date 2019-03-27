@@ -17,31 +17,21 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
             _context = context;
         }
 
-        [BindProperty]
-        public Instructor Instructor { get; set; }
+        [BindProperty] public Instructor Instructor { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Instructor = await _context.Instructors.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Instructor == null)
-            {
-                return NotFound();
-            }
+            if (Instructor == null) return NotFound();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Instructor = await _context.Instructors.FindAsync(id);
 

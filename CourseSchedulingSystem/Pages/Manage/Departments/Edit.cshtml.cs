@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -33,18 +34,17 @@ namespace CourseSchedulingSystem.Pages.Manage.Departments
         {
             if (!ModelState.IsValid) return Page();
 
-            var departmentToUpdate = await _context.Departments.FindAsync(id);
+            var department = await _context.Departments.FindAsync(id);
 
             if (await TryUpdateModelAsync(
-                departmentToUpdate,
+                department,
                 "Department",
                 d => d.Code, d => d.Name))
             {
-                // Check if any other department has the same name
-                if (await _context.Departments.AnyAsync(d =>
-                    d.Id != departmentToUpdate.Id && d.NormalizedName == departmentToUpdate.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"A department already exists with the name {departmentToUpdate.Name}.");
+                await department.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 

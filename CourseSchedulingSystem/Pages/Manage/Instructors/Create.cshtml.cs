@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Async;
+using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Instructors
 {
@@ -16,13 +16,12 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
             _context = context;
         }
 
+        [BindProperty] public Instructor Instructor { get; set; }
+
         public IActionResult OnGet()
         {
             return Page();
         }
-
-        [BindProperty]
-        public Instructor Instructor { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -35,10 +34,10 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
                 "Instructor",
                 i => i.FirstName, i => i.Middle, i => i.LastName))
             {
-                // Check if any instructor has the same name
-                if (await _context.Instructors.AnyAsync(i => i.NormalizedName == instructor.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"An instructor already exists with the name {instructor.FullName}.");
+                await instructor.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 

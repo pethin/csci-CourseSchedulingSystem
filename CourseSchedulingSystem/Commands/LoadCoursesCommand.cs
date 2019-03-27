@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Utilities;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NPOI.SS.UserModel;
@@ -37,46 +34,43 @@ namespace CourseSchedulingSystem.Commands
             using (var scope = _serviceProvider.CreateScope())
             {
                 var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
-                await LoadExcelFixture(context);
+                
+                var dataTable = LoadExcelFixture();
+                var courseRows = ConvertDataTableToCourseRows(dataTable);
+                await InsertCourseRows(context, courseRows);
             }
         }
 
-        private async Task LoadExcelFixture(ApplicationDbContext context)
+        private DataTable LoadExcelFixture()
         {
-            string coursesFixturePath = Path.Combine(PathUtilities.GetResourceDirectory(), "Fixtures", "Courses.xlsx");
-            DataTable dt = new DataTable();
+            var coursesFixturePath = Path.Combine(PathUtilities.GetResourceDirectory(), "Fixtures", "Courses.xlsx");
+            var dt = new DataTable();
 
             using (var stream = new FileStream(coursesFixturePath, FileMode.Open, FileAccess.Read))
             {
-                XSSFWorkbook hssfwb = new XSSFWorkbook(stream); // This will read 2007 Excel format
+                var hssfwb = new XSSFWorkbook(stream); // This will read 2007 Excel format
 
-                ISheet sheet = hssfwb.GetSheetAt(0);
-                IRow headerRow = sheet.GetRow(0);
-                IEnumerator rows = sheet.GetRowEnumerator();
+                var sheet = hssfwb.GetSheetAt(0);
+                var headerRow = sheet.GetRow(0);
+                var rows = sheet.GetRowEnumerator();
 
                 int colCount = headerRow.LastCellNum;
 
                 // Read header row
-                for (int c = 0; c < colCount; c++)
-                {
-                    dt.Columns.Add(headerRow.GetCell(c).ToString());
-                }
+                for (var c = 0; c < colCount; c++) dt.Columns.Add(headerRow.GetCell(c).ToString());
 
                 // Skip header row
                 rows.MoveNext();
                 while (rows.MoveNext())
                 {
                     IRow row = (XSSFRow) rows.Current;
-                    DataRow dr = dt.NewRow();
+                    var dr = dt.NewRow();
 
-                    for (int i = 0; i < colCount; i++)
+                    for (var i = 0; i < colCount; i++)
                     {
-                        ICell cell = row.GetCell(i);
+                        var cell = row.GetCell(i);
 
-                        if (cell != null)
-                        {
-                            dr[i] = cell.ToString();
-                        }
+                        if (cell != null) dr[i] = cell.ToString();
                     }
 
                     dt.Rows.Add(dr);
@@ -85,9 +79,13 @@ namespace CourseSchedulingSystem.Commands
                 hssfwb.Close();
             }
 
+            return dt;
+        }
+
+        private ICollection<CourseRow> ConvertDataTableToCourseRows(DataTable dt)
+        {
             IList<CourseRow> courses = new List<CourseRow>();
 
-            // Convert DataTable to list of row objects
             foreach (DataRow dr in dt.Rows)
             {
                 var newCourse = new CourseRow
@@ -96,7 +94,7 @@ namespace CourseSchedulingSystem.Commands
                     SubjectCode = dr["Subject"].ToString().ToUpper(),
                     Number = dr["Number"].ToString().ToUpper(),
                     Name = dr["Name"].ToString(),
-                    CreditHours = Convert.ToDecimal(dr["Credit Hours"]),
+                    CreditHours = Convert.ToDecimal(dr["Credit Hours"])
                 };
 
                 var courseLevels = dr["Levels"].ToString().Split(",").Select(t => t.Trim()).ToHashSet();
@@ -119,6 +117,11 @@ namespace CourseSchedulingSystem.Commands
                 courses.Add(newCourse);
             }
 
+            return courses;
+        }
+
+        private async Task InsertCourseRows(ApplicationDbContext context, ICollection<CourseRow> courseRows)
+        {
             var departments = await context.Departments.ToListAsync();
             var subjects = await context.Subjects.ToListAsync();
             var scheduleTypes = await context.ScheduleTypes.ToListAsync();
@@ -126,7 +129,7 @@ namespace CourseSchedulingSystem.Commands
             var courseAttributes = await context.AttributeTypes.ToListAsync();
             var courseAttributesNames = courseAttributes.Select(ca => ca.Name).ToHashSet();
 
-            foreach (var courseRow in courses)
+            foreach (var courseRow in courseRows)
             {
                 var department = departments.FirstOrDefault(d => d.Code == courseRow.DepartmentCode);
                 if (department == null)
@@ -187,7 +190,7 @@ namespace CourseSchedulingSystem.Commands
                         IsUndergraduate = courseRow.IsUndergraduate,
                         CourseScheduleTypes = new List<CourseScheduleType>(),
                         CourseAttributeTypes = new List<CourseAttributeType>()
-                };
+                    };
                     context.Courses.Add(course);
                 }
 
@@ -219,7 +222,7 @@ namespace CourseSchedulingSystem.Commands
             }
         }
 
-        public class CourseRow
+        private class CourseRow
         {
             public string DepartmentCode { get; set; }
             public string SubjectCode { get; set; }

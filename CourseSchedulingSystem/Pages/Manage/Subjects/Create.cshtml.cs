@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Async;
+using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Subjects
 {
@@ -27,26 +27,21 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
         {
             if (!ModelState.IsValid) return Page();
 
-            var newSubject = new Subject();
+            var subject = new Subject();
 
             if (await TryUpdateModelAsync(
-                newSubject,
+                subject,
                 "Subject",
                 s => s.Code, s => s.Name))
             {
-                // Check if any subject has the same code
-                if (await _context.Subjects.AnyAsync(s => s.Code == newSubject.Code))
-                    ModelState.AddModelError(string.Empty,
-                        $"A subject already exists with the code {newSubject.Code}.");
-
-                // Check if any subject has the same name
-                if (await _context.Subjects.AnyAsync(s => s.NormalizedName == newSubject.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"A subject already exists with the name {newSubject.Name}.");
+                await subject.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.Subjects.Add(newSubject);
+                _context.Subjects.Add(subject);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }

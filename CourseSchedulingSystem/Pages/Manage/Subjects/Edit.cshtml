@@ -3,7 +3,6 @@
 
 @{
     ViewData["Title"] = "Edit";
-    Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
 <h1>Edit</h1>
@@ -14,7 +13,6 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Subject.Id"/>
             <div class="form-group">
                 <label asp-for="Subject.Code" class="control-label"></label>
                 <input asp-for="Subject.Code" class="form-control" readonly/>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -33,18 +34,17 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
         {
             if (!ModelState.IsValid) return Page();
 
-            var scheduleTypeToUpdate = await _context.ScheduleTypes.FindAsync(id);
+            var scheduleType = await _context.ScheduleTypes.FindAsync(id);
 
             if (await TryUpdateModelAsync(
-                scheduleTypeToUpdate,
+                scheduleType,
                 "ScheduleType",
                 st => st.Name))
             {
-                // Check if any other schedule type has the same name
-                if (await _context.ScheduleTypes.AnyAsync(at =>
-                    at.Id != scheduleTypeToUpdate.Id && at.NormalizedName == scheduleTypeToUpdate.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"A schedule type already exists with the name {scheduleTypeToUpdate.Name}.");
+                await scheduleType.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 

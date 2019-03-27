@@ -21,17 +21,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Instructor = await _context.Instructors.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Instructor == null)
-            {
-                return NotFound();
-            }
+            if (Instructor == null) return NotFound();
             return Page();
         }
     }

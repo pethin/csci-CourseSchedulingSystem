@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Async;
+using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
 {
@@ -27,21 +27,21 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
         {
             if (!ModelState.IsValid) return Page();
 
-            var newScheduleType = new ScheduleType();
+            var scheduleType = new ScheduleType();
 
             if (await TryUpdateModelAsync(
-                newScheduleType,
+                scheduleType,
                 "ScheduleType",
                 st => st.Name))
             {
-                // Check if any schedule type has the same name
-                if (await _context.ScheduleTypes.AnyAsync(st => st.NormalizedName == newScheduleType.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"A schedule type already exists with the name {newScheduleType.Name}.");
+                await scheduleType.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.ScheduleTypes.Add(newScheduleType);
+                _context.ScheduleTypes.Add(scheduleType);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }

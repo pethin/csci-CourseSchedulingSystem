@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.Data.SqlTypes;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -16,8 +14,6 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
-        delegate Task<IActionResult> OnExternalLoginFail(ExternalLoginInfo info, string returnUrl);
-
         private readonly ILogger<ExternalLoginModel> _logger;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -100,9 +96,7 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
                 {
                     var addLoginResult = await _userManager.AddLoginAsync(user, info);
                     if (addLoginResult.Succeeded)
-                    {
                         return await LogInWithExternalProvider(info, false, true, returnUrl, OnExternalLoginFailed);
-                    }
 
                     foreach (var error in addLoginResult.Errors)
                         ModelState.AddModelError(string.Empty, error.Description);
@@ -130,10 +124,7 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
                 return LocalRedirect(returnUrl);
             }
 
-            if (result.IsLockedOut)
-            {
-                return RedirectToPage("./Lockout");
-            }
+            if (result.IsLockedOut) return RedirectToPage("./Lockout");
 
             return await onFailure(info, returnUrl);
         }
@@ -162,10 +153,7 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
                 var addLoginResult = await _userManager.AddLoginAsync(existingUser, info);
 
                 if (addLoginResult.Succeeded)
-                {
-                    // Sign in the user with this external login provider if the user already has a login.
                     return await LogInWithExternalProvider(info, false, true, returnUrl, OnExternalLoginFailed);
-                }
 
                 return OnIdentityError(addLoginResult, returnUrl);
             }
@@ -178,9 +166,7 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
             {
                 var addLoginResult = await _userManager.AddLoginAsync(user, info);
                 if (addLoginResult.Succeeded)
-                {
                     return await LogInWithExternalProvider(info, false, true, returnUrl, OnExternalLoginFailed);
-                }
             }
 
             return OnIdentityError(createUserResult, returnUrl);
@@ -204,6 +190,8 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
                             info.Principal.FindFirstValue(ClaimTypes.Name);
             return userEmail?.Split("@").FirstOrDefault();
         }
+
+        private delegate Task<IActionResult> OnExternalLoginFail(ExternalLoginInfo info, string returnUrl);
 
         public class InputModel
         {

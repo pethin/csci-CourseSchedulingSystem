@@ -18,7 +18,7 @@ namespace CourseSchedulingSystem.Data.Seeders
             new InstructionalMethod("Hybrid: 25-49% taught online", true),
             new InstructionalMethod("Hybrid: 50-74% taught online", true),
             new InstructionalMethod("Hybrid: 75-99% taught online", true),
-            new InstructionalMethod("Online", false),
+            new InstructionalMethod("Online", false)
         };
 
         private readonly ApplicationDbContext _context;
@@ -41,8 +41,10 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .Select(im => im.Name)
                 .ToHashSet();
 
-            var instructionalMethods = InstructionalMethodsTemplate.Where(imt => !createdInstructionalMethods.Contains(imt.Name));
-            foreach (var instructionalMethod in instructionalMethods) await _context.InstructionalMethods.AddAsync(instructionalMethod);
+            var instructionalMethods =
+                InstructionalMethodsTemplate.Where(imt => !createdInstructionalMethods.Contains(imt.Name));
+            foreach (var instructionalMethod in instructionalMethods)
+                await _context.InstructionalMethods.AddAsync(instructionalMethod);
 
             await _context.SaveChangesAsync();
         }

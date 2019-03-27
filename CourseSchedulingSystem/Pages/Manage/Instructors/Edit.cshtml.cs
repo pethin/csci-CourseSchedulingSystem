@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -21,17 +22,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             Instructor = await _context.Instructors.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Instructor == null)
-            {
-                return NotFound();
-            }
+            if (Instructor == null) return NotFound();
 
             return Page();
         }
@@ -47,11 +42,10 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
                 "Instructor",
                 i => i.FirstName, i => i.Middle, i => i.LastName))
             {
-                // Check if any instructor has the same name
-                if (await _context.Instructors.AnyAsync(i =>
-                    i.Id != instructor.Id && i.NormalizedName == instructor.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"An instructor already exists with the name {instructor.FullName}.");
+                await instructor.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 

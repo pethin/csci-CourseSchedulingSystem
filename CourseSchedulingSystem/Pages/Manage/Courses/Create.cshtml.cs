@@ -1,45 +1,36 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Courses
 {
-    public class CreateModel : PageModel
+    public class CreateModel : CoursesPageModel
     {
-        private readonly ApplicationDbContext _context;
-
-        public CreateModel(ApplicationDbContext context)
+        public CreateModel(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
 
         [BindProperty] public Course Course { get; set; }
 
         public IActionResult OnGet()
         {
-            ViewData["DepartmentId"] = _context.Departments
-                .Select(d => new SelectListItem {Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}"});
-
-            ViewData["SubjectId"] = _context.Subjects
-                .Select(d => new SelectListItem {Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}"});
+            LoadDropdownData();
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            LoadDropdownData();
+
             if (!ModelState.IsValid) return Page();
 
-            var newCourse = new Course();
+            var course = new Course();
 
             if (await TryUpdateModelAsync(
-                newCourse,
+                course,
                 "Course",
                 c => c.DepartmentId,
                 c => c.SubjectId,
@@ -49,27 +40,15 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 c => c.IsUndergraduate,
                 c => c.IsGraduate))
             {
-                // Check if any course has the same subject and level
-                if (await _context.Courses.AnyAsync(c =>
-                    c.SubjectId == newCourse.SubjectId && c.Number == newCourse.Number))
+                await course.DbValidateAsync(Context).ForEachAsync(result =>
                 {
-                    var subject = await _context.Subjects.FirstOrDefaultAsync(s => s.Id == newCourse.SubjectId);
-
-                    if (subject == null)
-                    {
-                        ModelState.AddModelError(string.Empty, "Invalid subject selected.");
-                        return Page();
-                    }
-
-                    newCourse.Subject = subject;
-                    ModelState.AddModelError(string.Empty,
-                        $"A course already exists with the identifier {newCourse.Identifier}.");
-                }
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.Courses.Add(newCourse);
-                await _context.SaveChangesAsync();
+                Context.Courses.Add(course);
+                await Context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }
 

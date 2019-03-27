@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Subjects
 {
@@ -33,18 +33,17 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
         {
             if (!ModelState.IsValid) return Page();
 
-            var subjectToUpdate = await _context.Subjects.FindAsync(id);
+            var subject = await _context.Subjects.FindAsync(id);
 
             if (await TryUpdateModelAsync(
-                subjectToUpdate,
+                subject,
                 "Subject",
                 s => s.Name))
             {
-                // Check if any other subject has the same name
-                if (await _context.Subjects.AnyAsync(s =>
-                    s.Id != subjectToUpdate.Id && s.NormalizedName == subjectToUpdate.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"A subject already exists with the name {subjectToUpdate.Name}.");
+                await subject.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 

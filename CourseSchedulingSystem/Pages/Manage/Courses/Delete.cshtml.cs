@@ -3,18 +3,14 @@ using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Courses
 {
-    public class DeleteModel : PageModel
+    public class DeleteModel : CoursesPageModel
     {
-        private readonly ApplicationDbContext _context;
-
-        public DeleteModel(ApplicationDbContext context)
+        public DeleteModel(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
 
         [BindProperty] public Course Course { get; set; }
@@ -23,9 +19,10 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         {
             if (id == null) return NotFound();
 
-            Course = await _context.Courses
+            Course = await Context.Courses
                 .Include(c => c.Department)
-                .Include(c => c.Subject).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(c => c.Subject)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Course == null) return NotFound();
             return Page();
@@ -35,12 +32,12 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         {
             if (id == null) return NotFound();
 
-            Course = await _context.Courses.FindAsync(id);
+            Course = await Context.Courses.FindAsync(id);
 
             if (Course != null)
             {
-                _context.Courses.Remove(Course);
-                await _context.SaveChangesAsync();
+                Context.Courses.Remove(Course);
+                await Context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");

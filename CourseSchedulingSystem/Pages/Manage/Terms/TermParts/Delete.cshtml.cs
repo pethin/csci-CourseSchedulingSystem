@@ -21,29 +21,20 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             TermPart = await _context.TermParts
                 .Include(t => t.Term)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (TermPart == null)
-            {
-                return NotFound();
-            }
+            if (TermPart == null) return NotFound();
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             TermPart = await _context.TermParts.FindAsync(id);
 

@@ -39,7 +39,8 @@ namespace CourseSchedulingSystem
                     options.Wtrealm = Configuration.GetValue<string>("WsFederation:Wtrealm");
                 });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddRazorPagesOptions(options =>
                 {
                     options.AllowAreas = true;

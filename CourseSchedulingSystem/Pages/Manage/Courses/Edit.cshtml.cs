@@ -1,22 +1,17 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Courses
 {
-    public class EditModel : PageModel
+    public class EditModel : CoursesPageModel
     {
-        private readonly ApplicationDbContext _context;
-
-        public EditModel(ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
 
         [BindProperty] public Course Course { get; set; }
@@ -25,29 +20,28 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         {
             if (id == null) return NotFound();
 
-            Course = await _context.Courses
+            Course = await Context.Courses
                 .Include(c => c.Department)
-                .Include(c => c.Subject).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(c => c.Subject)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Course == null) return NotFound();
 
-            ViewData["DepartmentId"] = _context.Departments
-                .Select(d => new SelectListItem {Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}"});
-
-            ViewData["SubjectId"] = _context.Subjects
-                .Select(d => new SelectListItem {Value = d.Id.ToString(), Text = $"{d.Code} - {d.Name}"});
+            LoadDropdownData();
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
+            LoadDropdownData();
+
             if (!ModelState.IsValid) return Page();
 
-            var courseToUpdate = await _context.Courses.FindAsync(id);
+            var course = await Context.Courses.FindAsync(id);
 
             if (await TryUpdateModelAsync(
-                courseToUpdate,
+                course,
                 "Course",
                 c => c.DepartmentId,
                 c => c.SubjectId,
@@ -57,26 +51,14 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 c => c.IsUndergraduate,
                 c => c.IsGraduate))
             {
-                // Check if any course has the same subject and level
-                if (await _context.Courses.AnyAsync(c =>
-                    c.Id != courseToUpdate.Id && c.SubjectId == courseToUpdate.SubjectId && c.Number == courseToUpdate.Number))
+                await course.DbValidateAsync(Context).ForEachAsync(result =>
                 {
-                    var subject = await _context.Subjects.FirstOrDefaultAsync(s => s.Id == courseToUpdate.SubjectId);
-
-                    if (subject == null)
-                    {
-                        ModelState.AddModelError(string.Empty, "Invalid subject selected.");
-                        return Page();
-                    }
-
-                    courseToUpdate.Subject = subject;
-                    ModelState.AddModelError(string.Empty,
-                        $"A course already exists with the identifier {courseToUpdate.Identifier}.");
-                }
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 
-                await _context.SaveChangesAsync();
+                await Context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }
 

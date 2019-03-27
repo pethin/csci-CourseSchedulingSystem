@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Async;
+using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
 {
@@ -16,33 +16,32 @@ namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
             _context = context;
         }
 
+        [BindProperty] public InstructionalMethod InstructionalMethod { get; set; }
+
         public IActionResult OnGet()
         {
             return Page();
         }
 
-        [BindProperty]
-        public InstructionalMethod InstructionalMethod { get; set; }
-
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
-            var newInstructionalMethod = new InstructionalMethod();
+            var instructionalMethod = new InstructionalMethod();
 
             if (await TryUpdateModelAsync(
-                newInstructionalMethod,
+                instructionalMethod,
                 "InstructionalMethod",
                 im => im.Name, im => im.IsRoomRequired))
             {
-                // Check if any instructional method has the same name
-                if (await _context.InstructionalMethods.AnyAsync(im => im.NormalizedName == newInstructionalMethod.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"An instructional methods already exists with the name {newInstructionalMethod.Name}.");
+                await instructionalMethod.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.InstructionalMethods.Add(newInstructionalMethod);
+                _context.InstructionalMethods.Add(instructionalMethod);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }

@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
@@ -18,6 +18,10 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
             _context = context;
         }
 
+        public Term Term { get; set; }
+
+        [BindProperty] public TermPart TermPart { get; set; }
+
         public async Task<IActionResult> OnGetAsync(Guid? termId)
         {
             if (termId == null) return NotFound();
@@ -29,10 +33,6 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
             return Page();
         }
 
-        public Term Term { get; set; }
-
-        [BindProperty] public TermPart TermPart { get; set; }
-
         public async Task<IActionResult> OnPostAsync(Guid? termId)
         {
             if (termId == null) return NotFound();
@@ -43,27 +43,27 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
 
             if (!ModelState.IsValid) return Page();
 
-            var newTermPart = new TermPart
+            var termPart = new TermPart
             {
+                Term = Term,
                 TermId = Term.Id
             };
 
             if (await TryUpdateModelAsync(
-                newTermPart,
+                termPart,
                 "TermPart",
                 tp => tp.Name, tp => tp.StartDate, tp => tp.EndDate))
             {
-                // Check if any term part has the same name
-                if (await _context.TermParts.AnyAsync(tp =>
-                    tp.TermId == newTermPart.TermId && tp.NormalizedName == newTermPart.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"A part of term already exists with the name {newTermPart.Name}.");
+                await termPart.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.TermParts.Add(newTermPart);
+                _context.TermParts.Add(termPart);
                 await _context.SaveChangesAsync();
-                return RedirectToPage("./Index", new { termId = Term.Id });
+                return RedirectToPage("./Index", new {termId = Term.Id});
             }
 
             return Page();

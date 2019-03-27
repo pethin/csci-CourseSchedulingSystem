@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Async;
+using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
 {
@@ -27,21 +27,21 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
         {
             if (!ModelState.IsValid) return Page();
 
-            var newAttributeType = new AttributeType();
+            var attributeType = new AttributeType();
 
             if (await TryUpdateModelAsync(
-                newAttributeType,
+                attributeType,
                 "AttributeType",
                 at => at.Name))
             {
-                // Check if any attribute type has the same name
-                if (await _context.AttributeTypes.AnyAsync(at => at.NormalizedName == newAttributeType.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"An attribute type already exists with the name {newAttributeType.Name}.");
+                await attributeType.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.AttributeTypes.Add(newAttributeType);
+                _context.AttributeTypes.Add(attributeType);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }

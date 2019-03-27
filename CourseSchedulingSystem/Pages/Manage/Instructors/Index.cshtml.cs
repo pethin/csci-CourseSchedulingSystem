@@ -16,7 +16,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
             _context = context;
         }
 
-        public IList<Instructor> Instructor { get;set; }
+        public IList<Instructor> Instructor { get; set; }
 
         public async Task OnGetAsync()
         {

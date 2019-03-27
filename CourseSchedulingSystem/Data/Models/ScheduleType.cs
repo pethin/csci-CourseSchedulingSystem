@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
@@ -35,5 +36,21 @@ namespace CourseSchedulingSystem.Data.Models
         public string NormalizedName { get; private set; }
 
         public virtual ICollection<CourseScheduleType> CourseScheduleTypes { get; set; }
+
+        public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
+            ApplicationDbContext context
+        )
+        {
+            return new AsyncEnumerable<ValidationResult>(async yield =>
+            {
+                // Check if any schedule type has the same name
+                if (await context.ScheduleTypes
+                    .Where(st => st.Id != Id)
+                    .Where(st => st.NormalizedName == NormalizedName)
+                    .AnyAsync())
+                    await yield.ReturnAsync(
+                        new ValidationResult($"A schedule type already exists with the name {Name}."));
+            });
+        }
     }
 }
