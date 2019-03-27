@@ -29,12 +29,6 @@ namespace CourseSchedulingSystem.Data
         public DbSet<Instructor> Instructors { get; set; }
         public DbSet<InstructionalMethod> InstructionalMethods { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder
-                .UseLazyLoadingProxies();
-        }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
