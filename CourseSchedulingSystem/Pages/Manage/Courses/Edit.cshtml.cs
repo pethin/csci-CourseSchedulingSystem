@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Async;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,18 +17,36 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         {
         }
 
-        [BindProperty] public Course Course { get; set; }
+        [BindProperty] public CourseInputModel CourseModel { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
             if (id == null) return NotFound();
 
-            Course = await Context.Courses
-                .Include(c => c.Department)
-                .Include(c => c.Subject)
+            var course = await Context.Courses
+                .Include(c => c.CourseScheduleTypes)
+                .Include(c => c.CourseAttributeTypes)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Course == null) return NotFound();
+            if (course == null) return NotFound();
+
+            CourseModel = new CourseInputModel
+            {
+                Id = course.Id,
+                DepartmentId = course.DepartmentId,
+                SubjectId = course.SubjectId,
+                Title = course.Title,
+                Number = course.Number,
+                CreditHours = course.CreditHours,
+                ScheduleTypeIds = course.CourseScheduleTypes.Select(cst => cst.ScheduleTypeId),
+                CourseAttributeIds = course.CourseAttributeTypes.Select(cat => cat.AttributeTypeId)
+            };
+
+            var courseLevels = new List<CourseLevelEnum>();
+            if (course.IsUndergraduate) courseLevels.Add(CourseLevelEnum.Undergraduate);
+            if (course.IsGraduate) courseLevels.Add(CourseLevelEnum.Graduate);
+
+            CourseModel.CourseLevels = courseLevels;
 
             LoadDropdownData();
 
@@ -38,31 +59,51 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
 
             if (!ModelState.IsValid) return Page();
 
-            var course = await Context.Courses.FindAsync(id);
+            var course = await Context.Courses
+                .Include(c => c.CourseScheduleTypes)
+                .Include(c => c.CourseAttributeTypes)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (await TryUpdateModelAsync(
-                course,
-                "Course",
-                c => c.DepartmentId,
-                c => c.SubjectId,
-                c => c.Number,
-                c => c.Title,
-                c => c.CreditHours,
-                c => c.IsUndergraduate,
-                c => c.IsGraduate))
+            course.DepartmentId = CourseModel.DepartmentId;
+            course.SubjectId = CourseModel.SubjectId;
+            course.Number = CourseModel.Number;
+            course.Title = CourseModel.Title;
+            course.CreditHours = CourseModel.CreditHours;
+            course.IsGraduate = CourseModel.CourseLevels.Contains(CourseLevelEnum.Graduate);
+            course.IsUndergraduate = CourseModel.CourseLevels.Contains(CourseLevelEnum.Undergraduate);
+
+            await course.DbValidateAsync(Context).ForEachAsync(result =>
             {
-                await course.DbValidateAsync(Context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
+                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+            });
 
-                if (!ModelState.IsValid) return Page();
+            if (!ModelState.IsValid) return Page();
 
-                await Context.SaveChangesAsync();
-                return RedirectToPage("./Index");
-            }
+            await Context.SaveChangesAsync();
 
-            return Page();
+            // Update schedule types
+            Context.UpdateManyToMany(course.CourseScheduleTypes,
+                CourseModel.ScheduleTypeIds
+                    .Select(stId => new CourseScheduleType
+                    {
+                        CourseId = course.Id,
+                        ScheduleTypeId = stId
+                    }),
+                cst => cst.ScheduleTypeId);
+
+            // Update course attributes
+            Context.UpdateManyToMany(course.CourseAttributeTypes,
+                CourseModel.CourseAttributeIds
+                    .Select(caId => new CourseAttributeType
+                    {
+                        CourseId = course.Id,
+                        AttributeTypeId = caId
+                    }),
+                cat => cat.AttributeTypeId);
+
+            await Context.SaveChangesAsync();
+
+            return RedirectToPage("./Index");
         }
     }
 }

@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,500,700" rel="stylesheet">
     <environment include="Development">
         <link rel="stylesheet" href="~/css/bootstrap.css"/>
+        <link rel="stylesheet" href="~/lib/multi-select/css/multi-select.css"/>
         <link rel="stylesheet" href="~/lib/fullcalendar/fullcalendar.css"/>
         <link rel="stylesheet" href="~/lib/fullcalendar/fullcalendar.print.css" media="print"/>
         <link rel="stylesheet" href="~/lib/fullcalendar-scheduler/scheduler.css"/>
@@ -15,6 +16,11 @@
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="~/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/css/multi-select.min.css"
+              asp-fallback-href="~/lib/multi-select/css/multi-select.min.css"
+              asp-fallback-test-class="ms-container" asp-fallback-test-property="width" asp-fallback-test-value="370px"
+              integrity="sha256-l4jVb17uOpLwdXQPDpkVIxW9LrCRFUjaZHb6Fqww/0o="
+              crossorigin="anonymous"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.0/fullcalendar.min.css"
               asp-fallback-href="~/lib/fullcalendar/fullcalendar.min.css"
               asp-fallback-test-class="fc" asp-fallback-test-property="direction" asp-fallback-test-value="ltr"
@@ -37,6 +43,7 @@
               integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"/>
     </environment>
     <link rel="stylesheet" href="~/css/site.css"/>
+    @RenderSection("Styles", false)
 </head>
 <body>
 <header>
@@ -67,6 +74,7 @@
 
 <environment include="Development">
     <script src="~/lib/jquery/jquery.js"></script>
+    <script src="~/lib/multi-select/js/jquery.multi-select.js"></script>
     <script src="~/lib/moment.js/moment.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.bundle.js"></script>
     <script src="~/lib/fullcalendar/fullcalendar.js"></script>
@@ -78,6 +86,12 @@
             asp-fallback-test="window.jQuery"
             crossorigin="anonymous"
             integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/multi-select/0.9.12/js/jquery.multi-select.min.js"
+            asp-fallback-src="~/lib/multi-select/js/jquery.multi-select.min.js"
+            asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.multiSelect"
+            integrity="sha256-qe8stzuAY8ixwMqLzEMX7hTs1TGKpHagLXWQ11tm7kg="
+            crossorigin="anonymous">
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js"
             asp-fallback-src="~/lib/moment.js/moment.min.js"

@@ -29,6 +29,10 @@
       "destination": "wwwroot/lib/jquery-validation-unobtrusive"
     },
     {
+      "library": "multi-select@0.9.12",
+      "destination": "wwwroot/lib/multi-select"
+    },
+    {
       "provider": "unpkg",
       "library": "@fortawesome/fontawesome-free@5.6.3",
       "destination": "wwwroot/lib/@fortawesome/fontawesome-free/",

@@ -1,8 +1,14 @@
-﻿using System.Collections.Async;
+﻿using System;
+using System.Collections.Async;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Courses
 {
@@ -12,7 +18,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         {
         }
 
-        [BindProperty] public Course Course { get; set; }
+        [BindProperty] public CourseInputModel CourseModel { get; set; }
 
         public IActionResult OnGet()
         {
@@ -27,32 +33,49 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
 
             if (!ModelState.IsValid) return Page();
 
-            var course = new Course();
-
-            if (await TryUpdateModelAsync(
-                course,
-                "Course",
-                c => c.DepartmentId,
-                c => c.SubjectId,
-                c => c.Number,
-                c => c.Title,
-                c => c.CreditHours,
-                c => c.IsUndergraduate,
-                c => c.IsGraduate))
+            var course = new Course
             {
-                await course.DbValidateAsync(Context).ForEachAsync(result =>
+                DepartmentId = CourseModel.DepartmentId,
+                SubjectId = CourseModel.SubjectId,
+                Number = CourseModel.Number,
+                Title = CourseModel.Title,
+                CreditHours = CourseModel.CreditHours,
+                IsGraduate = CourseModel.CourseLevels.Contains(CourseLevelEnum.Graduate),
+                IsUndergraduate = CourseModel.CourseLevels.Contains(CourseLevelEnum.Undergraduate)
+            };
+
+            await course.DbValidateAsync(Context).ForEachAsync(result =>
+            {
+                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+            });
+
+            if (!ModelState.IsValid) return Page();
+
+            Context.Courses.Add(course);
+            await Context.SaveChangesAsync();
+
+            var courseScheduleTypes = Context.ScheduleTypes
+                .Where(st => CourseModel.ScheduleTypeIds.Contains(st.Id))
+                .Select(st => new CourseScheduleType
                 {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    CourseId = course.Id,
+                    ScheduleTypeId = st.Id
                 });
 
-                if (!ModelState.IsValid) return Page();
+            var courseAttributeTypes = Context.AttributeTypes
+                .Where(at => CourseModel.CourseAttributeIds.Contains(at.Id))
+                .Select(at => new CourseAttributeType
+                {
+                    CourseId = course.Id,
+                    AttributeTypeId = at.Id
+                });
 
-                Context.Courses.Add(course);
-                await Context.SaveChangesAsync();
-                return RedirectToPage("./Index");
-            }
+            Context.CourseScheduleTypes.AddRange(courseScheduleTypes);
+            Context.CourseAttributeTypes.AddRange(courseAttributeTypes);
 
-            return Page();
+            await Context.SaveChangesAsync();
+
+            return RedirectToPage("./Index");
         }
     }
 }

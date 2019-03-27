@@ -22,6 +22,10 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             Course = await Context.Courses
                 .Include(c => c.Department)
                 .Include(c => c.Subject)
+                .Include(c => c.CourseScheduleTypes)
+                .ThenInclude(cst => cst.ScheduleType)
+                .Include(c => c.CourseAttributeTypes)
+                .ThenInclude(cat => cat.AttributeType)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Course == null) return NotFound();
