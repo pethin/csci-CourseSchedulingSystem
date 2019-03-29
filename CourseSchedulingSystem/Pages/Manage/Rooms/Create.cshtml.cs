@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Rooms
 {
@@ -35,10 +36,23 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return Page();
             }
 
-            _context.Room.Add(Room);
-            await _context.SaveChangesAsync();
+            var newRoom = new Room();
 
-            return RedirectToPage("./Index");
+            if (await TryUpdateModelAsync(newRoom, "Room", rm => rm.Number, rm => rm.BuildingId))
+            {
+                //Check if any other room has the same number
+                if (await _context.Room.AnyAsync(rm => rm.Number == newRoom.Number && rm.BuildingId == newRoom.BuildingId))
+                    ModelState.AddModelError(string.Empty, $"A room already exists with the name {newRoom.Number}.");
+
+
+                if (!ModelState.IsValid) return Page();
+
+                _context.Room.Add(Room);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
+
+            return Page();
         }
     }
 }
