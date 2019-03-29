@@ -41,7 +41,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
             if (!ModelState.IsValid)
             {
@@ -50,23 +50,24 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
             _context.Attach(Room).State = EntityState.Modified;
 
-            try
+
+            var roomToUpdate = await _context.Room.FindAsync(id);
+
+            if (await TryUpdateModelAsync(roomToUpdate, "Room", rm => rm.Number, rm => rm.BuildingId))
             {
+                //Check if any other room has the same number and building
+                if (await _context.Room.AnyAsync(rm =>
+                    rm.Id != roomToUpdate.Id && rm.Number == roomToUpdate.Number && rm.BuildingId == roomToUpdate.BuildingId))
+                    ModelState.AddModelError(string.Empty,
+                        $"A room already exists in this building with the number {roomToUpdate.Number}.");
+
+
+                if (!ModelState.IsValid) return Page();
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RoomExists(Room.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return RedirectToPage("./Index");
             }
 
-            return RedirectToPage("./Index");
+            return Page();
         }
 
         private bool RoomExists(Guid id)
