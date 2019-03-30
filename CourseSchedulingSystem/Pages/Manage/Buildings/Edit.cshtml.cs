@@ -46,6 +46,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
                 return Page();
             }
 
+            _context.Attach(Building).State = EntityState.Modified;
+
             var buildingToUpdate = await _context.Building.FindAsync(id);
 
             if (await TryUpdateModelAsync(buildingToUpdate, "Building", bd => bd.Code, bd => bd.Name))

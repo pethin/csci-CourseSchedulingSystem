@@ -22,7 +22,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
         public IActionResult OnGet()
         {
-        ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Code");
+        ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled==true), "Id", "Code");
             return Page();
         }
 

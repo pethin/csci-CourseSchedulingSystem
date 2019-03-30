@@ -37,7 +37,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             {
                 return NotFound();
             }
-           ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Code");
+            //Can change to Enabled Buildings or keep the current one
+            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true || bd.Id==Room.BuildingId), "Id", "Code");
             return Page();
         }
 
