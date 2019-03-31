@@ -79,6 +79,20 @@
     {
       "library": "fullcalendar-scheduler@1.9.4",
       "destination": "wwwroot/lib/fullcalendar-scheduler/"
+    },
+    {
+      "library": "gijgo@1.9.11",
+      "destination": "wwwroot/lib/gijgo/",
+      "files": [
+        "combined/js/gijgo.min.js",
+        "combined/js/gijgo.js",
+        "combined/css/gijgo.css",
+        "combined/css/gijgo.min.css",
+        "combined/fonts/gijgo-material.eot",
+        "combined/fonts/gijgo-material.svg",
+        "combined/fonts/gijgo-material.ttf",
+        "combined/fonts/gijgo-material.woff"
+      ]
     }
   ]
 }
