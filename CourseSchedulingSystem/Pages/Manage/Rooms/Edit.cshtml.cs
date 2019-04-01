@@ -49,6 +49,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return Page();
             }
 
+            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true || bd.Id == Room.BuildingId), "Id", "Code");
+
             _context.Attach(Room).State = EntityState.Modified;
 
 

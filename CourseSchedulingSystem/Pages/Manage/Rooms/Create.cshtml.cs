@@ -36,6 +36,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return Page();
             }
 
+            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true), "Id", "Code");
+
             var newRoom = new Room();
 
             if (await TryUpdateModelAsync(newRoom, "Room", rm => rm.Number, rm => rm.BuildingId))
