@@ -44,7 +44,8 @@ namespace CourseSchedulingSystem.Data
 
                 b.HasOne(du => du.Department)
                     .WithMany(d => d.DepartmentUsers)
-                    .HasForeignKey(du => du.DepartmentId);
+                    .HasForeignKey(du => du.DepartmentId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Department
@@ -76,6 +77,14 @@ namespace CourseSchedulingSystem.Data
             {
                 // Course >>-- Subject
                 b.HasIndex(c => new {c.SubjectId, Level = c.Number}).IsUnique();
+
+                b.HasOne(c => c.Department)
+                    .WithMany(d => d.Courses)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                b.HasOne(c => c.Subject)
+                    .WithMany(s => s.Courses)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Course >>--<< ScheduleType
@@ -89,7 +98,8 @@ namespace CourseSchedulingSystem.Data
 
                 b.HasOne(cst => cst.ScheduleType)
                     .WithMany(st => st.CourseScheduleTypes)
-                    .HasForeignKey(cst => cst.ScheduleTypeId);
+                    .HasForeignKey(cst => cst.ScheduleTypeId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Course >>--<< AttributeType
@@ -103,7 +113,8 @@ namespace CourseSchedulingSystem.Data
 
                 b.HasOne(cat => cat.AttributeType)
                     .WithMany(at => at.CourseAttributeTypes)
-                    .HasForeignKey(cat => cat.AttributeTypeId);
+                    .HasForeignKey(cat => cat.AttributeTypeId)
+                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Term
@@ -112,10 +123,15 @@ namespace CourseSchedulingSystem.Data
                 .IsUnique();
 
             // TermPart >>-- Term
-            builder.Entity<TermPart>()
-                .HasIndex(c => new {c.TermId, c.NormalizedName})
-                .IsUnique();
+            builder.Entity<TermPart>(b =>
+            {
+                b.HasIndex(c => new { c.TermId, c.NormalizedName }).IsUnique();
 
+                b.HasOne(tp => tp.Term)
+                    .WithMany(t => t.TermParts)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+            
             // Instructor
             builder.Entity<Instructor>()
                 .HasIndex(i => i.NormalizedName)
