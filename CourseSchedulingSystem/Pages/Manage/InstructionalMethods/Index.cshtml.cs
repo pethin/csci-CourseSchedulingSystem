@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -20,7 +21,9 @@ namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
 
         public async Task OnGetAsync()
         {
-            InstructionalMethod = await _context.InstructionalMethods.ToListAsync();
+            InstructionalMethod = await _context.InstructionalMethods
+                .OrderBy(im => im.NormalizedName)
+                .ToListAsync();
         }
     }
 }

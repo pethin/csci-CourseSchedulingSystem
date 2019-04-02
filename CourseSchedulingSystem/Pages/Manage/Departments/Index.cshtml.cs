@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -20,7 +21,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Departments
 
         public async Task OnGetAsync()
         {
-            Departments = await _context.Departments.ToListAsync();
+            Departments = await _context.Departments
+                .OrderBy(d => d.Code)
+                .ToListAsync();
         }
     }
 }

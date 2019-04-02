@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -20,7 +21,9 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
 
         public async Task OnGetAsync()
         {
-            AttributeTypes = await _context.AttributeTypes.ToListAsync();
+            AttributeTypes = await _context.AttributeTypes
+                .OrderBy(at => at.NormalizedName)
+                .ToListAsync();
         }
     }
 }

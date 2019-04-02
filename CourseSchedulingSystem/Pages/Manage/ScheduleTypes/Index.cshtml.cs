@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -20,7 +21,9 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
 
         public async Task OnGetAsync()
         {
-            ScheduleTypes = await _context.ScheduleTypes.ToListAsync();
+            ScheduleTypes = await _context.ScheduleTypes
+                .OrderBy(st => st.NormalizedName)
+                .ToListAsync();
         }
     }
 }

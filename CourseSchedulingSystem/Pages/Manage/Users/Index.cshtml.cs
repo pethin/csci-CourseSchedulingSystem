@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Identity;
@@ -20,7 +21,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
 
         public async Task OnGetAsync()
         {
-            ApplicationUser = await _userManager.Users.ToListAsync();
+            ApplicationUser = await _userManager.Users
+                .OrderBy(u => u.NormalizedUserName)
+                .ToListAsync();
         }
     }
 }
