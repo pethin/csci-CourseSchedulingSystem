@@ -15,9 +15,11 @@ namespace CourseSchedulingSystem.Data.Models
 
         public Guid Id { get; set; }
 
+        [Required]
         public Guid DepartmentId { get; set; }
         public virtual Department Department { get; set; }
 
+        [Required]
         public Guid SubjectId { get; set; }
         public virtual Subject Subject { get; set; }
 
