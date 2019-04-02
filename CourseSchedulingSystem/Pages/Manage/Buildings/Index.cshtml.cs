@@ -23,7 +23,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
 
         public async Task OnGetAsync()
         {
-            Building = await _context.Building.ToListAsync();
+            Building = await _context.Building
+                .OrderBy(bd => bd.Code)
+                .ToListAsync();
         }
     }
 }
