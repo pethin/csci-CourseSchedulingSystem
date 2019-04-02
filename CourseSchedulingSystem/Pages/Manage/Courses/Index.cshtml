@@ -10,6 +10,35 @@
 <p>
     <a asp-page="Create">Create New</a>
 </p>
+<h4>Filters</h4>
+<div class="form-row">
+    <div class="col-2">
+        <div class="form-group">
+            <label class="control-label">Department</label>
+            <select id="departmentFilter" class="form-control form-control-chosen" data-placeholder="Departments" multiple asp-items="ViewBag.DepartmentId"></select>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-group">
+            <label class="control-label">Identifier</label>
+            <input type="text" id="identifierFilter" class="form-control" placeholder="Identifier">
+        </div>
+    </div>
+    <div class="col">
+        <div class="form-group">
+            <label class="control-label">Name</label>
+            <input type="text" id="nameFilter" class="form-control" placeholder="Name">
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="form-group">
+            <label class="control-label">Credit Hours</label>
+            <select id="creditHoursFilter" class="form-control form-control-chosen" data-placeholder="Credit Hours" multiple asp-items="ViewBag.CreditHours"></select>
+        </div>
+    </div>
+</div>
+
+<h4>Results</h4>
 <table id="grid"></table>
 
 @section Scripts {
@@ -24,16 +53,33 @@
                 paramNames: {
                     page: 'pageNumber'
                 },
-                headerFilter: true,
                 columns: [
                     { field: 'department', title: 'Department', sortable: true, width: 125 },
                     { field: 'identifier', title: 'Identifier', sortable: true, width: 125 },
                     { field: 'title', title: 'Name', sortable: true },
                     { field: 'creditHours', title: 'Credit Hours', sortable: true, width: 125 },
-                    { field: 'links', title: '', sortable: false, filterable: false, width: 200, renderer: linksRenderer }
+                    { field: 'links', title: '', sortable: false, width: 200, renderer: linksRenderer }
                 ],
                 pager: { limit: 20 }
             });
+            var reloadGrid = function () {
+                grid.reload({
+                    departments: $('#departmentFilter').val(),
+                    identifier: $('#identifierFilter').val(),
+                    title: $('#nameFilter').val(),
+                    creditHours: $('#creditHoursFilter').val()
+                });
+            };
+
+            $('#departmentFilter').chosen();
+            $('#departmentFilter').on('change', reloadGrid);
+
+            $('#identifierFilter').on('change keyup paste', reloadGrid);
+
+            $('#nameFilter').on('change keyup paste', reloadGrid);
+
+            $('#creditHoursFilter').chosen();
+            $('#creditHoursFilter').on('change', reloadGrid);
         });
     </script>
 }

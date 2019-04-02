@@ -5,7 +5,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
+using CourseSchedulingSystem.Utilities.Gijgo;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Courses
@@ -18,44 +21,39 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
 
         public IActionResult OnGet()
         {
+            ViewData["DepartmentId"] = Context.Courses
+                .Include(c => c.Department)
+                .GroupBy(c => c.DepartmentId, (departmentId, courses) => new SelectListItem
+            {
+                Value = departmentId.ToString(),
+                Text = courses.First().Department.Code
+            });
+            
+            ViewData["CreditHours"] = Context.Courses.GroupBy(c => c.CreditHours, (ch, course) => new SelectListItem
+            {
+                Value = $"{ch}",
+                Text = $"{ch}"
+            });
+
             return Page();
-        }
-
-        public class DataGridResult<T>
-        {
-            public List<T> Records { get; set; }
-            public int Total { get; set; }
-        }
-
-        public class RecordLinks
-        {
-            public string Edit { get; set; }
-            public string Details { get; set; }
-            public string Delete { get; set; }
-        }
-
-        public class CourseRecord
-        {
-            public Guid Id { get; set; }
-            public string Department { get; set; }
-            public string Identifier { get; set; }
-            public string Title { get; set; }
-            public decimal CreditHours { get; set; }
-            public RecordLinks Links { get; set; }
         }
 
         public async Task<IActionResult> OnGetDataAsync(
             int? pageNumber, int? limit,
             string sortBy,
             string direction,
-            string department,
+            [FromQuery(Name = "departments[]")] List<Guid> departments,
             string identifier,
             string title,
-            decimal? creditHours)
+            [FromQuery(Name = "creditHours[]")] List<decimal> creditHours)
         {
             var query = Context.Courses
                 .Include(c => c.Department)
                 .Include(c => c.Subject)
+                .ConditionalWhere(() => departments?.Count > 0, c => departments.Contains(c.DepartmentId))
+                .ConditionalWhere(() => !string.IsNullOrWhiteSpace(identifier), c => (c.Subject.Code + c.Number).Contains(identifier))
+                .ConditionalWhere(() => !string.IsNullOrWhiteSpace(title), c => c.Title.Contains(title))
+                .ConditionalWhere(() => creditHours?.Count > 0, c => creditHours.Contains(c.CreditHours))
                 .Select(c => new CourseRecord
                 {
                     Id = c.Id,
@@ -63,33 +61,13 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                     Identifier = c.Subject.Code + c.Number,
                     Title = c.Title,
                     CreditHours = c.CreditHours,
-                    Links = new RecordLinks
+                    Links = new RecordCrudLinks
                     {
                         Edit = Url.Page("Edit", new { id = c.Id }),
                         Details = Url.Page("Details", new { id = c.Id }),
                         Delete = Url.Page("Delete", new { id = c.Id })
                     }
                 });
-
-            if (!string.IsNullOrWhiteSpace(department))
-            {
-                query = query.Where(q => q.Department.Contains(department));
-            }
-
-            if (!string.IsNullOrWhiteSpace(identifier))
-            {
-                query = query.Where(q => q.Identifier.Contains(identifier));
-            }
-
-            if (!string.IsNullOrWhiteSpace(title))
-            {
-                query = query.Where(q => q.Title.Contains(title));
-            }
-
-            if (creditHours.HasValue)
-            {
-                query = query.Where(q => q.CreditHours == creditHours);
-            }
 
             var total = query.Count();
 
@@ -153,6 +131,16 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 Records = records,
                 Total = total
             });
+        }
+
+        public class CourseRecord : IRecord
+        {
+            public Guid Id { get; set; }
+            public string Department { get; set; }
+            public string Identifier { get; set; }
+            public string Title { get; set; }
+            public decimal CreditHours { get; set; }
+            public RecordCrudLinks Links { get; set; }
         }
     }
 }

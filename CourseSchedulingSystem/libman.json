@@ -93,6 +93,14 @@
         "combined/fonts/gijgo-material.ttf",
         "combined/fonts/gijgo-material.woff"
       ]
+    },
+    {
+      "library": "chosen@1.8.7",
+      "destination": "wwwroot/lib/chosen/",
+      "files": [
+        "chosen.jquery.js",
+        "chosen.jquery.min.js"
+      ]
     }
   ]
 }
