@@ -1,5 +1,5 @@
 ﻿@page
-@model CourseSchedulingSystem.Pages.Manage.AttributeTypes.CreateModel
+@model CourseSchedulingSystem.Pages.Manage.CourseAttributes.CreateModel
 
 @{
     ViewData["Title"] = "Create";
@@ -7,16 +7,16 @@
 
 <h1>Create</h1>
 
-<h4>Attribute Type</h4>
+<h4>Course Attribute</h4>
 <hr/>
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="AttributeType.Name" class="control-label"></label>
-                <input asp-for="AttributeType.Name" class="form-control"/>
-                <span asp-validation-for="AttributeType.Name" class="text-danger"></span>
+                <label asp-for="CourseAttribute.Name" class="control-label"></label>
+                <input asp-for="CourseAttribute.Name" class="form-control"/>
+                <span asp-validation-for="CourseAttribute.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary"/>

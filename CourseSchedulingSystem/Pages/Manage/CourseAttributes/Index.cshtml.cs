@@ -6,7 +6,7 @@ using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
+namespace CourseSchedulingSystem.Pages.Manage.CourseAttributes
 {
     public class IndexModel : PageModel
     {
@@ -17,11 +17,11 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
             _context = context;
         }
 
-        public IList<AttributeType> AttributeTypes { get; set; }
+        public IList<CourseAttribute> AttributeTypes { get; set; }
 
         public async Task OnGetAsync()
         {
-            AttributeTypes = await _context.AttributeTypes
+            AttributeTypes = await _context.CourseAttributes
                 .OrderBy(at => at.NormalizedName)
                 .ToListAsync();
         }

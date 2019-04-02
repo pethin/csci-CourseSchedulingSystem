@@ -23,7 +23,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             Text = st.Name
         });
         
-        public IEnumerable<SelectListItem> CourseAttributeOptions => Context.AttributeTypes.Select(st => new SelectListItem
+        public IEnumerable<SelectListItem> CourseAttributeOptions => Context.CourseAttributes.Select(st => new SelectListItem
         {
             Value = st.Id.ToString(),
             Text = st.Name

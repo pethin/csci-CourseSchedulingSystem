@@ -40,10 +40,10 @@ namespace CourseSchedulingSystem.Pages.Manage
                     },
                     new Row
                     {
-                        Title = "Attribute Types",
+                        Title = "Course Attributes",
                         Description =
                             "Additional attributes that can be added to courses or course sections. E.g., Intensive Writing, Oral Communication.",
-                        Link = "./AttributeTypes"
+                        Link = "./CourseAttributes"
                     },
                     new Row
                     {

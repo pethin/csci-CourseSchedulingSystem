@@ -17,11 +17,11 @@ namespace CourseSchedulingSystem.Data
         public DbSet<Subject> Subjects { get; set; }
 
         public DbSet<ScheduleType> ScheduleTypes { get; set; }
-        public DbSet<AttributeType> AttributeTypes { get; set; }
+        public DbSet<CourseAttribute> CourseAttributes { get; set; }
 
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseScheduleType> CourseScheduleTypes { get; set; }
-        public DbSet<CourseAttributeType> CourseAttributeTypes { get; set; }
+        public DbSet<CourseCourseAttribute> CourseCourseAttributes { get; set; }
 
         public DbSet<Term> Terms { get; set; }
         public DbSet<TermPart> TermParts { get; set; }
@@ -70,7 +70,7 @@ namespace CourseSchedulingSystem.Data
                 .IsUnique();
 
             // Attribute Type
-            builder.Entity<AttributeType>()
+            builder.Entity<CourseAttribute>()
                 .HasIndex(at => at.NormalizedName)
                 .IsUnique();
 
@@ -104,18 +104,18 @@ namespace CourseSchedulingSystem.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Course >>--<< AttributeType
-            builder.Entity<CourseAttributeType>(b =>
+            // Course >>--<< CourseAttribute
+            builder.Entity<CourseCourseAttribute>(b =>
             {
-                b.HasKey(t => new {t.CourseId, t.AttributeTypeId});
+                b.HasKey(t => new {t.CourseId, t.CourseAttributeId});
 
                 b.HasOne(cat => cat.Course)
-                    .WithMany(c => c.CourseAttributeTypes)
+                    .WithMany(c => c.CourseCourseAttributes)
                     .HasForeignKey(cat => cat.CourseId);
 
-                b.HasOne(cat => cat.AttributeType)
-                    .WithMany(at => at.CourseAttributeTypes)
-                    .HasForeignKey(cat => cat.AttributeTypeId)
+                b.HasOne(cat => cat.CourseAttribute)
+                    .WithMany(at => at.CourseCourseAttributes)
+                    .HasForeignKey(cat => cat.CourseAttributeId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 

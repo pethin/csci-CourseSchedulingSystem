@@ -24,8 +24,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 .Include(c => c.Subject)
                 .Include(c => c.CourseScheduleTypes)
                 .ThenInclude(cst => cst.ScheduleType)
-                .Include(c => c.CourseAttributeTypes)
-                .ThenInclude(cat => cat.AttributeType)
+                .Include(c => c.CourseCourseAttributes)
+                .ThenInclude(cat => cat.CourseAttribute)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Course == null) return NotFound();

@@ -56,25 +56,25 @@ namespace CourseSchedulingSystem.Data.Seeders
         };
 
         /// <summary>
-        ///     List of attribute types to seed.
+        ///     List of course attributes to seed.
         /// </summary>
-        private static readonly List<AttributeType> AttributeTypes = new List<AttributeType>
+        private static readonly List<CourseAttribute> AttributeTypes = new List<CourseAttribute>
         {
-            new AttributeType("Capstone Course"),
-            new AttributeType("Constitution Requirement"),
-            new AttributeType("Global Perspective"),
-            new AttributeType("Historical Perspective"),
-            new AttributeType("Humanities and Arts"),
-            new AttributeType("Intensive Writing"),
-            new AttributeType("Logic Language and Semiotics"),
-            new AttributeType("Natural Science - Earth"),
-            new AttributeType("Natural Science - Life"),
-            new AttributeType("Natural Science - Physical"),
-            new AttributeType("Oral Communication"),
-            new AttributeType("Physical Activity"),
-            new AttributeType("Quantitative Skills Req"),
-            new AttributeType("Social Science"),
-            new AttributeType("Technology Requirement")
+            new CourseAttribute("Capstone Course"),
+            new CourseAttribute("Constitution Requirement"),
+            new CourseAttribute("Global Perspective"),
+            new CourseAttribute("Historical Perspective"),
+            new CourseAttribute("Humanities and Arts"),
+            new CourseAttribute("Intensive Writing"),
+            new CourseAttribute("Logic Language and Semiotics"),
+            new CourseAttribute("Natural Science - Earth"),
+            new CourseAttribute("Natural Science - Life"),
+            new CourseAttribute("Natural Science - Physical"),
+            new CourseAttribute("Oral Communication"),
+            new CourseAttribute("Physical Activity"),
+            new CourseAttribute("Quantitative Skills Req"),
+            new CourseAttribute("Social Science"),
+            new CourseAttribute("Technology Requirement")
         };
 
         private readonly ApplicationDbContext _context;
@@ -137,13 +137,13 @@ namespace CourseSchedulingSystem.Data.Seeders
         private async Task SeedAttributeTypesAsync()
         {
             var attributeTypeCodes = AttributeTypes.Select(d => d.NormalizedName).ToHashSet();
-            var createdCodes = _context.AttributeTypes
+            var createdCodes = _context.CourseAttributes
                 .Where(st => attributeTypeCodes.Contains(st.NormalizedName))
                 .Select(st => st.NormalizedName)
                 .ToHashSet();
 
             var attributeTypes = AttributeTypes.Where(st => !createdCodes.Contains(st.NormalizedName));
-            foreach (var attributeType in attributeTypes) await _context.AttributeTypes.AddAsync(attributeType);
+            foreach (var attributeType in attributeTypes) await _context.CourseAttributes.AddAsync(attributeType);
 
             await _context.SaveChangesAsync();
         }

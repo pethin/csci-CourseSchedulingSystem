@@ -7,15 +7,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
-    public class AttributeType
+    public class CourseAttribute
     {
         private string _name;
 
-        public AttributeType()
+        public CourseAttribute()
         {
         }
 
-        public AttributeType(string name)
+        public CourseAttribute(string name)
         {
             Name = name;
         }
@@ -35,7 +35,7 @@ namespace CourseSchedulingSystem.Data.Models
 
         public string NormalizedName { get; private set; }
 
-        public virtual ICollection<CourseAttributeType> CourseAttributeTypes { get; set; }
+        public virtual ICollection<CourseCourseAttribute> CourseCourseAttributes { get; set; }
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
@@ -43,13 +43,13 @@ namespace CourseSchedulingSystem.Data.Models
         {
             return new AsyncEnumerable<ValidationResult>(async yield =>
             {
-                // Check if any attribute type has the same name
-                if (await context.AttributeTypes
+                // Check if any course attribute has the same name
+                if (await context.CourseAttributes
                     .Where(at => at.Id != Id)
                     .Where(at => at.NormalizedName == NormalizedName)
                     .AnyAsync())
                     await yield.ReturnAsync(
-                        new ValidationResult($"An attribute type already exists with the name {Name}."));
+                        new ValidationResult($"A course attribute already exists with the name {Name}."));
             });
         }
     }

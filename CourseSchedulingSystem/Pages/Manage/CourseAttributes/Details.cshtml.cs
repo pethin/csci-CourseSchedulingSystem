@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
+namespace CourseSchedulingSystem.Pages.Manage.CourseAttributes
 {
     public class DetailsModel : PageModel
     {
@@ -17,15 +17,19 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
             _context = context;
         }
 
-        public AttributeType AttributeType { get; set; }
+        public CourseAttribute CourseAttribute { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
             if (id == null) return NotFound();
 
-            AttributeType = await _context.AttributeTypes.FirstOrDefaultAsync(m => m.Id == id);
+            CourseAttribute = await _context.CourseAttributes
+                .Include(ca => ca.CourseCourseAttributes)
+                .ThenInclude(cca => cca.Course)
+                .ThenInclude(c => c.Subject)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (AttributeType == null) return NotFound();
+            if (CourseAttribute == null) return NotFound();
             return Page();
         }
     }

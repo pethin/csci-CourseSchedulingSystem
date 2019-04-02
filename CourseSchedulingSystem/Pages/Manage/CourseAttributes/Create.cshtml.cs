@@ -5,7 +5,7 @@ using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
+namespace CourseSchedulingSystem.Pages.Manage.CourseAttributes
 {
     public class CreateModel : PageModel
     {
@@ -16,7 +16,7 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
             _context = context;
         }
 
-        [BindProperty] public AttributeType AttributeType { get; set; }
+        [BindProperty] public CourseAttribute CourseAttribute { get; set; }
 
         public IActionResult OnGet()
         {
@@ -27,21 +27,21 @@ namespace CourseSchedulingSystem.Pages.Manage.AttributeTypes
         {
             if (!ModelState.IsValid) return Page();
 
-            var attributeType = new AttributeType();
+            var courseAttribute = new CourseAttribute();
 
             if (await TryUpdateModelAsync(
-                attributeType,
-                "AttributeType",
+                courseAttribute,
+                "CourseAttribute",
                 at => at.Name))
             {
-                await attributeType.DbValidateAsync(_context).ForEachAsync(result =>
+                await courseAttribute.DbValidateAsync(_context).ForEachAsync(result =>
                 {
                     ModelState.AddModelError(string.Empty, result.ErrorMessage);
                 });
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.AttributeTypes.Add(attributeType);
+                _context.CourseAttributes.Add(courseAttribute);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }

@@ -62,16 +62,16 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                     ScheduleTypeId = st.Id
                 });
 
-            var courseAttributeTypes = Context.AttributeTypes
+            var courseAttributeTypes = Context.CourseAttributes
                 .Where(at => CourseModel.CourseAttributeIds.Contains(at.Id))
-                .Select(at => new CourseAttributeType
+                .Select(at => new CourseCourseAttribute
                 {
                     CourseId = course.Id,
-                    AttributeTypeId = at.Id
+                    CourseAttributeId = at.Id
                 });
 
             Context.CourseScheduleTypes.AddRange(courseScheduleTypes);
-            Context.CourseAttributeTypes.AddRange(courseAttributeTypes);
+            Context.CourseCourseAttributes.AddRange(courseAttributeTypes);
 
             await Context.SaveChangesAsync();
 

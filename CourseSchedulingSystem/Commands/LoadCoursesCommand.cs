@@ -126,7 +126,7 @@ namespace CourseSchedulingSystem.Commands
             var subjects = await context.Subjects.ToListAsync();
             var scheduleTypes = await context.ScheduleTypes.ToListAsync();
             var scheduleTypesNames = scheduleTypes.Select(st => st.Name).ToHashSet();
-            var courseAttributes = await context.AttributeTypes.ToListAsync();
+            var courseAttributes = await context.CourseAttributes.ToListAsync();
             var courseAttributesNames = courseAttributes.Select(ca => ca.Name).ToHashSet();
 
             foreach (var courseRow in courseRows)
@@ -166,7 +166,7 @@ namespace CourseSchedulingSystem.Commands
                 var course =
                     await context.Courses
                         .Include(c => c.CourseScheduleTypes)
-                        .Include(c => c.CourseAttributeTypes)
+                        .Include(c => c.CourseCourseAttributes)
                         .FirstOrDefaultAsync(c => c.SubjectId == subject.Id && c.Number == courseRow.Number);
 
                 if (course != null)
@@ -189,7 +189,7 @@ namespace CourseSchedulingSystem.Commands
                         IsGraduate = courseRow.IsGraduate,
                         IsUndergraduate = courseRow.IsUndergraduate,
                         CourseScheduleTypes = new List<CourseScheduleType>(),
-                        CourseAttributeTypes = new List<CourseAttributeType>()
+                        CourseCourseAttributes = new List<CourseCourseAttribute>()
                     };
                     context.Courses.Add(course);
                 }
@@ -208,15 +208,15 @@ namespace CourseSchedulingSystem.Commands
                     cst => cst.ScheduleTypeId);
 
                 // Update course attributes
-                context.UpdateManyToMany(course.CourseAttributeTypes,
+                context.UpdateManyToMany(course.CourseCourseAttributes,
                     courseAttributes
                         .Where(ca => courseRow.CourseAttributes.Contains(ca.Name))
-                        .Select(ca => new CourseAttributeType
+                        .Select(ca => new CourseCourseAttribute
                         {
                             CourseId = course.Id,
-                            AttributeTypeId = ca.Id
+                            CourseAttributeId = ca.Id
                         }),
-                    cat => cat.AttributeTypeId);
+                    cat => cat.CourseAttributeId);
 
                 await context.SaveChangesAsync();
             }

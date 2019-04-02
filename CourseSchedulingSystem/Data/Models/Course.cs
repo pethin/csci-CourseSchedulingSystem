@@ -56,7 +56,7 @@ namespace CourseSchedulingSystem.Data.Models
         public bool IsGraduate { get; set; }
 
         public virtual ICollection<CourseScheduleType> CourseScheduleTypes { get; set; }
-        public virtual ICollection<CourseAttributeType> CourseAttributeTypes { get; set; }
+        public virtual ICollection<CourseCourseAttribute> CourseCourseAttributes { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

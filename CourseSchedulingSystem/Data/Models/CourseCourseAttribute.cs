@@ -2,12 +2,12 @@
 
 namespace CourseSchedulingSystem.Data.Models
 {
-    public class CourseAttributeType
+    public class CourseCourseAttribute
     {
         public Guid CourseId { get; set; }
         public virtual Course Course { get; set; }
 
-        public Guid AttributeTypeId { get; set; }
-        public virtual AttributeType AttributeType { get; set; }
+        public Guid CourseAttributeId { get; set; }
+        public virtual CourseAttribute CourseAttribute { get; set; }
     }
 }

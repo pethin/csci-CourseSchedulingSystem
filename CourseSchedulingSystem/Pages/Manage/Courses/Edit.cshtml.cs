@@ -25,7 +25,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
 
             var course = await Context.Courses
                 .Include(c => c.CourseScheduleTypes)
-                .Include(c => c.CourseAttributeTypes)
+                .Include(c => c.CourseCourseAttributes)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (course == null) return NotFound();
@@ -39,7 +39,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 Number = course.Number,
                 CreditHours = course.CreditHours,
                 ScheduleTypeIds = course.CourseScheduleTypes.Select(cst => cst.ScheduleTypeId),
-                CourseAttributeIds = course.CourseAttributeTypes.Select(cat => cat.AttributeTypeId)
+                CourseAttributeIds = course.CourseCourseAttributes.Select(cca => cca.CourseAttributeId)
             };
 
             var courseLevels = new List<CourseLevelEnum>();
@@ -61,7 +61,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
 
             var course = await Context.Courses
                 .Include(c => c.CourseScheduleTypes)
-                .Include(c => c.CourseAttributeTypes)
+                .Include(c => c.CourseCourseAttributes)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             course.DepartmentId = CourseModel.DepartmentId;
@@ -92,14 +92,14 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 cst => cst.ScheduleTypeId);
 
             // Update course attributes
-            Context.UpdateManyToMany(course.CourseAttributeTypes,
+            Context.UpdateManyToMany(course.CourseCourseAttributes,
                 CourseModel.CourseAttributeIds
-                    .Select(caId => new CourseAttributeType
+                    .Select(caId => new CourseCourseAttribute
                     {
                         CourseId = course.Id,
-                        AttributeTypeId = caId
+                        CourseAttributeId = caId
                     }),
-                cat => cat.AttributeTypeId);
+                cca => cca.CourseAttributeId);
 
             await Context.SaveChangesAsync();
 
