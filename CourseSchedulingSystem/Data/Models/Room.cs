@@ -13,7 +13,8 @@ namespace CourseSchedulingSystem.Data.Models
         private string _number;
 
         public Room()
-        { }
+        {
+        }
 
         public Room(string number, int capacity, bool isEnabled)
         {
@@ -24,6 +25,7 @@ namespace CourseSchedulingSystem.Data.Models
 
         public Guid Id { get; set; }
 
+        [Required]
         public Guid BuildingId { get; set; }
         public virtual Building Building { get; set; }
 
@@ -38,8 +40,7 @@ namespace CourseSchedulingSystem.Data.Models
 
         [Required]
         [Range(0.000, int.MaxValue, ErrorMessage = "Capacity must be between greater than or equal to zero.")]
-        public int Capacity
-        { get; set; }
+        public int Capacity { get; set; }
 
         [Required]
         [Display(Name = "Room Enabled")]
@@ -53,11 +54,6 @@ namespace CourseSchedulingSystem.Data.Models
         {
             return new AsyncEnumerable<ValidationResult>(async yield =>
             {
-                // Check if building ID is valid
-                if (!await context.Building.AnyAsync(bd => bd.Id == BuildingId))
-                    await yield.ReturnAsync(new ValidationResult("Invalid Building selected."));
-
-
                 // Check if any room has the same number and building
                 if (await context.Room
                     .Where(rm => rm.Id != Id)

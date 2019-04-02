@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,8 +26,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
             return Page();
         }
 
-        [BindProperty]
-        public Building Building { get; set; }
+        [BindProperty] public Building Building { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -34,21 +34,18 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
             {
                 return Page();
             }
-            
-            var newBuilding = new Building();
 
-            if (await TryUpdateModelAsync(newBuilding, "Building", bd => bd.Name, bd => bd.Code))
+            var building = new Building();
+
+            if (await TryUpdateModelAsync(building, "Building", bd => bd.Name, bd => bd.Code))
             {
-                //Check if any other building has the same name
-                if(await _context.Building.AnyAsync(bd => bd.NormalizedName == newBuilding.NormalizedName))
-                    ModelState.AddModelError(string.Empty, $"A building already exists with the name {newBuilding.Name}.");
+                await building.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
                 
-                //Check if any other building has the same code
-                if(await _context.Building.AnyAsync(bd => bd.Code == newBuilding.Code))
-                    ModelState.AddModelError(string.Empty, $"A building already exists with the building code {newBuilding.Code}.");
-
                 if (!ModelState.IsValid) return Page();
-                
+
                 _context.Building.Add(Building);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");

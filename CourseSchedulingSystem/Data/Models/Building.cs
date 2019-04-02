@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
@@ -44,10 +45,39 @@ namespace CourseSchedulingSystem.Data.Models
         }
 
         [Required]
-        [Display (Name = "Building Enabled")]
+        [Display(Name = "Building Enabled")]
         public bool IsEnabled { get; set; }
 
         public string NormalizedName { get; private set; }
 
+        public virtual ICollection<Room> Rooms { get; set; }
+
+        public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
+            ApplicationDbContext context
+        )
+        {
+            return new AsyncEnumerable<ValidationResult>(async yield =>
+            {
+                // Check if any other building has the same code
+                if (await context.Building
+                    .Where(bd => bd.Id != Id)
+                    .Where(bd => bd.Code == Code)
+                    .AnyAsync())
+                {
+                    await yield.ReturnAsync(
+                        new ValidationResult($"A building already exists with the code {Code}."));
+                }
+
+                // Check if any other building has the same name
+                if (await context.Building
+                    .Where(bd => bd.Id != Id)
+                    .Where(bd => bd.NormalizedName == NormalizedName)
+                    .AnyAsync())
+                {
+                    await yield.ReturnAsync(
+                        new ValidationResult($"A building already exists with the name {Name}."));
+                }
+            });
+        }
     }
 }

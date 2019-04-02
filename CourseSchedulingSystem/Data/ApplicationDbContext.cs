@@ -145,9 +145,11 @@ namespace CourseSchedulingSystem.Data
                 .IsUnique();
 
             // Building
-            builder.Entity<Building>()
-                .HasIndex(bd => bd.NormalizedName)
-                .IsUnique();
+            builder.Entity<Building>(b =>
+            {
+                b.HasIndex(s => s.Code).IsUnique();
+                b.HasIndex(s => s.NormalizedName).IsUnique();
+            });
 
             // Room
             builder.Entity<Room>()

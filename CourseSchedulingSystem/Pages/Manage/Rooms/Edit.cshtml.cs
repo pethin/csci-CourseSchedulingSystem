@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,8 +21,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             _context = context;
         }
 
-        [BindProperty]
-        public Room Room { get; set; }
+        [BindProperty] public Room Room { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -37,8 +37,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             {
                 return NotFound();
             }
+
             //Can change to Enabled Buildings or keep the current one
-            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true || bd.Id==Room.BuildingId), "Id", "Code");
+            ViewData["BuildingId"] =
+                new SelectList(_context.Building.Where(bd => bd.IsEnabled == true || bd.Id == Room.BuildingId), "Id",
+                    "Code");
             return Page();
         }
 
@@ -49,20 +52,21 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return Page();
             }
 
-            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true || bd.Id == Room.BuildingId), "Id", "Code");
+            ViewData["BuildingId"] =
+                new SelectList(_context.Building.Where(bd => bd.IsEnabled == true || bd.Id == Room.BuildingId), "Id",
+                    "Code");
 
             _context.Attach(Room).State = EntityState.Modified;
 
 
-            var roomToUpdate = await _context.Room.FindAsync(id);
+            var room = await _context.Room.FindAsync(id);
 
-            if (await TryUpdateModelAsync(roomToUpdate, "Room", rm => rm.Number, rm => rm.BuildingId))
+            if (await TryUpdateModelAsync(room, "Room", rm => rm.Number, rm => rm.BuildingId))
             {
-                //Check if any other room has the same number and building
-                if (await _context.Room.AnyAsync(rm =>
-                    rm.Id != roomToUpdate.Id && rm.Number == roomToUpdate.Number && rm.BuildingId == roomToUpdate.BuildingId))
-                    ModelState.AddModelError(string.Empty,
-                        $"A room already exists in this building with the number {roomToUpdate.Number}.");
+                await room.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
 
                 if (!ModelState.IsValid) return Page();

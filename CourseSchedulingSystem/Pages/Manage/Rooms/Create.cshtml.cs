@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -38,13 +39,14 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
             ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true), "Id", "Code");
 
-            var newRoom = new Room();
+            var room = new Room();
 
-            if (await TryUpdateModelAsync(newRoom, "Room", rm => rm.Number, rm => rm.BuildingId))
+            if (await TryUpdateModelAsync(room, "Room", rm => rm.Number, rm => rm.BuildingId))
             {
-                //Check if any other room has the same number
-                if (await _context.Room.AnyAsync(rm => rm.Number == newRoom.Number && rm.BuildingId == newRoom.BuildingId))
-                    ModelState.AddModelError(string.Empty, $"A room already exists with the name {newRoom.Number}.");
+                await room.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
 
                 if (!ModelState.IsValid) return Page();

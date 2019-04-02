@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Async;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,21 +49,14 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
 
             _context.Attach(Building).State = EntityState.Modified;
 
-            var buildingToUpdate = await _context.Building.FindAsync(id);
+            var building = await _context.Building.FindAsync(id);
 
-            if (await TryUpdateModelAsync(buildingToUpdate, "Building", bd => bd.Code, bd => bd.Name))
+            if (await TryUpdateModelAsync(building, "Building", bd => bd.Code, bd => bd.Name))
             {
-                //Check if any other building has the same name
-                if (await _context.Building.AnyAsync(bd =>
-                    bd.Id != buildingToUpdate.Id && bd.NormalizedName == buildingToUpdate.NormalizedName))
-                    ModelState.AddModelError(string.Empty,
-                        $"A building already exists with the name {buildingToUpdate.Name}.");
-
-                //Check if any other building has the same code
-                if (await _context.Building.AnyAsync(bd =>
-                    bd.Id != buildingToUpdate.Id && bd.Code == buildingToUpdate.Code))
-                    ModelState.AddModelError(string.Empty,
-                        $"A building already exists with the building code {buildingToUpdate.Code}.");
+                await building.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
                 if (!ModelState.IsValid) return Page();
                 await _context.SaveChangesAsync();
