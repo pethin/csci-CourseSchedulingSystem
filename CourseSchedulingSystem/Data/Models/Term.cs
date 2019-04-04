@@ -2,12 +2,13 @@
 using System.Collections.Async;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
-    public class Term : IValidatableObject
+    public class Term
     {
         private string _name;
 
@@ -15,11 +16,9 @@ namespace CourseSchedulingSystem.Data.Models
         {
         }
 
-        public Term(string name, DateTime startDate, DateTime endDate)
+        public Term(string name)
         {
             Name = name;
-            StartDate = startDate;
-            EndDate = endDate;
         }
 
         public Guid Id { get; set; }
@@ -30,34 +29,24 @@ namespace CourseSchedulingSystem.Data.Models
             get => _name;
             set
             {
-                _name = value.Trim();
-                NormalizedName = _name.ToUpper();
+                _name = value?.Trim();
+                NormalizedName = _name?.ToUpper();
             }
         }
 
         public string NormalizedName { get; private set; }
 
-        // TODO: Remove start date and end date from term. Calculate from TermParts.
-        [Required]
+        [NotMapped]
         [Display(Name = "Start Date")]
         [DataType(DataType.Date)]
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate => TermParts?.OrderBy(tp => tp.StartDate).Select(tp => tp.StartDate).FirstOrDefault();
 
-        [Required]
+        [NotMapped]
         [Display(Name = "End Date")]
         [DataType(DataType.Date)]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate => TermParts?.OrderByDescending(tp => tp.EndDate).Select(tp => tp.EndDate).FirstOrDefault();
 
-        public virtual ICollection<TermPart> TermParts { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (StartDate >= EndDate)
-            {
-                yield return new ValidationResult("Start date must be before end date.", new[] {"StartDate"});
-                yield return new ValidationResult("End date must be after start date.", new[] {"EndDate"});
-            }
-        }
+        public virtual IList<TermPart> TermParts { get; set; }
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context

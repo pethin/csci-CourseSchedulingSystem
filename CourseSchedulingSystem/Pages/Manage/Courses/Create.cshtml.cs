@@ -44,10 +44,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 IsUndergraduate = CourseModel.CourseLevels.Contains(CourseLevelEnum.Undergraduate)
             };
 
-            await course.DbValidateAsync(Context).ForEachAsync(result =>
-            {
-                ModelState.AddModelError(string.Empty, result.ErrorMessage);
-            });
+            await course.DbValidateAsync(Context).AddErrorsToModelState(ModelState);
 
             if (!ModelState.IsValid) return Page();
 

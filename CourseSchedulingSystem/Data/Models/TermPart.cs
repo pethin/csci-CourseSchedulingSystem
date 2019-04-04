@@ -35,8 +35,8 @@ namespace CourseSchedulingSystem.Data.Models
             get => _name;
             set
             {
-                _name = value.Trim();
-                NormalizedName = _name.ToUpper();
+                _name = value?.Trim();
+                NormalizedName = _name?.ToUpper();
             }
         }
 
@@ -70,6 +70,7 @@ namespace CourseSchedulingSystem.Data.Models
                 // Check if any term part has the same name
                 if (await context.TermParts
                     .Where(tp => tp.Id != Id)
+                    .Where(tp => tp.TermId == TermId)
                     .Where(tp => tp.NormalizedName == NormalizedName)
                     .AnyAsync())
                     await yield.ReturnAsync(new ValidationResult($"A term part already exists with the name {Name}."));

@@ -20,7 +20,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
 
         public async Task OnGetAsync()
         {
-            Term = await _context.Terms.ToListAsync();
+            Term = await _context.Terms
+                .Include(t => t.TermParts)
+                .ToListAsync();
         }
     }
 }
