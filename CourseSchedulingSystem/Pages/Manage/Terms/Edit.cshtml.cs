@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Async;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +19,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
         }
 
         [BindProperty] public TermInputModel Term { get; set; }
+
+        [BindProperty] public TermPartInputModel TermPart { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -46,9 +49,12 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostUpdateNameAsync(Guid? id)
         {
-            // TODO: Actually make it do what it's supposed to do
+            // Only validate Term
+            ModelState.Clear();
+            TryValidateModel(Term);
+
             if (!ModelState.IsValid) return Page();
 
             var term = await Context.Terms.FindAsync(id);
@@ -56,7 +62,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
             if (await TryUpdateModelAsync(
                 term,
                 "Term",
-                t => t.Name, t => t.StartDate, t => t.EndDate))
+                t => t.Name))
             {
                 await term.DbValidateAsync(Context).ForEachAsync(result =>
                 {
@@ -66,40 +72,92 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
                 if (!ModelState.IsValid) return Page();
 
                 await Context.SaveChangesAsync();
-                return RedirectToPage("./Index");
+                return await OnGetAsync(id);
             }
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAddRowAsync()
+        public async Task<IActionResult> OnPostAddPartAsync(Guid? id)
         {
-            await Task.Yield();
+            if (id == null) return NotFound();
 
-            if (Term.TermParts == null)
+            var term = await Context.Terms
+                .Include(t => t.TermParts)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (term == null) return NotFound();
+
+            // Only validate TermPart
+            ModelState.Clear();
+            TryValidateModel(TermPart, "TermPart");
+
+            if (!ModelState.IsValid) await OnGetAsync(id);
+
+            var termPart = new TermPart
             {
-                Term.TermParts = new List<TermPartInputModel>();
+                TermId = term.Id
+            };
+
+            if (await TryUpdateModelAsync(termPart, "TermPart", tp => tp.Name, tp => tp.StartDate, tp => tp.EndDate))
+            {
+                await termPart.DbValidateAsync(Context).AddErrorsToModelState(ModelState);
+
+                if (!ModelState.IsValid) return await OnGetAsync(id);
+
+                Context.TermParts.Add(termPart);
+                await Context.SaveChangesAsync();
+
+                // Reset form
+                TermPart = new TermPartInputModel();
+                ModelState.Clear();
             }
 
-            Term.TermParts.Add(new TermPartInputModel());
-
-            ModelState.Clear();
-            return Page();
+            return await OnGetAsync(id);
         }
 
-        public async Task<IActionResult> OnPostDeleteRowAsync(int row)
+        public async Task<IActionResult> OnPostUpdatePartAsync(Guid? id, int partIndex)
         {
-            await Task.Yield();
+            if (id == null) return NotFound();
 
-            if (row < 0 || Term.TermParts.Count <= row)
+            var modelStateKey = $"Term.TermParts[{partIndex}]";
+
+            // Only validate TermPart
+            ModelState.Clear();
+            TryValidateModel(Term.TermParts[partIndex], modelStateKey);
+
+            if (!ModelState.IsValid) await OnGetAsync(id);
+
+            var termPart = await Context.TermParts.FindAsync(Term.TermParts[partIndex].Id);
+
+            if (await TryUpdateModelAsync(termPart, modelStateKey, tp => tp.Name, tp => tp.StartDate, tp => tp.EndDate))
             {
-                return Page();
+                await termPart.DbValidateAsync(Context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(modelStateKey + ".Name", result.ErrorMessage);
+                });
+
+                if (!ModelState.IsValid) return await OnGetAsync(id);
+
+                await Context.SaveChangesAsync();
             }
 
-            Term.TermParts.RemoveAt(row);
+            return await OnGetAsync(id);
+        }
+
+        public async Task<IActionResult> OnPostDeletePartAsync(Guid? id, Guid partId)
+        {
+            if (id == null) return NotFound();
+
+            var termPart = await Context.TermParts.FindAsync(partId);
+
+            // TODO: Check if in use
+            Context.TermParts.Remove(termPart);
+            await Context.SaveChangesAsync();
 
             ModelState.Clear();
-            return Page();
+
+            return await OnGetAsync(id);
         }
     }
 }

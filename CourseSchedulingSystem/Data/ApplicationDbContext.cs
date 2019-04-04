@@ -130,8 +130,7 @@ namespace CourseSchedulingSystem.Data
                 b.HasIndex(c => new { c.TermId, c.NormalizedName }).IsUnique();
 
                 b.HasOne(tp => tp.Term)
-                    .WithMany(t => t.TermParts)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .WithMany(t => t.TermParts);
             });
             
             // Instructor

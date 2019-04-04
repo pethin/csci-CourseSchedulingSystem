@@ -23,7 +23,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
         {
             if (id == null) return NotFound();
 
-            Term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == id);
+            Term = await _context.Terms
+                .Include(t => t.TermParts)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Term == null) return NotFound();
             return Page();
@@ -33,8 +35,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
         {
             if (id == null) return NotFound();
 
-            Term = await _context.Terms.FindAsync(id);
+            Term = await _context.Terms
+                .Include(t => t.TermParts)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
+            // TODO: Check if term parts are in use
             if (Term != null)
             {
                 _context.Terms.Remove(Term);

@@ -9,29 +9,38 @@
 
 <h4>Term</h4>
 <hr/>
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <form method="post" id="term-form">
     <div class="row">
         <div class="col-md-4">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Term.Name" class="control-label"></label>
-                <input asp-for="Term.Name" class="form-control" />
+                <input asp-for="Term.Name" class="form-control"/>
                 <span asp-validation-for="Term.Name" class="text-danger"></span>
             </div>
         </div>
     </div>
-    <hr />
-    <div class="row mb-2">
+    <div class="row">
         <div class="col">
-            <h4 class="mb-0">Parts of Term</h4>
-            <small>Course Sections are scheduled to a Part of Term.</small>
+            <div class="form-group">
+                <input type="submit" value="Update Name" class="btn btn-primary" asp-page-handler="updateName"/>
+            </div>
         </div>
     </div>
+</form>
+<hr/>
+<div class="row mb-2">
+    <div class="col">
+        <h4 class="mb-0">Parts of Term</h4>
+        <small>Course Sections are scheduled to a Part of Term.</small>
+    </div>
+</div>
+<form method="post">
     @for (int rowNum = 0; rowNum < Model.Term.TermParts.Count; rowNum++)
     {
         <div class="row">
             <div class="col-md-4">
-                <input type="hidden" asp-for="Term.TermParts[rowNum].Id" />
+                <input type="hidden" asp-for="Term.TermParts[rowNum].Id"/>
                 <div class="form-group">
                     <label asp-for="Term.TermParts[rowNum].Name" class="sr-only"></label>
                     <div class="input-group">
@@ -69,27 +78,59 @@
             </div>
             <div class="col-md-2">
                 @{
-                    var deleteData = new Dictionary<string, string> { { "row", rowNum.ToString() } };
+                    var partIdData = new Dictionary<string, string> {{"partId", Model.Term.TermParts[rowNum].Id.ToString()}};
+                    var partIndexData = new Dictionary<string, string> {{"partIndex", rowNum.ToString()}};
                 }
-                @* cancel class is required to ignore validation *@
-                <input type="submit" value="Remove Part" class="btn btn-danger btn-block cancel" asp-page-handler="deleteRow" asp-all-route-data="@deleteData" />
+                <input type="submit" value="Delete" class="btn btn-danger cancel" asp-page-handler="deletePart" asp-all-route-data="@partIdData"/>
+                <input type="submit" value="Save" class="btn btn-info" asp-page-handler="updatePart" asp-all-route-data="@partIndexData"/>
             </div>
         </div>
     }
+</form>
+<form method="post">
     <div class="row">
-        <div class="col-md-2 offset-md-10">
-            <input type="submit" value="Add Part" class="btn btn-success btn-block cancel" asp-page-handler="addRow" />
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="col">
+        <div class="col-md-4">
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" asp-page-handler="" />
+                <label asp-for="TermPart.Name" class="sr-only"></label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">@Html.DisplayNameFor(model => model.TermPart.Name)</div>
+                    </div>
+                    <input asp-for="TermPart.Name" class="form-control">
+                </div>
+                <span asp-validation-for="TermPart.Name" class="text-danger"></span>
             </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label asp-for="TermPart.StartDate" class="sr-only"></label>
+                <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">@Html.DisplayNameFor(model => model.TermPart.StartDate)</div>
+                    </div>
+                    <input asp-for="TermPart.StartDate" class="form-control">
+                </div>
+                <span asp-validation-for="TermPart.StartDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label asp-for="TermPart.EndDate" class="sr-only"></label>
+                <div class="input-group mb-2 mr-sm-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">@Html.DisplayNameFor(model => model.TermPart.EndDate)</div>
+                    </div>
+                    <input asp-for="TermPart.EndDate" class="form-control">
+                </div>
+                <span asp-validation-for="TermPart.EndDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <input type="submit" value="Add Part" class="btn btn-success" asp-page-handler="addPart"/>
         </div>
     </div>
 </form>
+<hr/>
 
 <div>
     <a asp-page="./Index">Back to List</a>
