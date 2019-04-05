@@ -25,9 +25,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
         {
             Room = await _context.Room
                 .Include(r => r.Building)
-                .OrderBy(rm => rm.Building.Code)
-                .ThenBy(rm => rm.Number)
-                .ToListAsync();
+                .Include(r => r.Capability).ToListAsync();
         }
     }
 }

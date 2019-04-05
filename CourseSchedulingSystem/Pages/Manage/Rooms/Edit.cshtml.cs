@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Async;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using System.Collections.Async;
 
 namespace CourseSchedulingSystem.Pages.Manage.Rooms
 {
@@ -21,7 +21,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             _context = context;
         }
 
-        [BindProperty] public Room Room { get; set; }
+        [BindProperty]
+        public Room Room { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -31,17 +32,15 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             }
 
             Room = await _context.Room
-                .Include(r => r.Building).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(r => r.Building)
+                .Include(r => r.Capability).FirstOrDefaultAsync(m => m.Id == id);
 
             if (Room == null)
             {
                 return NotFound();
             }
-
-            //Can change to Enabled Buildings or keep the current one
-            ViewData["BuildingId"] =
-                new SelectList(_context.Building.Where(bd => bd.IsEnabled == true || bd.Id == Room.BuildingId), "Id",
-                    "Code");
+           ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Code");
+           ViewData["CapabilityId"] = new SelectList(_context.Capability, "Id", "Name");
             return Page();
         }
 
@@ -55,6 +54,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             ViewData["BuildingId"] =
                 new SelectList(_context.Building.Where(bd => bd.IsEnabled == true || bd.Id == Room.BuildingId), "Id",
                     "Code");
+            ViewData["CapabilityId"] = new SelectList(_context.Capability, "Id", "Name");
 
             _context.Attach(Room).State = EntityState.Modified;
 

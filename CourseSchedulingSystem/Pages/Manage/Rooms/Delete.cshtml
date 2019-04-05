@@ -1,4 +1,4 @@
-﻿@page "{id:Guid}"
+﻿@page
 @model CourseSchedulingSystem.Pages.Manage.Rooms.DeleteModel
 
 @{
@@ -17,6 +17,12 @@
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Room.Building.Code)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Room.Capability)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Room.Capability.Name)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Room.Number)

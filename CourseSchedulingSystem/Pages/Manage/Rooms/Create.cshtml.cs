@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Async;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Async;
 
 namespace CourseSchedulingSystem.Pages.Manage.Rooms
 {
@@ -23,7 +22,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
         public IActionResult OnGet()
         {
-        ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled==true), "Id", "Code");
+            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Code");
+            ViewData["CapabilityId"] = new SelectList(_context.Capability, "Id", "Name");
             return Page();
         }
 

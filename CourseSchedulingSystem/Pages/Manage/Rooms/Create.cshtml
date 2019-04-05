@@ -15,7 +15,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Room.BuildingId" class="control-label">Building Code</label>
-                <select asp-for="Room.BuildingId" class ="form-control" asp-items="ViewBag.BuildingId"></select>
+                <select asp-for="Room.BuildingId" class="form-control" asp-items="ViewBag.BuildingId"></select>
             </div>
             <div class="form-group">
                 <label asp-for="Room.Number" class="control-label"></label>
@@ -27,9 +27,13 @@
                 <input asp-for="Room.Capacity" class="form-control" />
                 <span asp-validation-for="Room.Capacity" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="Room.CapabilityId" class="control-label">Capability</label>
+                <select asp-for="Room.CapabilityId" class="form-control" asp-items="ViewBag.CapabilityId"></select>
+            </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Room.IsEnabled" checked="" /> @Html.DisplayNameFor(model => model.Room.IsEnabled)
+                    <input class="form-check-input" asp-for="Room.IsEnabled" /> @Html.DisplayNameFor(model => model.Room.IsEnabled)
                 </label>
             </div>
             <div class="form-group">

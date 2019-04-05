@@ -30,6 +30,11 @@ namespace CourseSchedulingSystem.Data.Models
         public virtual Building Building { get; set; }
 
 
+        public Guid CapabilityId { get; set; }
+        public virtual Capability Capability { get; set; }
+
+
+
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
         public string Number

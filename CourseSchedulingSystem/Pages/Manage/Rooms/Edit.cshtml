@@ -1,4 +1,4 @@
-﻿@page "{id:Guid}"
+﻿@page
 @model CourseSchedulingSystem.Pages.Manage.Rooms.EditModel
 
 @{
@@ -28,6 +28,11 @@
                 <label asp-for="Room.Capacity" class="control-label"></label>
                 <input asp-for="Room.Capacity" class="form-control" />
                 <span asp-validation-for="Room.Capacity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Room.CapabilityId" class="control-label">Capability</label>
+                <select asp-for="Room.CapabilityId" class="form-control" asp-items="ViewBag.CapabilityId"></select>
+                <span asp-validation-for="Room.CapabilityId" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
