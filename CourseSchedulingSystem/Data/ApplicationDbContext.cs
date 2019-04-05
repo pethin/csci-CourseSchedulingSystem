@@ -30,6 +30,7 @@ namespace CourseSchedulingSystem.Data
         public DbSet<InstructionalMethod> InstructionalMethods { get; set; }
         public DbSet<Building> Building { get; set; }
         public DbSet<Room> Room { get; set; }
+        public DbSet<Capability> Capability { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -155,6 +156,11 @@ namespace CourseSchedulingSystem.Data
                 //Room >>-- Building
                 .HasIndex(rm => new { rm.BuildingId, rm.Number })
                 .IsUnique();
+
+            // Capabilities
+            builder.Entity<Capability>()
+               .HasIndex(cp => cp.NormalizedName)
+               .IsUnique();
         }
 
     }
