@@ -25,11 +25,12 @@ namespace CourseSchedulingSystem.Data
 
         public DbSet<Term> Terms { get; set; }
         public DbSet<TermPart> TermParts { get; set; }
-
         public DbSet<Instructor> Instructors { get; set; }
+
         public DbSet<InstructionalMethod> InstructionalMethods { get; set; }
         public DbSet<Building> Building { get; set; }
         public DbSet<Room> Room { get; set; }
+
         public DbSet<Capability> Capability { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
