@@ -1,0 +1,49 @@
+﻿@page "{id:Guid}"
+@model CourseSchedulingSystem.Pages.Manage.Users.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>User</h4>
+    <hr />
+    <table class="table">
+        <tbody>
+        <tr>
+            <th scope="row">
+                @Html.DisplayNameFor(model => model.User.UserName)
+            </th>
+            <td>
+                @Html.DisplayFor(model => model.User.UserName)
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                @Html.DisplayNameFor(model => model.User.IsLockedOut)
+            </th>
+            <td>
+                @Html.DisplayFor(model => model.User.IsLockedOut)
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                Departments
+            </th>
+            <td>
+                @foreach (var du in Model.User.DepartmentUsers)
+                {
+                    @du.Department.Name
+                    <br />
+                }
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.User.Id">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

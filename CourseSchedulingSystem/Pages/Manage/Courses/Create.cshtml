@@ -72,9 +72,11 @@
 
 @section Scripts {
     <script>
-        $("#CourseModel_CourseLevels").multiSelect();
-        $("#CourseModel_ScheduleTypeIds").multiSelect();
-        $("#CourseModel_CourseAttributeIds").multiSelect();
+        $(document).ready(function() {
+            $("#CourseModel_CourseLevels").multiSelect();
+            $("#CourseModel_ScheduleTypeIds").multiSelect();
+            $("#CourseModel_CourseAttributeIds").multiSelect();
+        });
     </script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
