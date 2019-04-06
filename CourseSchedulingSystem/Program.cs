@@ -13,7 +13,6 @@ Remarks:
     [HelpOption("--help")]
     [Subcommand(typeof(MigrateCommand),
         typeof(SeedCommand),
-        typeof(CreateAdminUserCommand),
         typeof(AddUserCommand),
         typeof(LoadCoursesCommand))]
     public class Program

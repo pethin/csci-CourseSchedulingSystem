@@ -6,7 +6,7 @@ namespace CourseSchedulingSystem.Pages.Errors
 {
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     [AllowAnonymous]
-    public class NotFoundModel : PageModel
+    public class UnauthorizedModel : PageModel
     {
     }
 }

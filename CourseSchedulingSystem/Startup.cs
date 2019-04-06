@@ -1,11 +1,19 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
-using CourseSchedulingSystem.Services;
+using CourseSchedulingSystem.Filters;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,46 +30,29 @@ namespace CourseSchedulingSystem
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public virtual void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("ApplicationDbConnection")));
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
+                .AddAzureAD(options => Configuration.Bind("AzureAd", options));
 
-            services.AddAuthentication()
-                .AddWsFederation("Winthrop", "Sign in with Winthrop", options =>
-                {
-                    options.MetadataAddress = Configuration.GetValue<string>("WsFederation:MetadataAddress");
-                    options.Wtrealm = Configuration.GetValue<string>("WsFederation:Wtrealm");
-                });
-
-            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddRazorPagesOptions(options =>
-                {
-                    options.AllowAreas = true;
-                    options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
-                    options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
-
-                    options.Conventions.AuthorizeFolder("/Manage");
-                });
-
-            services.ConfigureApplicationCookie(options =>
+            services.AddMvc(options =>
             {
-                options.LoginPath = "/Identity/Account/Login";
-                options.LogoutPath = "/Identity/Account/Logout";
-                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-            });
-
-            services.AddSingleton<IEmailSender, EmailSender>();
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+                options.Filters.Add<UserWhitelistFilter>();
+                options.Filters.Add<UserLockoutFilter>();
+            })
+            .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
