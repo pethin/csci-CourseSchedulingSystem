@@ -96,6 +96,12 @@ namespace CourseSchedulingSystem.Pages.Manage
                         Title = "Rooms",
                         Description = "Rooms are assigned to applicable course sections.",
                         Link = "./Rooms"
+                    },
+                    new Row
+                    {
+                        Title = "Room Capabilities",
+                        Description = "Capabilities and features are assigned to rooms.",
+                        Link = "./Capabilities"
                     }
                 }
             },
