@@ -109,11 +109,6 @@ namespace CourseSchedulingSystem.Pages.Manage
                         Title = "Users",
                         Description = "Not related to instructors. Users for this course scheduling system.",
                         Link = "./Users"
-                    },
-                    new Row
-                    {
-                        Title = "Groups",
-                        Description = "User groups are used to manage permissions."
                     }
                 }
             }
