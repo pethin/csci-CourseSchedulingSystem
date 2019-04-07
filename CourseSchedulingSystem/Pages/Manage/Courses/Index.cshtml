@@ -11,11 +11,11 @@
     <a asp-page="Create">Create New</a>
 </p>
 <h4>Filters</h4>
-<div class="form-row">
+<div class="row">
     <div class="col-2">
         <div class="form-group">
             <label class="control-label">Department</label>
-            <select id="departmentFilter" class="form-control form-control-chosen" data-placeholder="Departments" multiple asp-items="ViewBag.DepartmentId"></select>
+            <select id="departmentFilter" class="form-control form-control-chosen" data-placeholder="Departments" multiple asp-items="Model.DepartmentFilterOptions"></select>
         </div>
     </div>
     <div class="col-2">
@@ -24,7 +24,7 @@
             <input type="text" id="identifierFilter" class="form-control" placeholder="Identifier">
         </div>
     </div>
-    <div class="col">
+    <div class="col-6">
         <div class="form-group">
             <label class="control-label">Name</label>
             <input type="text" id="nameFilter" class="form-control" placeholder="Name">
@@ -33,7 +33,19 @@
     <div class="col-2">
         <div class="form-group">
             <label class="control-label">Credit Hours</label>
-            <select id="creditHoursFilter" class="form-control form-control-chosen" data-placeholder="Credit Hours" multiple asp-items="ViewBag.CreditHours"></select>
+            <select id="creditHoursFilter" class="form-control form-control-chosen" data-placeholder="Credit Hours" multiple asp-items="Model.CreditHoursFilterOptions"></select>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="form-group">
+            <label class="control-label">Schedule Types</label>
+            <select id="scheduleTypesFilter" class="form-control form-control-chosen" data-placeholder="Schedule Types" multiple asp-items="Model.ScheduleTypesFilterOptions"></select>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="form-group">
+            <label class="control-label">Course Attributes</label>
+            <select id="courseAttributesFilter" class="form-control form-control-chosen" data-placeholder="Course Attributes" multiple asp-items="Model.CourseAttributesFilterOptions"></select>
         </div>
     </div>
 </div>
@@ -67,7 +79,9 @@
                     departments: $('#departmentFilter').val(),
                     identifier: $('#identifierFilter').val(),
                     title: $('#nameFilter').val(),
-                    creditHours: $('#creditHoursFilter').val()
+                    creditHours: $('#creditHoursFilter').val(),
+                    scheduleTypes: $('#scheduleTypesFilter').val(),
+                    courseAttributes: $('#courseAttributesFilter').val()
                 });
             };
 
@@ -80,6 +94,12 @@
 
             $('#creditHoursFilter').chosen();
             $('#creditHoursFilter').on('change', reloadGrid);
+
+            $('#scheduleTypesFilter').chosen();
+            $('#scheduleTypesFilter').on('change', reloadGrid);
+
+            $('#courseAttributesFilter').chosen();
+            $('#courseAttributesFilter').on('change', reloadGrid);
         });
     </script>
 }

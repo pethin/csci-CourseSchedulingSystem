@@ -20,6 +20,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseAttributes
 
         [BindProperty] public CourseAttribute CourseAttribute { get; set; }
 
+        public bool InUse => CourseAttribute.CourseCourseAttributes.Any();
+
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
             if (id == null) return NotFound();
@@ -46,7 +48,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseAttributes
 
             if (CourseAttribute != null)
             {
-                if (CourseAttribute.CourseCourseAttributes.Any())
+                if (InUse)
                 {
                     return Page();
                 }

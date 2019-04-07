@@ -27,7 +27,7 @@ namespace CourseSchedulingSystem.Data.Models
         public Guid Id { get; set; }
 
         public Guid TermId { get; set; }
-        public virtual Term Term { get; set; }
+        public Term Term { get; set; }
 
         [Required]
         public string Name
@@ -36,7 +36,7 @@ namespace CourseSchedulingSystem.Data.Models
             set
             {
                 _name = value?.Trim();
-                NormalizedName = _name?.ToUpper();
+                NormalizedName = _name?.ToUpperInvariant();
             }
         }
 

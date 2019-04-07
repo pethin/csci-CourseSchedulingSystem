@@ -53,8 +53,7 @@ namespace CourseSchedulingSystem.Data
 
                 b.HasOne(du => du.Department)
                     .WithMany(d => d.DepartmentUsers)
-                    .HasForeignKey(du => du.DepartmentId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .HasForeignKey(du => du.DepartmentId);
             });
 
             // Department

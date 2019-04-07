@@ -16,29 +16,31 @@ namespace CourseSchedulingSystem.Data.Models
         public Guid Id { get; set; }
 
         [Required]
+        [Display(Name = "Department")]
         public Guid DepartmentId { get; set; }
-        public virtual Department Department { get; set; }
+        public Department Department { get; set; }
 
         [Required]
+        [Display(Name = "Subject")]
         public Guid SubjectId { get; set; }
-        public virtual Subject Subject { get; set; }
+        public Subject Subject { get; set; }
 
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
         public string Number
         {
             get => _number;
-            set => _number = value.Trim().ToUpper();
+            set => _number = value?.Trim().ToUpperInvariant();
         }
 
         [Required]
         public string Title
         {
             get => _title;
-            set => _title = value.Trim();
+            set => _title = value?.Trim();
         }
 
-        [NotMapped] public string Identifier => $@"{Subject?.Code ?? $"{SubjectId.ToString()} - "}{Number}";
+        [NotMapped] public string Identifier => Subject?.Code + Number;
 
         [Required]
         [Column(TypeName = "decimal(5, 3)")]
@@ -55,8 +57,12 @@ namespace CourseSchedulingSystem.Data.Models
         [Display(Name = "Graduate")]
         public bool IsGraduate { get; set; }
 
-        public virtual ICollection<CourseScheduleType> CourseScheduleTypes { get; set; }
-        public virtual ICollection<CourseCourseAttribute> CourseCourseAttributes { get; set; }
+        [Required]
+        [Display(Name = "Enabled")]
+        public bool IsEnabled { get; set; }
+
+        public List<CourseScheduleType> CourseScheduleTypes { get; set; }
+        public List<CourseCourseAttribute> CourseCourseAttributes { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

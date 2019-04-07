@@ -12,17 +12,6 @@ namespace CourseSchedulingSystem.Data.Models
         private string _name;
         private string _code;
 
-        public Building()
-        {
-        }
-
-        public Building(string name, string code, bool isEnabled)
-        {
-            Name = name;
-            Code = code;
-            IsEnabled = isEnabled;
-        }
-
         public Guid Id { get; set; }
 
         [Required]
@@ -30,7 +19,7 @@ namespace CourseSchedulingSystem.Data.Models
         public string Code
         {
             get => _code;
-            set => _code = value.Trim().ToUpper();
+            set => _code = value?.Trim().ToUpperInvariant();
         }
 
         [Required]
@@ -39,18 +28,18 @@ namespace CourseSchedulingSystem.Data.Models
             get => _name;
             set
             {
-                _name = value.Trim();
-                NormalizedName = _name.ToUpper();
+                _name = value?.Trim();
+                NormalizedName = _name?.ToUpperInvariant();
             }
         }
 
         [Required]
-        [Display(Name = "Building Enabled")]
+        [Display(Name = "Enabled")]
         public bool IsEnabled { get; set; }
 
         public string NormalizedName { get; private set; }
 
-        public virtual ICollection<Room> Rooms { get; set; }
+        public List<Room> Rooms { get; set; }
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context

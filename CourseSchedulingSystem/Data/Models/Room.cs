@@ -16,18 +16,11 @@ namespace CourseSchedulingSystem.Data.Models
         {
         }
 
-        public Room(string number, int capacity, bool isEnabled)
-        {
-            Number = number;
-            Capacity = capacity;
-            IsEnabled = isEnabled;
-        }
-
         public Guid Id { get; set; }
 
         [Required]
         public Guid BuildingId { get; set; }
-        public virtual Building Building { get; set; }
+        public Building Building { get; set; }
 
 
         [Required]
@@ -35,7 +28,7 @@ namespace CourseSchedulingSystem.Data.Models
         public string Number
         {
             get => _number;
-            set => _number = value.Trim().ToUpper();
+            set => _number = value?.Trim().ToUpperInvariant();
         }
 
         [Required]
@@ -43,10 +36,10 @@ namespace CourseSchedulingSystem.Data.Models
         public int Capacity { get; set; }
 
         [Required]
-        [Display(Name = "Room Enabled")]
+        [Display(Name = "Enabled")]
         public bool IsEnabled { get; set; }
 
-        [NotMapped] public string Identifier => $@"{Building?.Code ?? $"{BuildingId.ToString()} - "}{Number}";
+        [NotMapped] public string Identifier => Building?.Code + Number;
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context

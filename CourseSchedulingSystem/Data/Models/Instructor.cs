@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Async;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
@@ -31,7 +33,7 @@ namespace CourseSchedulingSystem.Data.Models
             get => _firstName;
             set
             {
-                _firstName = value.Trim();
+                _firstName = value?.Trim();
                 UpdateNormalizedName();
             }
         }
@@ -41,7 +43,7 @@ namespace CourseSchedulingSystem.Data.Models
             get => _middle;
             set
             {
-                _middle = value == null ? value : value.Trim();
+                _middle = value?.Trim();
                 UpdateNormalizedName();
             }
         }
@@ -53,7 +55,7 @@ namespace CourseSchedulingSystem.Data.Models
             get => _lastName;
             set
             {
-                _lastName = value.Trim();
+                _lastName = value?.Trim();
                 UpdateNormalizedName();
             }
         }
@@ -62,9 +64,11 @@ namespace CourseSchedulingSystem.Data.Models
 
         [NotMapped]
         public string FullName =>
-            $@"{(FirstName == null ? "" : $"{FirstName} ")}{(Middle == null ? "" : $"{Middle} ")}{LastName}";
+            string.Join(" ",
+                new List<String> {FirstName, Middle, LastName}
+                    .Where(part => !string.IsNullOrWhiteSpace(part)));
 
-        public IAsyncEnumerable<ValidationResult> DbValidateAsync(
+        public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )
         {

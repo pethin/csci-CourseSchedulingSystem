@@ -28,7 +28,7 @@ namespace CourseSchedulingSystem.Data.Models
             set
             {
                 _userName = value?.Trim();
-                NormalizedUserName = _userName?.ToUpper();
+                NormalizedUserName = _userName?.ToUpperInvariant();
             }
         }
 
@@ -38,7 +38,7 @@ namespace CourseSchedulingSystem.Data.Models
         [Display(Name = "Locked Out")]
         public bool IsLockedOut { get; set; }
 
-        public virtual ICollection<DepartmentUser> DepartmentUsers { get; set; }
+        public List<DepartmentUser> DepartmentUsers { get; set; }
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context

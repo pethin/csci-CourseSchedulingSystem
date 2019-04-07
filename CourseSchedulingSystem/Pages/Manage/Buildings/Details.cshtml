@@ -30,6 +30,12 @@
             @Html.DisplayFor(model => model.Building.IsEnabled)
         </dd>
     </dl>
+    <h5>Rooms</h5>
+    <table>
+        <thead>
+        <tr>@Html.DisplayNameFor(model => model.Building.Rooms[0])</tr>
+        </thead>
+    </table>
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.Building.Id">Edit</a> |

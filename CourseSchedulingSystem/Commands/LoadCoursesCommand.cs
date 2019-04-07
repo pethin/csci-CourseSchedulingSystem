@@ -189,7 +189,8 @@ namespace CourseSchedulingSystem.Commands
                         IsGraduate = courseRow.IsGraduate,
                         IsUndergraduate = courseRow.IsUndergraduate,
                         CourseScheduleTypes = new List<CourseScheduleType>(),
-                        CourseCourseAttributes = new List<CourseCourseAttribute>()
+                        CourseCourseAttributes = new List<CourseCourseAttribute>(),
+                        IsEnabled = true
                     };
                     context.Courses.Add(course);
                 }

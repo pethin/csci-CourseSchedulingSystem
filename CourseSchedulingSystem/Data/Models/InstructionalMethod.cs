@@ -28,8 +28,8 @@ namespace CourseSchedulingSystem.Data.Models
             get => _name;
             set
             {
-                _name = value.Trim();
-                NormalizedName = _name.ToUpper();
+                _name = value?.Trim();
+                NormalizedName = _name?.ToUpperInvariant();
             }
         }
 

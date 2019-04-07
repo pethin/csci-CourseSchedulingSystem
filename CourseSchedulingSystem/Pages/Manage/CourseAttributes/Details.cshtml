@@ -17,14 +17,12 @@
         <dd class="col-sm-11">
             @Html.DisplayFor(model => model.CourseAttribute.Name)
         </dd>
-    </dl>
-    <dl class="row">
         <dt class="col-sm-12">Courses</dt>
         <dd class="col-sm-12">
             <ul>
                 @foreach (var courseAttribute in @Model.CourseAttribute.CourseCourseAttributes)
                 {
-                    <li>@courseAttribute.Course.Identifier</li>
+                    <li><a asp-page="../Courses/Details" asp-route-id="@courseAttribute.CourseId">@courseAttribute.Course.Identifier - @courseAttribute.Course.Title</a></li>
                 }
             </ul>
         </dd>

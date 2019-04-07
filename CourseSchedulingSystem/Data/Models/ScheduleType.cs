@@ -28,14 +28,14 @@ namespace CourseSchedulingSystem.Data.Models
             get => _name;
             set
             {
-                _name = value.Trim();
-                NormalizedName = _name.ToUpper();
+                _name = value?.Trim();
+                NormalizedName = _name?.ToUpperInvariant();
             }
         }
 
         public string NormalizedName { get; private set; }
 
-        public virtual ICollection<CourseScheduleType> CourseScheduleTypes { get; set; }
+        public List<CourseScheduleType> CourseScheduleTypes { get; set; }
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context

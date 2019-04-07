@@ -19,22 +19,43 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         {
         }
 
-        public IActionResult OnGet()
-        {
-            ViewData["DepartmentId"] = Context.Courses
+        public IEnumerable<SelectListItem> DepartmentFilterOptions =>
+            Context.Courses
                 .Include(c => c.Department)
                 .GroupBy(c => c.DepartmentId, (departmentId, courses) => new SelectListItem
-            {
-                Value = departmentId.ToString(),
-                Text = courses.First().Department.Code
-            });
-            
-            ViewData["CreditHours"] = Context.Courses.GroupBy(c => c.CreditHours, (ch, course) => new SelectListItem
-            {
-                Value = $"{ch}",
-                Text = $"{ch}"
-            });
+                {
+                    Value = departmentId.ToString(),
+                    Text = courses.First().Department.Code
+                });
 
+        public IEnumerable<SelectListItem> CreditHoursFilterOptions =>
+            Context.Courses
+                .GroupBy(c => c.CreditHours, (ch, course) => new SelectListItem
+                {
+                    Value = $"{ch}",
+                    Text = $"{ch}"
+                });
+
+        public IEnumerable<SelectListItem> ScheduleTypesFilterOptions =>
+            Context.ScheduleTypes
+                .Where(st => st.CourseScheduleTypes.Any())
+                .Select(st => new SelectListItem
+                {
+                    Value = st.Id.ToString(),
+                    Text = st.Name
+                });
+
+        public IEnumerable<SelectListItem> CourseAttributesFilterOptions =>
+            Context.CourseAttributes
+                .Where(ca => ca.CourseCourseAttributes.Any())
+                .Select(ca => new SelectListItem
+                {
+                    Value = ca.Id.ToString(),
+                    Text = ca.Name
+                });
+
+        public IActionResult OnGet()
+        {
             return Page();
         }
 
@@ -45,15 +66,22 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             [FromQuery(Name = "departments[]")] List<Guid> departments,
             string identifier,
             string title,
-            [FromQuery(Name = "creditHours[]")] List<decimal> creditHours)
+            [FromQuery(Name = "creditHours[]")] List<decimal> creditHours,
+            [FromQuery(Name = "scheduleTypes[]")] List<Guid> scheduleTypes,
+            [FromQuery(Name = "courseAttributes[]")] List<Guid> courseAttributes)
         {
             var query = Context.Courses
                 .Include(c => c.Department)
                 .Include(c => c.Subject)
+                .Include(c => c.CourseScheduleTypes)
+                .Include(c => c.CourseCourseAttributes)
                 .ConditionalWhere(() => departments?.Count > 0, c => departments.Contains(c.DepartmentId))
-                .ConditionalWhere(() => !string.IsNullOrWhiteSpace(identifier), c => (c.Subject.Code + c.Number).Contains(identifier))
+                .ConditionalWhere(() => !string.IsNullOrWhiteSpace(identifier),
+                    c => (c.Subject.Code + c.Number).Contains(identifier))
                 .ConditionalWhere(() => !string.IsNullOrWhiteSpace(title), c => c.Title.Contains(title))
                 .ConditionalWhere(() => creditHours?.Count > 0, c => creditHours.Contains(c.CreditHours))
+                .ConditionalWhere(() => scheduleTypes?.Count > 0, c => c.CourseScheduleTypes.Exists(cst => scheduleTypes.Contains(cst.ScheduleTypeId)))
+                .ConditionalWhere(() => courseAttributes?.Count > 0, c => c.CourseCourseAttributes.Exists(cca => courseAttributes.Contains(cca.CourseAttributeId)))
                 .Select(c => new CourseRecord
                 {
                     Id = c.Id,
@@ -63,9 +91,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                     CreditHours = c.CreditHours,
                     Links = new RecordCrudLinks
                     {
-                        Edit = Url.Page("Edit", new { id = c.Id }),
-                        Details = Url.Page("Details", new { id = c.Id }),
-                        Delete = Url.Page("Delete", new { id = c.Id })
+                        Edit = Url.Page("Edit", new {id = c.Id}),
+                        Details = Url.Page("Details", new {id = c.Id}),
+                        Delete = Url.Page("Delete", new {id = c.Id})
                     }
                 });
 

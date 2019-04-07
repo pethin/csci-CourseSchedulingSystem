@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Utilities;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Courses
@@ -18,61 +21,64 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         {
         }
 
-        [BindProperty] public CourseInputModel CourseModel { get; set; }
+        [BindProperty] public Course Course { get; set; }
+
+        [Display(Name = "Schedule Types")]
+        [BindProperty]
+        public IEnumerable<Guid> ScheduleTypeIds { get; set; } = new List<Guid>();
+
+        [Display(Name = "Course Attributes")]
+        [BindProperty]
+        public IEnumerable<Guid> CourseAttributeIds { get; set; } = new List<Guid>();
 
         public IActionResult OnGet()
         {
-            LoadDropdownData();
-
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            LoadDropdownData();
-
-            if (!ModelState.IsValid) return Page();
-
-            var course = new Course
+            if (!ModelState.IsValid)
             {
-                DepartmentId = CourseModel.DepartmentId,
-                SubjectId = CourseModel.SubjectId,
-                Number = CourseModel.Number,
-                Title = CourseModel.Title,
-                CreditHours = CourseModel.CreditHours,
-                IsGraduate = CourseModel.CourseLevels.Contains(CourseLevelEnum.Graduate),
-                IsUndergraduate = CourseModel.CourseLevels.Contains(CourseLevelEnum.Undergraduate)
-            };
+                return Page();
+            }
 
-            await course.DbValidateAsync(Context).AddErrorsToModelState(ModelState);
+            var course = new Course();
 
-            if (!ModelState.IsValid) return Page();
+            if (await TryUpdateModelAsync(
+                course,
+                "Course",
+                c => c.DepartmentId,
+                c => c.SubjectId,
+                c => c.Number,
+                c => c.Title,
+                c => c.CreditHours,
+                c => c.IsUndergraduate,
+                c => c.IsGraduate,
+                c => c.IsEnabled))
+            {
+                await course.DbValidateAsync(Context).AddErrorsToModelState(ModelState);
+                if (!ModelState.IsValid) return Page();
 
-            Context.Courses.Add(course);
-            await Context.SaveChangesAsync();
+                Context.Courses.Add(course);
 
-            var courseScheduleTypes = Context.ScheduleTypes
-                .Where(st => CourseModel.ScheduleTypeIds.Contains(st.Id))
-                .Select(st => new CourseScheduleType
+                Context.CourseScheduleTypes.AddRange(ScheduleTypeIds.Select(stId => new CourseScheduleType
                 {
                     CourseId = course.Id,
-                    ScheduleTypeId = st.Id
-                });
+                    ScheduleTypeId = stId
+                }));
 
-            var courseAttributeTypes = Context.CourseAttributes
-                .Where(at => CourseModel.CourseAttributeIds.Contains(at.Id))
-                .Select(at => new CourseCourseAttribute
+                Context.CourseCourseAttributes.AddRange(CourseAttributeIds.Select(caId => new CourseCourseAttribute
                 {
                     CourseId = course.Id,
-                    CourseAttributeId = at.Id
-                });
+                    CourseAttributeId = caId
+                }));
 
-            Context.CourseScheduleTypes.AddRange(courseScheduleTypes);
-            Context.CourseCourseAttributes.AddRange(courseAttributeTypes);
+                await Context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
 
-            await Context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }

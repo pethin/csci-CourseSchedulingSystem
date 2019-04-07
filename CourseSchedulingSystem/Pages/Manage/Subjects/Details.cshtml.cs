@@ -23,7 +23,10 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
         {
             if (id == null) return NotFound();
 
-            Subject = await _context.Subjects.FirstOrDefaultAsync(m => m.Id == id);
+            Subject = await _context.Subjects
+                .Include(s => s.Courses)
+                .ThenInclude(c => c.Subject)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Subject == null) return NotFound();
             return Page();

@@ -30,7 +30,7 @@ namespace CourseSchedulingSystem.Data.Models
             set
             {
                 _name = value?.Trim();
-                NormalizedName = _name?.ToUpper();
+                NormalizedName = _name?.ToUpperInvariant();
             }
         }
 
@@ -46,7 +46,11 @@ namespace CourseSchedulingSystem.Data.Models
         [DataType(DataType.Date)]
         public DateTime? EndDate => TermParts?.OrderByDescending(tp => tp.EndDate).Select(tp => tp.EndDate).FirstOrDefault();
 
-        public virtual IList<TermPart> TermParts { get; set; }
+        [Required]
+        [Display(Name = "Archived")]
+        public bool IsArchived { get; set; }
+
+        public List<TermPart> TermParts { get; set; }
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context

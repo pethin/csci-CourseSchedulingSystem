@@ -10,38 +10,29 @@
 <div>
     <h4>User</h4>
     <hr />
-    <table class="table">
-        <tbody>
-        <tr>
-            <th scope="row">
-                @Html.DisplayNameFor(model => model.User.UserName)
-            </th>
-            <td>
-                @Html.DisplayFor(model => model.User.UserName)
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                @Html.DisplayNameFor(model => model.User.IsLockedOut)
-            </th>
-            <td>
-                @Html.DisplayFor(model => model.User.IsLockedOut)
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                Departments
-            </th>
-            <td>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.User.UserName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.User.UserName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.User.IsLockedOut)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.User.IsLockedOut)
+        </dd>
+        <dt class="col-sm-12">Departments</dt>
+        <dd class="col-sm-12">
+            <ul>
                 @foreach (var du in Model.User.DepartmentUsers)
                 {
-                    @du.Department.Name
-                    <br />
+                    <li><a asp-page="../Departments/Details" asp-route-id="@du.DepartmentId">@du.Department.Name</a></li>
                 }
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            </ul>
+        </dd>
+    </dl>
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.User.Id">Edit</a> |

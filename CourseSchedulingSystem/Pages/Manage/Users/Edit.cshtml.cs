@@ -65,12 +65,6 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
                 return Page();
             }
 
-            if (!DepartmentIds.Any())
-            {
-                ModelState.AddModelError("DepartmentIds", "A department is required.");
-                return Page();
-            }
-
             var user = await _context.Users
                 .Include(u => u.DepartmentUsers)
                 .FirstOrDefaultAsync(u => u.Id == id);
