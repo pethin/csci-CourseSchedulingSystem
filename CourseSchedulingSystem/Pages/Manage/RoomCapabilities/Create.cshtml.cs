@@ -7,9 +7,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
-using System.Collections.Async;
 
-namespace CourseSchedulingSystem.Pages.Manage.Capabilities
+namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 {
     public class CreateModel : PageModel
     {
@@ -26,7 +25,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Capabilities
         }
 
         [BindProperty]
-        public Capability Capability { get; set; }
+        public RoomCapability RoomCapability { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -35,24 +34,10 @@ namespace CourseSchedulingSystem.Pages.Manage.Capabilities
                 return Page();
             }
 
-            var cap = new Capability();
+            _context.RoomCapability.Add(RoomCapability);
+            await _context.SaveChangesAsync();
 
-            if (await TryUpdateModelAsync(cap, "Capability", cp => cp.Name))
-            {
-                await cap.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
-
-
-                if (!ModelState.IsValid) return Page();
-
-                _context.Capability.Add(Capability);
-                await _context.SaveChangesAsync();
-                return RedirectToPage("./Index");
-            }
-
-            return Page();
+            return RedirectToPage("./Index");
         }
     }
 }

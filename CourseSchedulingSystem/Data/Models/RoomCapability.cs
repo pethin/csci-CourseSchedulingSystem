@@ -7,15 +7,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
-    public class Capability
+    public class RoomCapability
     {
         private string _name;
 
-        public Capability()
+        public RoomCapability()
         {
         }
 
-        public Capability(string name)
+        public RoomCapability(string name)
         {
             Name = name;
         }
@@ -35,7 +35,7 @@ namespace CourseSchedulingSystem.Data.Models
 
         public string NormalizedName { get; private set; }
 
-
+        public virtual ICollection<RoomRoomCapability> RoomRoomCapability { get; set; }
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )
@@ -43,7 +43,7 @@ namespace CourseSchedulingSystem.Data.Models
             return new AsyncEnumerable<ValidationResult>(async yield =>
             {
                 // Check if any schedule type has the same name
-                if (await context.Capability
+                if (await context.RoomCapability
                     .Where(cp => cp.Id != Id)
                     .Where(cp => cp.NormalizedName == NormalizedName)
                     .AnyAsync())

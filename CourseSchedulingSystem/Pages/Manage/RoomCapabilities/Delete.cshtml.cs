@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 
-namespace CourseSchedulingSystem.Pages.Manage.Rooms
+namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 {
     public class DeleteModel : PageModel
     {
@@ -20,7 +20,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
         }
 
         [BindProperty]
-        public Room Room { get; set; }
+        public RoomCapability RoomCapability { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -29,11 +29,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return NotFound();
             }
 
-            Room = await _context.Room
-                .Include(r => r.Building)
-                .Include(r => r.Capability).FirstOrDefaultAsync(m => m.Id == id);
+            RoomCapability = await _context.RoomCapability.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Room == null)
+            if (RoomCapability == null)
             {
                 return NotFound();
             }
@@ -47,11 +45,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return NotFound();
             }
 
-            Room = await _context.Room.FindAsync(id);
+            RoomCapability = await _context.RoomCapability.FindAsync(id);
 
-            if (Room != null)
+            if (RoomCapability != null)
             {
-                _context.Room.Remove(Room);
+                _context.RoomCapability.Remove(RoomCapability);
                 await _context.SaveChangesAsync();
             }
 

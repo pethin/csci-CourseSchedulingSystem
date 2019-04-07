@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 
-namespace CourseSchedulingSystem.Pages.Manage.Capabilities
+namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 {
     public class DetailsModel : PageModel
     {
@@ -19,7 +19,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Capabilities
             _context = context;
         }
 
-        public Capability Capability { get; set; }
+        public RoomCapability RoomCapability { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -28,9 +28,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Capabilities
                 return NotFound();
             }
 
-            Capability = await _context.Capability.FirstOrDefaultAsync(m => m.Id == id);
+            RoomCapability = await _context.RoomCapability.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Capability == null)
+            if (RoomCapability == null)
             {
                 return NotFound();
             }

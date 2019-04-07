@@ -31,7 +31,7 @@ namespace CourseSchedulingSystem.Data.Models
 
 
         public Guid CapabilityId { get; set; }
-        public virtual Capability Capability { get; set; }
+        public virtual RoomCapability Capability { get; set; }
 
 
 
@@ -53,6 +53,7 @@ namespace CourseSchedulingSystem.Data.Models
 
         [NotMapped] public string Identifier => $@"{Building?.Code ?? $"{BuildingId.ToString()} - "}{Number}";
 
+        public virtual ICollection<RoomRoomCapability> RoomRoomCapability { get; set; }
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )

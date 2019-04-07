@@ -8,9 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
-using System.Collections.Async;
 
-namespace CourseSchedulingSystem.Pages.Manage.Capabilities
+namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 {
     public class EditModel : PageModel
     {
@@ -22,7 +21,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Capabilities
         }
 
         [BindProperty]
-        public Capability Capability { get; set; }
+        public RoomCapability RoomCapability { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -31,45 +30,46 @@ namespace CourseSchedulingSystem.Pages.Manage.Capabilities
                 return NotFound();
             }
 
-            Capability = await _context.Capability.FirstOrDefaultAsync(m => m.Id == id);
+            RoomCapability = await _context.RoomCapability.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Capability == null)
+            if (RoomCapability == null)
             {
                 return NotFound();
             }
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Attach(Capability).State = EntityState.Modified;
+            _context.Attach(RoomCapability).State = EntityState.Modified;
 
-            var cap = await _context.Capability.FindAsync(id);
-
-            if (await TryUpdateModelAsync(cap, "Capability", cp => cp.Name))
+            try
             {
-                await cap.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
-
-
-                if (!ModelState.IsValid) return Page();
                 await _context.SaveChangesAsync();
-                return RedirectToPage("./Index");
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!RoomCapabilityExists(RoomCapability.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
 
-            return Page();
+            return RedirectToPage("./Index");
         }
 
-        private bool CapabilityExists(Guid id)
+        private bool RoomCapabilityExists(Guid id)
         {
-            return _context.Capability.Any(e => e.Id == id);
+            return _context.RoomCapability.Any(e => e.Id == id);
         }
     }
 }

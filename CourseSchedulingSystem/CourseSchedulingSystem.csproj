@@ -58,6 +58,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Pages\Manage\Rooms\" />
       <Folder Include="wwwroot\lib" />
     </ItemGroup>
 

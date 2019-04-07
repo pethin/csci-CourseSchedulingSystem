@@ -29,8 +29,9 @@ namespace CourseSchedulingSystem.Data
 
         public DbSet<InstructionalMethod> InstructionalMethods { get; set; }
         public DbSet<Building> Building { get; set; }
-        public DbSet<Capability> Capability { get; set; }
         public DbSet<Room> Room { get; set; }
+        public DbSet<RoomCapability> RoomCapability { get; set; }
+        public DbSet<RoomRoomCapability> RoomRoomCapability { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -153,7 +154,7 @@ namespace CourseSchedulingSystem.Data
             });
 
             // Capabilities
-            builder.Entity<Capability>()
+            builder.Entity<RoomCapability>()
                .HasIndex(cp => cp.NormalizedName)
                .IsUnique();
             // Room
@@ -162,6 +163,20 @@ namespace CourseSchedulingSystem.Data
                 .HasIndex(rm => new { rm.BuildingId, rm.Number })
                 .IsUnique();
 
+            // Room >>--<< RoomCapability
+            builder.Entity<RoomRoomCapability>(b =>
+            {
+                b.HasKey(t => new { t.RoomId, t.RoomCapabilityId });
+
+                b.HasOne(rm => rm.Room)
+                    .WithMany(rcc => rcc.RoomRoomCapability)
+                    .HasForeignKey(rm => rm.RoomId);
+
+                b.HasOne(rc => rc.RoomCapability)
+                    .WithMany(rcc => rcc.RoomRoomCapability)
+                    .HasForeignKey(rc => rc.RoomCapabilityId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
         }
 
     }

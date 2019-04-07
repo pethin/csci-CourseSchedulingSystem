@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 
-namespace CourseSchedulingSystem.Pages.Manage.Rooms
+namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 {
     public class IndexModel : PageModel
     {
@@ -19,13 +19,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             _context = context;
         }
 
-        public IList<Room> Room { get;set; }
+        public IList<RoomCapability> RoomCapability { get;set; }
 
         public async Task OnGetAsync()
         {
-            Room = await _context.Room
-                .Include(r => r.Building)
-                .Include(r => r.Capability).ToListAsync();
+            RoomCapability = await _context.RoomCapability.ToListAsync();
         }
     }
 }
