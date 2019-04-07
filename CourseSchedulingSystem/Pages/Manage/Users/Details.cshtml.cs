@@ -17,7 +17,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
             _context = context;
         }
 
-        public User User { get; set; }
+        public User UserModel { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -26,12 +26,12 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
                 return NotFound();
             }
 
-            User = await _context.Users
+            UserModel = await _context.Users
                 .Include(u => u.DepartmentUsers)
                 .ThenInclude(du => du.Department)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (User == null)
+            if (UserModel == null)
             {
                 return NotFound();
             }

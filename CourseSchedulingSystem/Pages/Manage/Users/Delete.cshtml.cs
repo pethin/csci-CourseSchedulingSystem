@@ -19,7 +19,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
         }
 
         [BindProperty]
-        public User User { get; set; }
+        public User UserModel { get; set; }
 
         public bool CanDelete { get; set; }
 
@@ -30,12 +30,12 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
                 return NotFound();
             }
 
-            User = await _context.Users
+            UserModel = await _context.Users
                 .Include(u => u.DepartmentUsers)
                 .ThenInclude(du => du.Department)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (User == null)
+            if (UserModel == null)
             {
                 return NotFound();
             }
@@ -52,16 +52,16 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
                 return NotFound();
             }
 
-            User = await _context.Users.FindAsync(id);
+            UserModel = await _context.Users.FindAsync(id);
 
-            if (User != null)
+            if (UserModel != null)
             {
                 if (!await MoreThanOneActiveUser())
                 {
                     return Page();
                 }
 
-                _context.Users.Remove(User);
+                _context.Users.Remove(UserModel);
                 await _context.SaveChangesAsync();
             }
 

@@ -3,27 +3,27 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
+using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
-using CourseSchedulingSystem.Utilities;
 
 namespace CourseSchedulingSystem.Pages.Manage.Users
 {
     public class EditModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public EditModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
         [BindProperty]
-        public User User { get; set; }
+        public User UserModel { get; set; }
 
         [Display(Name = "Departments")]
         [BindProperty]
@@ -44,7 +44,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
                 return NotFound();
             }
 
-            User = await _context.Users
+            UserModel = await _context.Users
                 .Include(u => u.DepartmentUsers)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -53,7 +53,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
                 return NotFound();
             }
 
-            DepartmentIds = User.DepartmentUsers.Select(du => du.DepartmentId);
+            DepartmentIds = UserModel.DepartmentUsers.Select(du => du.DepartmentId);
             
             return Page();
         }
@@ -80,7 +80,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
                 // Update departments
                 _context.UpdateManyToMany(user.DepartmentUsers,
                     DepartmentIds
-                        .Select(dId => new DepartmentUser()
+                        .Select(dId => new DepartmentUser
                         {
                             UserId = user.Id,
                             DepartmentId = dId

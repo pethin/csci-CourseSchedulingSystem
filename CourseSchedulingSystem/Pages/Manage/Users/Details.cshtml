@@ -12,21 +12,21 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.UserName)
+            @Html.DisplayNameFor(model => model.UserModel.UserName)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.UserName)
+            @Html.DisplayFor(model => model.UserModel.UserName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.IsLockedOut)
+            @Html.DisplayNameFor(model => model.UserModel.IsLockedOut)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.IsLockedOut)
+            @Html.DisplayFor(model => model.UserModel.IsLockedOut)
         </dd>
         <dt class="col-sm-12">Departments</dt>
         <dd class="col-sm-12">
             <ul>
-                @foreach (var du in Model.User.DepartmentUsers)
+                @foreach (var du in Model.UserModel.DepartmentUsers)
                 {
                     <li><a asp-page="../Departments/Details" asp-route-id="@du.DepartmentId">@du.Department.Name</a></li>
                 }
@@ -35,6 +35,6 @@
     </dl>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.User.Id">Edit</a> |
+    <a asp-page="./Edit" asp-route-id="@Model.UserModel.Id">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>

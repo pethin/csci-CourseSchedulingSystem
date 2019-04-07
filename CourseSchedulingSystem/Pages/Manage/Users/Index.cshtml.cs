@@ -19,11 +19,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
             _context = context;
         }
 
-        public IList<User> User { get;set; }
+        public IList<User> UserModel { get;set; }
 
         public async Task OnGetAsync()
         {
-            User = await _context.Users
+            UserModel = await _context.Users
                 .Include(u => u.DepartmentUsers)
                 .ThenInclude(du => du.Department)
                 .ToListAsync();

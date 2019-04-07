@@ -26,7 +26,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
             return Page();
         }
 
-        [BindProperty] public User User { get; set; }
+        [BindProperty] public User UserModel { get; set; }
 
         [Display(Name = "Departments")]
         [BindProperty]

@@ -14,10 +14,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.User[0].UserName)
+                @Html.DisplayNameFor(model => model.UserModel[0].UserName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User[0].IsLockedOut)
+                @Html.DisplayNameFor(model => model.UserModel[0].IsLockedOut)
             </th>
             <th>
                 Departments
@@ -26,7 +26,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.User) {
+@foreach (var item in Model.UserModel) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.UserName)

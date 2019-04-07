@@ -14,13 +14,13 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="User.UserName" class="control-label"></label>
-                <input asp-for="User.UserName" class="form-control" />
-                <span asp-validation-for="User.UserName" class="text-danger"></span>
+                <label asp-for="UserModel.UserName" class="control-label"></label>
+                <input asp-for="UserModel.UserName" class="form-control" />
+                <span asp-validation-for="UserModel.UserName" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="User.IsLockedOut" /> @Html.DisplayNameFor(model => model.User.IsLockedOut)
+                    <input class="form-check-input" asp-for="UserModel.IsLockedOut" /> @Html.DisplayNameFor(model => model.UserModel.IsLockedOut)
                 </label>
             </div>
             <div class="form-group">
