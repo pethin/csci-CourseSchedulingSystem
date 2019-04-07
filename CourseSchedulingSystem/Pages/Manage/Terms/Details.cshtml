@@ -24,17 +24,17 @@
     <div class="mb-2"></div>
     <table class="table">
         <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Term.TermParts[0].Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Term.TermParts[0].StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Term.TermParts[0].EndDate)
-            </th>
-        </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Term.TermParts[0].Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Term.TermParts[0].StartDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Term.TermParts[0].EndDate)
+                </th>
+            </tr>
         </thead>
         <tbody>
         @foreach (var item in Model.Term.TermParts)

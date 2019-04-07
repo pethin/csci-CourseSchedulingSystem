@@ -1,89 +1,76 @@
 ﻿using System;
 using System.Collections.Async;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Terms
 {
-    public class DuplicateModel : TermsPageModel
+    public class DuplicateModel : PageModel
     {
-        public DuplicateModel(ApplicationDbContext context) : base(context)
+        private readonly ApplicationDbContext _context;
+
+        public DuplicateModel(ApplicationDbContext context)
         {
+            _context = context;
         }
 
-        [BindProperty] public TermInputModel Term { get; set; }
+        [BindProperty] public Term Term { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
             if (id == null) return NotFound();
 
-            var term = await Context.Terms
+            Term = await _context.Terms
                 .Include(t => t.TermParts)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (term == null) return NotFound();
+            if (Term == null) return NotFound();
 
-            Term = new TermInputModel
-            {
-                Id = term.Id,
-                Name = term.Name,
-                TermParts = term.TermParts.Select(tp => new TermPartInputModel
-                    {
-                        Id = tp.Id,
-                        Name = tp.Name,
-                        StartDate = tp.StartDate,
-                        EndDate = tp.EndDate
-                    }
-                ).ToList()
-            };
-            
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
             if (!ModelState.IsValid) return Page();
 
-            // Validate that no other term exists in the DB with the same name
-            var term = new Term
+            Term = await _context.Terms
+                .Include(t => t.TermParts)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            Term.Id = new Guid();
+
+            if (await TryUpdateModelAsync(
+                Term,
+                "Term",
+                s => s.Name))
             {
-                Name = Term.Name
-            };
+                await Term.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
-            await term.DbValidateAsync(Context).AddErrorsToModelState(ModelState);
+                if (!ModelState.IsValid) return Page();
 
-            if (!ModelState.IsValid) return Page();
-
-            // Create the term
-            Context.Terms.Add(term);
-            await Context.SaveChangesAsync();
-
-            // Create the term parts
-            foreach (var termPart in Term.TermParts)
-            {
-                Debug.Assert(termPart.StartDate != null, "termPart.StartDate != null");
-                Debug.Assert(termPart.EndDate != null, "tp.EndDate != null");
-                
-                Context.TermParts.Add(new TermPart
+                // TODO: Also duplicate courses
+                Term.TermParts.ForEach(part =>
                 {
-                    TermId = term.Id,
-                    Name = termPart.Name,
-                    StartDate = (DateTime) termPart.StartDate,
-                    EndDate = (DateTime) termPart.EndDate
+                    part.Id = new Guid();
+                    part.TermId = Term.Id;
                 });
+
+                _context.Terms.Add(Term);
+
+                await _context.SaveChangesAsync();
+
+                return RedirectToPage("Edit", new {id = Term.Id});
             }
 
-            await Context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+            return Page();
         }
     }
 }
