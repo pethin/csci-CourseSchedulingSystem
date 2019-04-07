@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.Terms.TermParts.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = $"Edit {Model.TermPart.Name} - {Model.TermPart.Term.Name}";
 }
 
 <h1>Edit</h1>

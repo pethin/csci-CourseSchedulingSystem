@@ -30,7 +30,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             }
 
             Room = await _context.Room
-                .Include(r => r.Building).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(r => r.Building)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Room == null)
             {

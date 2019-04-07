@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 
 namespace CourseSchedulingSystem.Pages.Manage.Terms
 {
@@ -23,6 +24,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
 
         [BindProperty] public Term Term { get; set; }
 
+        public string SourceTermName { get; set; }
+
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
             if (id == null) return NotFound();
@@ -32,6 +35,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Term == null) return NotFound();
+
+            SourceTermName = Term.Name;
 
             return Page();
         }
@@ -45,7 +50,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            Term.Id = new Guid();
+            if (Term != null)
+            {
+                SourceTermName = Term.Name;
+                Term.Id = new Guid();
+            }
 
             if (await TryUpdateModelAsync(
                 Term,

@@ -23,6 +23,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
 
         [BindProperty] public Term Term { get; set; }
 
+        public string SourceTermName { get; set; }
+
         public string SuccessMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
@@ -35,6 +37,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
 
             if (Term == null) return NotFound();
 
+            SourceTermName = Term.Name;
+
             return Page();
         }
 
@@ -45,6 +49,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
             Term = await _context.Terms
                 .Include(t => t.TermParts)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (Term != null)
+            {
+                SourceTermName = Term.Name;
+            }
 
             if (await TryUpdateModelAsync(
                 Term,

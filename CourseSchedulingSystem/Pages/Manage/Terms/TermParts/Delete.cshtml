@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.Terms.TermParts.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = $"Delete {Model.TermPart.Name} - {Model.TermPart.Term.Name}";
 }
 
 <h1>Delete</h1>

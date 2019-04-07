@@ -33,6 +33,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             if (id == null) return NotFound();
 
             Course = await Context.Courses
+                .Include(c => c.Subject)
                 .Include(c => c.CourseScheduleTypes)
                 .Include(c => c.CourseCourseAttributes)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -53,6 +54,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             }
 
             var course = await Context.Courses
+                .Include(c => c.Subject)
                 .Include(c => c.CourseScheduleTypes)
                 .Include(c => c.CourseCourseAttributes)
                 .FirstOrDefaultAsync(m => m.Id == id);
