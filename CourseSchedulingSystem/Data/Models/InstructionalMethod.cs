@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Async;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -38,8 +39,10 @@ namespace CourseSchedulingSystem.Data.Models
         [Required]
         [Display(Name = "Requires Room")]
         public bool IsRoomRequired { get; set; }
+        
+        public List<CourseSection> CourseSections { get; set; }
 
-        public IAsyncEnumerable<ValidationResult> DbValidateAsync(
+        public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )
         {

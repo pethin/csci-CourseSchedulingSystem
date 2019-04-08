@@ -36,6 +36,8 @@ namespace CourseSchedulingSystem.Data.Models
         public string NormalizedName { get; private set; }
 
         public List<CourseScheduleType> CourseScheduleTypes { get; set; }
+        
+        public List<CourseSection> CourseSections { get; set; }
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context

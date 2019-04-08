@@ -12,6 +12,17 @@ namespace CourseSchedulingSystem.Data.Models
         private string _name;
         private string _code;
 
+        public Building()
+        {
+        }
+
+        public Building(string code, string name, bool enabled = true)
+        {
+            Code = code;
+            Name = name;
+            IsEnabled = enabled;
+        }
+
         public Guid Id { get; set; }
 
         [Required]

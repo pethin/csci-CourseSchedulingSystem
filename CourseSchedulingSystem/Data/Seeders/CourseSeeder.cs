@@ -4,41 +4,31 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Utilities;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 
-namespace CourseSchedulingSystem.Commands
+namespace CourseSchedulingSystem.Data.Seeders
 {
-    [Command("loadcourses", Description = "Imports courses from Resources/Fixtures/Courses.xlsx")]
-    [HelpOption("--help")]
-    public class LoadCoursesCommand : ICommand
+    public class CourseSeeder : ISeeder
     {
-        private readonly ILogger _logger;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly ApplicationDbContext _context;
+        private readonly ILogger<CourseSeeder> _logger;
 
-        public LoadCoursesCommand(IServiceProvider serviceProvider, ILogger<LoadCoursesCommand> logger)
+        public CourseSeeder(ApplicationDbContext context, ILogger<CourseSeeder> logger)
         {
-            _serviceProvider = serviceProvider;
+            _context = context;
             _logger = logger;
         }
 
-        public async Task OnExecute()
+        public async Task SeedAsync()
         {
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
-                
-                var dataTable = LoadExcelFixture();
-                var courseRows = ConvertDataTableToCourseRows(dataTable);
-                await InsertCourseRows(context, courseRows);
-            }
+            var dataTable = LoadExcelFixture();
+            var courseRows = ConvertDataTableToCourseRows(dataTable);
+            await InsertCourseRows(courseRows);
         }
 
         private DataTable LoadExcelFixture()
@@ -120,51 +110,57 @@ namespace CourseSchedulingSystem.Commands
             return courses;
         }
 
-        private async Task InsertCourseRows(ApplicationDbContext context, ICollection<CourseRow> courseRows)
+        private async Task InsertCourseRows(ICollection<CourseRow> courseRows)
         {
-            var departments = await context.Departments.ToListAsync();
-            var subjects = await context.Subjects.ToListAsync();
-            var scheduleTypes = await context.ScheduleTypes.ToListAsync();
+            var departments = await _context.Departments.ToListAsync();
+            var subjects = await _context.Subjects.ToListAsync();
+            var scheduleTypes = await _context.ScheduleTypes.ToListAsync();
             var scheduleTypesNames = scheduleTypes.Select(st => st.Name).ToHashSet();
-            var courseAttributes = await context.CourseAttributes.ToListAsync();
+            var courseAttributes = await _context.CourseAttributes.ToListAsync();
             var courseAttributesNames = courseAttributes.Select(ca => ca.Name).ToHashSet();
 
+            var errors = new List<string>();
+            
             foreach (var courseRow in courseRows)
             {
                 var department = departments.FirstOrDefault(d => d.Code == courseRow.DepartmentCode);
                 if (department == null)
                 {
-                    _logger.LogError(
-                        $"Could not find department with code {courseRow.DepartmentCode} for {courseRow.Name}. Skipping...");
+                    var error = $"Could not find department with code {courseRow.DepartmentCode} for {courseRow.Name}.";
+                    _logger.LogError(error + " Skipping...", courseRow);
+                    errors.Add(error);
                     continue;
                 }
 
                 var subject = subjects.FirstOrDefault(s => s.Code == courseRow.SubjectCode);
                 if (subject == null)
                 {
-                    _logger.LogError(
-                        $"Could not find subject with code {courseRow.SubjectCode} for {courseRow.Name}. Skipping...");
+                    var error = $"Could not find subject with code {courseRow.SubjectCode} for {courseRow.Name}.";
+                    _logger.LogError(error + " Skipping...", courseRow);
+                    errors.Add(error);
                     continue;
                 }
 
                 if (courseRow.ScheduleTypes.Any(st => !scheduleTypesNames.Contains(st)))
                 {
                     var missingScheduleTypes = string.Join(", ", courseRow.ScheduleTypes.Except(scheduleTypesNames));
-                    _logger.LogError(
-                        $"Could not find following schedule types for {courseRow.Name}: {missingScheduleTypes}. Skipping...");
+                    var error = $"Could not find following schedule types for {courseRow.Name}: {missingScheduleTypes}.";
+                    _logger.LogError(error + " Skipping...", courseRow);
+                    errors.Add(error);
                     continue;
                 }
 
                 if (courseRow.CourseAttributes.Any(ca => !courseAttributesNames.Contains(ca)))
                 {
                     var missingAttributes = string.Join(", ", courseRow.CourseAttributes.Except(courseAttributesNames));
-                    _logger.LogError(
-                        $"Could not find following attributes for {courseRow.Name}: {missingAttributes}. Skipping...");
+                    var error = $"Could not find following attributes for {courseRow.Name}: {missingAttributes}.";
+                    _logger.LogError(error + " Skipping...", courseRow);
+                    errors.Add(error);
                     continue;
                 }
 
                 var course =
-                    await context.Courses
+                    await _context.Courses
                         .Include(c => c.CourseScheduleTypes)
                         .Include(c => c.CourseCourseAttributes)
                         .FirstOrDefaultAsync(c => c.SubjectId == subject.Id && c.Number == courseRow.Number);
@@ -192,13 +188,13 @@ namespace CourseSchedulingSystem.Commands
                         CourseCourseAttributes = new List<CourseCourseAttribute>(),
                         IsEnabled = true
                     };
-                    context.Courses.Add(course);
+                    _context.Courses.Add(course);
                 }
 
-                await context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
                 // Update schedule types
-                context.UpdateManyToMany(course.CourseScheduleTypes,
+                _context.UpdateManyToMany(course.CourseScheduleTypes,
                     scheduleTypes
                         .Where(st => courseRow.ScheduleTypes.Contains(st.Name))
                         .Select(st => new CourseScheduleType
@@ -209,7 +205,7 @@ namespace CourseSchedulingSystem.Commands
                     cst => cst.ScheduleTypeId);
 
                 // Update course attributes
-                context.UpdateManyToMany(course.CourseCourseAttributes,
+                _context.UpdateManyToMany(course.CourseCourseAttributes,
                     courseAttributes
                         .Where(ca => courseRow.CourseAttributes.Contains(ca.Name))
                         .Select(ca => new CourseCourseAttribute
@@ -219,7 +215,12 @@ namespace CourseSchedulingSystem.Commands
                         }),
                     cat => cat.CourseAttributeId);
 
-                await context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
+
+            if (errors.Count > 0)
+            {
+                _logger.LogError("Errors:" + Environment.NewLine + string.Join(Environment.NewLine, errors));
             }
         }
 

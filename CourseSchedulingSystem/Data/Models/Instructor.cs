@@ -67,6 +67,8 @@ namespace CourseSchedulingSystem.Data.Models
             string.Join(" ",
                 new List<String> {FirstName, Middle, LastName}
                     .Where(part => !string.IsNullOrWhiteSpace(part)));
+        
+        public List<ScheduledMeetingTimeInstructor> ScheduledMeetingTimeInstructors { get; set; }
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context

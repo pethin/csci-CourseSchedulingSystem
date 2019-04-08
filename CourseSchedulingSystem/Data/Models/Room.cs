@@ -40,6 +40,8 @@ namespace CourseSchedulingSystem.Data.Models
         public bool IsEnabled { get; set; }
 
         [NotMapped] public string Identifier => Building?.Code + Number;
+        
+        public List<ScheduledMeetingTimeRoom> ScheduledMeetingTimeRooms { get; set; }
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
