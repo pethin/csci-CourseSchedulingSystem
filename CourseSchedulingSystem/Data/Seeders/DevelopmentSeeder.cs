@@ -31,7 +31,10 @@ namespace CourseSchedulingSystem.Data.Seeders
                 return;
             }
 
-            await SeedDevelopmentUsers();
+            await Task.Yield();
+            
+            // Not needed since using ADFS
+//            await SeedDevelopmentUsers();
         }
 
         /// <summary>
