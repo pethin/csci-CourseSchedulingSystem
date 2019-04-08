@@ -14,6 +14,9 @@
     <thead>
     <tr>
         <th>
+            @Html.DisplayNameFor(model => model.InstructionalMethod[0].Code)
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.InstructionalMethod[0].Name)
         </th>
         <th>
@@ -27,7 +30,7 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.Code)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsRoomRequired)

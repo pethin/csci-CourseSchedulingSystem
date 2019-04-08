@@ -32,7 +32,9 @@ namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
             if (await TryUpdateModelAsync(
                 instructionalMethod,
                 "InstructionalMethod",
-                im => im.Name, im => im.IsRoomRequired))
+                im => im.Code,
+                im => im.Name,
+                im => im.IsRoomRequired))
             {
                 await instructionalMethod.DbValidateAsync(_context).ForEachAsync(result =>
                 {

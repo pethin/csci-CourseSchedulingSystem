@@ -14,6 +14,11 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
+                <label asp-for="InstructionalMethod.Code" class="control-label"></label>
+                <input asp-for="InstructionalMethod.Code" class="form-control"/>
+                <span asp-validation-for="InstructionalMethod.Code" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="InstructionalMethod.Name" class="control-label"></label>
                 <input asp-for="InstructionalMethod.Name" class="form-control"/>
                 <span asp-validation-for="InstructionalMethod.Name" class="text-danger"></span>

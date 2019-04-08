@@ -9,18 +9,28 @@ namespace CourseSchedulingSystem.Data.Models
 {
     public class ScheduleType
     {
+        private string _code;
         private string _name;
 
         public ScheduleType()
         {
         }
 
-        public ScheduleType(string name)
+        public ScheduleType(string code, string name)
         {
+            Code = code;
             Name = name;
         }
 
         public Guid Id { get; set; }
+        
+        [Required]
+        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
+        public string Code
+        {
+            get => _code;
+            set => _code = value?.Trim().ToUpperInvariant();
+        }
 
         [Required]
         public string Name
@@ -45,6 +55,14 @@ namespace CourseSchedulingSystem.Data.Models
         {
             return new AsyncEnumerable<ValidationResult>(async yield =>
             {
+                // Check if any schedule type has the same code
+                if (await context.ScheduleTypes
+                    .Where(st => st.Id != Id)
+                    .Where(st => st.Code == Code)
+                    .AnyAsync())
+                    await yield.ReturnAsync(
+                        new ValidationResult($"A schedule type already exists with the code {Code}."));
+                
                 // Check if any schedule type has the same name
                 if (await context.ScheduleTypes
                     .Where(st => st.Id != Id)

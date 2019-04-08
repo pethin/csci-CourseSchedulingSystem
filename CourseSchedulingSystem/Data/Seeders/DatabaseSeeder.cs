@@ -23,6 +23,7 @@ namespace CourseSchedulingSystem.Data.Seeders
             await CallAsync<CourseSeeder>();
             await CallAsync<InfrastructureSeeder>();
             await CallAsync<SchedulingSchemaSeeder>();
+            await CallAsync<SchedulesSeeder>();
         }
 
         /// <summary>

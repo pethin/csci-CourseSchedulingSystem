@@ -41,18 +41,18 @@ namespace CourseSchedulingSystem.Data.Seeders
         /// </summary>
         private static readonly List<ScheduleType> ScheduleTypes = new List<ScheduleType>
         {
-            new ScheduleType("Field Studies"),
-            new ScheduleType("Independent Study/Research"),
-            new ScheduleType("Internship"),
-            new ScheduleType("Laboratory/Clinical"),
-            new ScheduleType("Lecture"),
-            new ScheduleType("Lecture/Lab-Clinical"),
-            new ScheduleType("Practice Teaching"),
-            new ScheduleType("Practicum/Cooperative edu"),
-            new ScheduleType("Private Instruction"),
-            new ScheduleType("Seminar/Recitation"),
-            new ScheduleType("Studio/PE"),
-            new ScheduleType("Thesis")
+            new ScheduleType("FLD", "Field Studies"),
+            new ScheduleType("ISD", "Independent Study/Research"),
+            new ScheduleType("INT", "Internship"),
+            new ScheduleType("LAB", "Laboratory/Clinical"),
+            new ScheduleType("LEC", "Lecture"),
+            new ScheduleType("LLC", "Lecture/Lab-Clinical"),
+            new ScheduleType("PRT", "Practice Teaching"),
+            new ScheduleType("PRC", "Practicum/Cooperative edu"),
+            new ScheduleType("PRI", "Private Instruction"),
+            new ScheduleType("SEM", "Seminar/Recitation"),
+            new ScheduleType("STU", "Studio/PE"),
+            new ScheduleType("THS", "Thesis")
         };
 
         /// <summary>

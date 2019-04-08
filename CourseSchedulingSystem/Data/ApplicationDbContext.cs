@@ -70,9 +70,11 @@ namespace CourseSchedulingSystem.Data
             });
 
             // Schedule Type
-            builder.Entity<ScheduleType>()
-                .HasIndex(st => st.NormalizedName)
-                .IsUnique();
+            builder.Entity<ScheduleType>(b =>
+            {
+                b.HasIndex(st => st.Code).IsUnique();
+                b.HasIndex(st => st.NormalizedName).IsUnique();
+            });
 
             // Attribute Type
             builder.Entity<CourseAttribute>()
@@ -144,10 +146,12 @@ namespace CourseSchedulingSystem.Data
                 .IsUnique();
 
             // InstructionalMethod
-            builder.Entity<InstructionalMethod>()
-                .HasIndex(im => im.NormalizedName)
-                .IsUnique();
-
+            builder.Entity<InstructionalMethod>(b =>
+            {
+                b.HasIndex(im => im.Code).IsUnique();
+                b.HasIndex(im => im.NormalizedName).IsUnique();
+            });
+            
             // Building
             builder.Entity<Building>(b =>
             {

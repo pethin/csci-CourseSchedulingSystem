@@ -12,13 +12,12 @@ namespace CourseSchedulingSystem.Data.Seeders
         /// </summary>
         private static readonly List<InstructionalMethod> InstructionalMethodsTemplate = new List<InstructionalMethod>
         {
-            new InstructionalMethod("Classroom", true),
-            new InstructionalMethod("Hybrid", true),
-            new InstructionalMethod("Hybrid: 1-24% taught online", true),
-            new InstructionalMethod("Hybrid: 25-49% taught online", true),
-            new InstructionalMethod("Hybrid: 50-74% taught online", true),
-            new InstructionalMethod("Hybrid: 75-99% taught online", true),
-            new InstructionalMethod("Online", false)
+            new InstructionalMethod("CLASS", "Classroom", true),
+            new InstructionalMethod("HYB01", "Hybrid: 1-24% taught online", true),
+            new InstructionalMethod("HYB25", "Hybrid: 25-49% taught online", true),
+            new InstructionalMethod("HYB50", "Hybrid: 50-74% taught online", true),
+            new InstructionalMethod("HYB75", "Hybrid: 75-99% taught online", true),
+            new InstructionalMethod("WEB", "Online", false)
         };
 
         private readonly ApplicationDbContext _context;
