@@ -11,7 +11,7 @@ namespace CourseSchedulingSystem.Commands
 {
     [Command("migrate", Description = "Updates the database to a specified migration.")]
     [HelpOption("--help")]
-    public class MigrateCommand
+    public class MigrateCommand : ICommand
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;

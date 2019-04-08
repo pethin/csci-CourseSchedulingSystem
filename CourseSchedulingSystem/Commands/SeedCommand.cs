@@ -14,7 +14,7 @@ Remarks:
   By default this command runs the DatabaseSeeder seeder.
 ")]
     [HelpOption("--help")]
-    public class SeedCommand
+    public class SeedCommand : ICommand
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;

@@ -11,10 +11,6 @@ Remarks:
   The server will start if no sub-command is specified.
 ")]
     [HelpOption("--help")]
-    [Subcommand(typeof(MigrateCommand),
-        typeof(SeedCommand),
-        typeof(AddUserCommand),
-        typeof(LoadCoursesCommand))]
     public class Program
     {
         private static IWebHost _host;
@@ -26,6 +22,7 @@ Remarks:
             var app = new CommandLineApplication<Program>();
             app.Conventions
                 .UseDefaultConventions()
+                .AddConvention(new AppCommandsAttributeConvention())
                 .UseConstructorInjection(_host.Services);
             return app.Execute(args);
         }

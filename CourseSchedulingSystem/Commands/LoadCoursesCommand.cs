@@ -18,7 +18,7 @@ namespace CourseSchedulingSystem.Commands
 {
     [Command("loadcourses", Description = "Imports courses from Resources/Fixtures/Courses.xlsx")]
     [HelpOption("--help")]
-    public class LoadCoursesCommand
+    public class LoadCoursesCommand : ICommand
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;

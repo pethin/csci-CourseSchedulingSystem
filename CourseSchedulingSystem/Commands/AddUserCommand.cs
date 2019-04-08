@@ -12,7 +12,7 @@ namespace CourseSchedulingSystem.Commands
     [Command("adduser", Description =
         "Add a user with no password. If the user exists, the user lockout will be removed.")]
     [HelpOption("--help")]
-    public class AddUserCommand
+    public class AddUserCommand : ICommand
     {
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
