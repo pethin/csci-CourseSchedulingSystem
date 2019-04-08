@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.271
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CourseSchedulingSystem", "CourseSchedulingSystem\CourseSchedulingSystem.csproj", "{38EA00D0-0E52-49D5-A5FD-5C6B2EA79F7D}"
 EndProject
@@ -12,6 +12,25 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{8DC2DF2A-3F3A-4E0D-BAC1-6F1C0EE9817C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Development", "Development", "{A86E4726-907F-48A2-9841-5E2B324B2249}"
+ProjectSection(SolutionItems) = preProject
+	Documentation\Development\Project Structure.md = Documentation\Development\Project Structure.md
+	Documentation\Development\Database.md = Documentation\Development\Database.md
+	Documentation\Development\Command Line Interface.md = Documentation\Development\Command Line Interface.md
+	Documentation\Development\Requirements.md = Documentation\Development\Requirements.md
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Design", "Design", "{65F77E17-A515-4A3E-A62A-5DACABDCAC4D}"
+ProjectSection(SolutionItems) = preProject
+	Documentation\Design\Design.docx = Documentation\Design\Design.docx
+	Documentation\Design\InstructionalMethodDefinitions.pdf = Documentation\Design\InstructionalMethodDefinitions.pdf
+	Documentation\Design\SectionBuildingTrainingManual.pdf = Documentation\Design\SectionBuildingTrainingManual.pdf
+	Documentation\Design\StandardClassMeetingTimes.pdf = Documentation\Design\StandardClassMeetingTimes.pdf
+	Documentation\Design\Authentication and Authorization.md = Documentation\Design\Authentication and Authorization.md
+EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +49,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8DC2DF2A-3F3A-4E0D-BAC1-6F1C0EE9817C} = {77CF712E-0BF5-4562-A398-4559EAD74516}
+		{A86E4726-907F-48A2-9841-5E2B324B2249} = {8DC2DF2A-3F3A-4E0D-BAC1-6F1C0EE9817C}
+		{65F77E17-A515-4A3E-A62A-5DACABDCAC4D} = {8DC2DF2A-3F3A-4E0D-BAC1-6F1C0EE9817C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF87EBD8-C508-4799-B5FE-9A08947C5A8F}
