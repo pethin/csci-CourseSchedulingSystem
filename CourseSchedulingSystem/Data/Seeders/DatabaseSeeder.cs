@@ -18,6 +18,7 @@ namespace CourseSchedulingSystem.Data.Seeders
 
         public async Task SeedAsync()
         {
+            await CallAsync<IdentitySeeder>();
             await CallAsync<CourseSchemaSeeder>();
             await CallAsync<SchedulingSchemaSeeder>();
         }

@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.Users.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Users";
 }
 
 <h1>Users</h1>
@@ -14,10 +14,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.UserModel[0].UserName)
+                @Html.DisplayNameFor(model => model.ApplicationUser[0].UserName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.UserModel[0].IsLockedOut)
+                @Html.DisplayNameFor(model => model.ApplicationUser[0].IsLockedOut)
             </th>
             <th>
                 Departments
@@ -26,7 +26,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.UserModel) {
+@foreach (var item in Model.ApplicationUser) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.UserName)

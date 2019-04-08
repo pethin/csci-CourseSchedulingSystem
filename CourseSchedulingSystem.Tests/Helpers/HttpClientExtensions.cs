@@ -10,9 +10,14 @@ namespace CourseSchedulingSystem.Tests.Helpers
 {
     public static class HttpClientExtensions
     {
-        public static async Task<HttpClient> ActAsAsync(this HttpClient client, string userName)
+        public static async Task<HttpClient> ActAsAsync(this HttpClient client, ApplicationUser user)
         {
-            await Task.Yield();
+            var response = await client.PostAsync("/api/Impersonation", new FormUrlEncodedContent(new[]
+            {
+                new KeyValuePair<string, string>("Id", user.Id.ToString())
+            }));
+            response.EnsureSuccessStatusCode();
+
             return client;
         }
 

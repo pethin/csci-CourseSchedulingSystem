@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Tests.Factories;
 using CourseSchedulingSystem.Tests.Helpers;
@@ -47,12 +46,12 @@ namespace CourseSchedulingSystem.Tests.IntegrationTests
             var client = _factory.CreateClient();
             using (var scope = _factory.Server.Host.Services.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                dbContext.Add(user);
-                await dbContext.SaveChangesAsync();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                var result = await userManager.CreateAsync(user);
+                Assert.True(result.Succeeded);
             }
 
-            await client.ActAsAsync(user.UserName);
+            await client.ActAsAsync(user);
 
             var response = await client.GetAsync(url);
 

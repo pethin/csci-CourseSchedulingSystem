@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,19 +16,20 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
 {
     public class EditModel : PageModel
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public EditModel(ApplicationDbContext context)
+        public EditModel(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
+            _userManager = userManager;
             _context = context;
         }
 
-        [BindProperty]
-        public User UserModel { get; set; }
+        [BindProperty] public ApplicationUser ApplicationUser { get; set; }
 
         [Display(Name = "Departments")]
         [BindProperty]
-        public IEnumerable<Guid> DepartmentIds { get; set; }
+        public IEnumerable<Guid> DepartmentIds { get; set; } = new List<Guid>();
 
         public IEnumerable<SelectListItem> DepartmentOptions => _context.Departments
             .OrderBy(d => d.NormalizedName)
@@ -39,57 +41,49 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            UserModel = await _context.Users
+            ApplicationUser = await _context.Users
                 .Include(u => u.DepartmentUsers)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (User == null)
-            {
-                return NotFound();
-            }
-
-            DepartmentIds = UserModel.DepartmentUsers.Select(du => du.DepartmentId);
-            
+            if (ApplicationUser == null) return NotFound();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
             var user = await _context.Users
                 .Include(u => u.DepartmentUsers)
-                .FirstOrDefaultAsync(u => u.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (await TryUpdateModelAsync(
                 user,
-                "User",
+                "ApplicationUser",
                 u => u.UserName, u => u.IsLockedOut))
             {
-                await user.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
-                if (!ModelState.IsValid) return Page();
+                var result = await _userManager.UpdateAsync(user);
 
-                // Update departments
-                _context.UpdateManyToMany(user.DepartmentUsers,
-                    DepartmentIds
-                        .Select(dId => new DepartmentUser
-                        {
-                            UserId = user.Id,
-                            DepartmentId = dId
-                        }),
-                    du => du.DepartmentId);
+                if (result.Succeeded)
+                {
+                    // Update departments
+                    _context.UpdateManyToMany(user.DepartmentUsers,
+                        DepartmentIds
+                            .Select(dId => new DepartmentUser
+                            {
+                                UserId = user.Id,
+                                DepartmentId = dId
+                            }),
+                        du => du.DepartmentId);
 
-                await _context.SaveChangesAsync();
-                
-                return RedirectToPage("./Index");
+                    await _context.SaveChangesAsync();
+                    
+                    return RedirectToPage("./Index");
+                }
+
+                foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
             }
 
             return Page();

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
-using CourseSchedulingSystem.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -14,19 +14,16 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
 {
     public class CreateModel : PageModel
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public CreateModel(ApplicationDbContext context)
+        public CreateModel(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
+            _userManager = userManager;
             _context = context;
         }
 
-        public IActionResult OnGet()
-        {
-            return Page();
-        }
-
-        [BindProperty] public User UserModel { get; set; }
+        [BindProperty] public ApplicationUser ApplicationUser { get; set; }
 
         [Display(Name = "Departments")]
         [BindProperty]
@@ -40,33 +37,39 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
                 Text = d.Name
             });
 
+        public IActionResult OnGet()
+        {
+            return Page();
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            if (!ModelState.IsValid) return Page();
 
-            var user = new User();
+            var user = new ApplicationUser();
 
             if (await TryUpdateModelAsync(
                 user,
-                "User",
+                "ApplicationUser",
                 u => u.UserName, u => u.IsLockedOut))
             {
-                await user.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
-                if (!ModelState.IsValid) return Page();
+                var result = await _userManager.CreateAsync(user);
 
-                _context.Users.Add(user);
-
-                _context.DepartmentUsers.AddRange(DepartmentIds.Select(dId => new DepartmentUser
+                if (result.Succeeded)
                 {
-                    UserId = user.Id,
-                    DepartmentId = dId
-                }));
+                    // Add departments
+                    _context.DepartmentUsers.AddRange(DepartmentIds.Select(dId => new DepartmentUser
+                    {
+                        UserId = user.Id,
+                        DepartmentId = dId
+                    }));
 
-                await _context.SaveChangesAsync();
-                return RedirectToPage("./Index");
+                    await _context.SaveChangesAsync();
+                    
+                    return RedirectToPage("./Index");
+                }
+
+                foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
             }
 
             return Page();

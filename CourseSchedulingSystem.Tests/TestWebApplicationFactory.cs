@@ -77,6 +77,10 @@ namespace CourseSchedulingSystem.Tests
             // Replace services
             builder.ConfigureTestServices(services =>
             {
+                // Add ImpersonationController for authenticating test HTTP clients
+                services
+                    .AddMvcCore()
+                    .AddApplicationPart(typeof(ImpersonationController).GetTypeInfo().Assembly);
             });
 
             base.ConfigureWebHost(builder);

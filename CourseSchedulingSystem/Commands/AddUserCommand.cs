@@ -1,11 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -33,28 +31,31 @@ namespace CourseSchedulingSystem.Commands
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var dbContext = scope.ServiceProvider.GetService<ApplicationDbContext>();
-                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.NormalizedUserName == Username.Trim().ToUpper());
+                var userManager = scope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
+                var user = await userManager.FindByNameAsync(Username);
 
                 // Check if user already exists
                 if (user != null)
                 {
                     user.IsLockedOut = false;
-                    await dbContext.SaveChangesAsync();
+                    var result = await userManager.UpdateAsync(user);
 
-                    _logger.LogInformation($"User lockout disabled for {user.UserName}.");
+                    if (result.Succeeded)
+                        _logger.LogInformation($"User lockout disabled for {user.UserName}.");
+                    else
+                        foreach (var error in result.Errors)
+                            _logger.LogError(error.Description);
                 }
                 // Create the new user
                 else
                 {
-                    var newUser = new User
-                    {
-                        UserName = Username
-                    };
-                    dbContext.Users.Add(newUser);
-                    await dbContext.SaveChangesAsync();
-                    
-                    _logger.LogInformation("User successfully created!");
+                    var result = await userManager.CreateAsync(new ApplicationUser {UserName = Username});
+
+                    if (result.Succeeded)
+                        _logger.LogInformation("User successfully created!");
+                    else
+                        foreach (var error in result.Errors)
+                            _logger.LogError(error.Description);
                 }
             }
         }

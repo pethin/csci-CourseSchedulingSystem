@@ -3,7 +3,7 @@ using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Tests.Factories
 {
-    public class UserFactory : Faker<User>
+    public class UserFactory : Faker<ApplicationUser>
     {
         public UserFactory()
         {

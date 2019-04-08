@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.Users.DeleteModel
 
 @{
-    ViewData["Title"] = $"Delete {Model.UserModel.UserName}";
+    ViewData["Title"] = $"Delete {Model.ApplicationUser.UserName}";
 }
 
 <h1>Delete</h1>
@@ -19,21 +19,21 @@
     }
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.UserModel.UserName)
+            @Html.DisplayNameFor(model => model.ApplicationUser.UserName)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.UserModel.UserName)
+            @Html.DisplayFor(model => model.ApplicationUser.UserName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.UserModel.IsLockedOut)
+            @Html.DisplayNameFor(model => model.ApplicationUser.IsLockedOut)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.UserModel.IsLockedOut)
+            @Html.DisplayFor(model => model.ApplicationUser.IsLockedOut)
         </dd>
         <dt class="col-sm-12">Departments</dt>
         <dd class="col-sm-12">
             <ul>
-                @foreach (var du in Model.UserModel.DepartmentUsers)
+                @foreach (var du in Model.ApplicationUser.DepartmentUsers)
                 {
                     <li><a asp-page="../Departments/Details" asp-route-id="@du.DepartmentId">@du.Department.Name</a></li>
                 }
@@ -42,7 +42,7 @@
     </dl>
 
     <form method="post">
-        <input type="hidden" asp-for="UserModel.Id" />
+        <input type="hidden" asp-for="ApplicationUser.Id" />
         <input type="submit" value="Delete" class="btn btn-danger" disabled="@(Model.CanDelete ? null : "")"/> |
         <a asp-page="./Index">Back to List</a>
     </form>

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -11,34 +12,29 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
 {
     public class DeleteModel : PageModel
     {
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public DeleteModel(ApplicationDbContext context)
+        public DeleteModel(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
+            _userManager = userManager;
             _context = context;
         }
 
-        [BindProperty]
-        public User UserModel { get; set; }
+        [BindProperty] public ApplicationUser ApplicationUser { get; set; }
 
         public bool CanDelete { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            UserModel = await _context.Users
+            ApplicationUser = await _context.Users
                 .Include(u => u.DepartmentUsers)
                 .ThenInclude(du => du.Department)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (UserModel == null)
-            {
-                return NotFound();
-            }
+            if (ApplicationUser == null) return NotFound();
 
             CanDelete = await MoreThanOneActiveUser();
             
@@ -47,32 +43,33 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
 
         public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            UserModel = await _context.Users.FindAsync(id);
+            ApplicationUser = await _userManager.FindByIdAsync(id.ToString());
 
-            if (UserModel != null)
+            if (ApplicationUser != null)
             {
-                if (!await MoreThanOneActiveUser())
+                CanDelete = await MoreThanOneActiveUser();
+                if (!CanDelete)
                 {
                     return Page();
                 }
 
-                _context.Users.Remove(UserModel);
-                await _context.SaveChangesAsync();
+                var result = await _userManager.DeleteAsync(ApplicationUser);
+
+                if (result.Succeeded) return RedirectToPage("./Index");
+
+                foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
             }
 
-            return RedirectToPage("./Index");
+            return Page();
         }
 
         private async Task<bool> MoreThanOneActiveUser()
         {
             return await _context.Users
-                .Where(u => !u.IsLockedOut)
-                .CountAsync() > 1;
+                       .Where(u => !u.IsLockedOut)
+                       .CountAsync() > 1;
         }
     }
 }

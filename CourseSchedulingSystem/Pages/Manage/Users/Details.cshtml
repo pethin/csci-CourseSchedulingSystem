@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.Users.DetailsModel
 
 @{
-    ViewData["Title"] = $"{Model.UserModel.UserName} Details";
+    ViewData["Title"] = $"{Model.ApplicationUser.UserName} Details";
 }
 
 <h1>Details</h1>
@@ -12,21 +12,21 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.UserModel.UserName)
+            @Html.DisplayNameFor(model => model.ApplicationUser.UserName)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.UserModel.UserName)
+            @Html.DisplayFor(model => model.ApplicationUser.UserName)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.UserModel.IsLockedOut)
+            @Html.DisplayNameFor(model => model.ApplicationUser.IsLockedOut)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.UserModel.IsLockedOut)
+            @Html.DisplayFor(model => model.ApplicationUser.IsLockedOut)
         </dd>
         <dt class="col-sm-12">Departments</dt>
         <dd class="col-sm-12">
             <ul>
-                @foreach (var du in Model.UserModel.DepartmentUsers)
+                @foreach (var du in Model.ApplicationUser.DepartmentUsers)
                 {
                     <li><a asp-page="../Departments/Details" asp-route-id="@du.DepartmentId">@du.Department.Name</a></li>
                 }
@@ -35,6 +35,6 @@
     </dl>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.UserModel.Id">Edit</a> |
+    <a asp-page="./Edit" asp-route-id="@Model.ApplicationUser.Id">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>

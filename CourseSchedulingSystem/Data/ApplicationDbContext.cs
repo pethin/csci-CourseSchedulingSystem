@@ -5,14 +5,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
-
-        public DbSet<User> Users { get; set; }
 
         public DbSet<Department> Departments { get; set; }
         public DbSet<DepartmentUser> DepartmentUsers { get; set; }
@@ -36,11 +34,6 @@ namespace CourseSchedulingSystem.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            // User
-            builder.Entity<User>()
-                .HasIndex(u => u.NormalizedUserName)
-                .IsUnique();
 
             // User >>--<< Department
             builder.Entity<DepartmentUser>(b =>
