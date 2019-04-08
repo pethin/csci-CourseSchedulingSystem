@@ -15,19 +15,19 @@ namespace CourseSchedulingSystem.Pages.Docs
         //Button for the main menu section of tutorial
         public static string MainMenu(ViewContext viewContext)
         {
-            return PageNavClass(viewContext, "Main Menu");
+            return PageNavClass(viewContext, "MainMenu");
         }
 
         //Button for User Settings tutorial
         public static string Settings(ViewContext viewContext)
         {
-            return PageNavClass(viewContext, "User Settings");
+            return PageNavClass(viewContext, "Settings");
         }
 
         //Button for the Add and Manage section of tutorial
         public static string AddManage(ViewContext viewContext)
         {
-            return PageNavClass(viewContext, "Add/Manage");
+            return PageNavClass(viewContext, "AddManage");
         }
 
         //Button for Term tutorial
@@ -57,7 +57,7 @@ namespace CourseSchedulingSystem.Pages.Docs
         //Button for Schedule Types tutorial
         public static string Schedule(ViewContext viewContext)
         {
-            return PageNavClass(viewContext, "Schedule Types");
+            return PageNavClass(viewContext, "Schedule");
         }
 
         //Button for Attributes tutorial
