@@ -6,7 +6,7 @@ namespace CourseSchedulingSystem.Pages.Docs
 {
     public static class DocsNavPages
     {
-        //Button for front page of documentation
+        //Button for front page of tutorial
         public static string IndexNavClass(ViewContext viewContext)
         {
             return PageNavClass(viewContext, "Index");
@@ -19,75 +19,87 @@ namespace CourseSchedulingSystem.Pages.Docs
         }
 
         //Button for User Settings tutorial
-        public static string Settings(ViewContext viewContext)
+        /*public static string Settings(ViewContext viewContext)
         {
             return PageNavClass(viewContext, "Settings");
-        }
+        }*/
 
-        //Button for the Add and Manage section of tutorial
+        //Button for the Add and Manage tutorial
         public static string AddManage(ViewContext viewContext)
         {
             return PageNavClass(viewContext, "AddManage");
         }
 
-        //Button for Term tutorial
+        //schedule making tutorial button
+        public static string SchedulingCourses(ViewContext viewContext)
+        {
+            return PageNavClass(viewContext, "SchedulingCourses");
+        }
+
+        //Term button
         public static string Term(ViewContext viewContext)
         {
             return PageNavClass(viewContext, "Term");
         }
 
-        //Button for instructional methods tutorial
+        //instructional methods button
         public static string Methods(ViewContext viewContext)
         {
             return PageNavClass(viewContext, "Methods");
         }
 
-        //Button for courses tutorial
+        //courses button
         public static string Courses(ViewContext viewContext)
         {
             return PageNavClass(viewContext, "Courses");
         }
 
-        //Button for Subjects tutorial
+        //Subjects button
         public static string Subjects(ViewContext viewContext)
         {
             return PageNavClass(viewContext, "Subjects");
         }
 
-        //Button for Schedule Types tutorial
-        public static string Schedule(ViewContext viewContext)
+        //Schedule Types button
+        public static string ScheduleTypes(ViewContext viewContext)
         {
-            return PageNavClass(viewContext, "Schedule");
+            return PageNavClass(viewContext, "ScheduleTypes");
         }
 
-        //Button for Attributes tutorial
+        //Attributes button
         public static string Attributes(ViewContext viewContext)
         {
             return PageNavClass(viewContext, "Attributes");
         }
 
-        //Button for buildings tutorial
+        //departments button
+        public static string Departments(ViewContext viewContext)
+        {
+            return PageNavClass(viewContext, "Departments");
+        }
+
+        //Instructors button
+        public static string Instructors(ViewContext viewContext)
+        {
+            return PageNavClass(viewContext, "Instructors");
+        }
+
+        //buildings button
         public static string Buildings(ViewContext viewContext)
         {
             return PageNavClass(viewContext, "Buildings");
         }
 
-        //Button for rooms tutorial
+        //rooms button
         public static string Rooms(ViewContext viewContext)
         {
             return PageNavClass(viewContext, "Rooms");
         }
 
-        //Button for users tutorial
+        //users button
         public static string Users(ViewContext viewContext)
         {
             return PageNavClass(viewContext, "Users");
-        }
-
-        //Button for groups tutorial
-        public static string Groups(ViewContext viewContext)
-        {
-            return PageNavClass(viewContext, "Groups");
         }
 
         private static string PageNavClass(ViewContext viewContext, string page)
