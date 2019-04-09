@@ -4,17 +4,20 @@
         <a class="nav-link @DocsNavPages.IndexNavClass(ViewContext)" asp-page="./Index">Overview</a>
     </li>
 
-    <!--I'm not sure if the reference is correct on these. There's no NavClass, like in the one above-->
     <li class="nav-item">
         <a class="nav-link @DocsNavPages.MainMenu(ViewContext)" asp-page="./MainMenu">Main Menu</a>
     </li>
 
-    <li class="nav-item">
-        <a class="nav-link @DocsNavPages.Settings(ViewContext)" asp-page="./Settings">User Settings</a>
-    </li>
+    <!--<li class="nav-item">
+        <a class="nav-link DocsNavPages.Settings(ViewContext)" asp-page="./Settings">User Settings</a>
+    </li>-->
 
     <li class="nav-item">
         <a class="nav-link @DocsNavPages.AddManage(ViewContext)" asp-page="./AddManage">Add/Manage</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link @DocsNavPages.SchedulingCourses(ViewContext)" asp-page="./SchedulingCourses">Scheduling Courses</a>
     </li>
 
     <li class="nav-item">
@@ -34,11 +37,19 @@
     </li>
 
     <li class="nav-item">
-        <a class="nav-link @DocsNavPages.Schedule(ViewContext)" asp-page="./Schedule">Schedule Types</a>
+        <a class="nav-link @DocsNavPages.ScheduleTypes(ViewContext)" asp-page="./ScheduleTypes">Schedule Types</a>
     </li>
 
     <li class="nav-item">
         <a class="nav-link @DocsNavPages.Attributes(ViewContext)" asp-page="./Attributes">Other Attributes</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link @DocsNavPages.Departments(ViewContext)" asp-page="./Departments">Departments</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link @DocsNavPages.Instructors(ViewContext)" asp-page="./Instructors">Insturctors</a>
     </li>
 
     <li class="nav-item">
@@ -51,9 +62,5 @@
 
     <li class="nav-item">
         <a class="nav-link @DocsNavPages.Users(ViewContext)" asp-page="./Users">Users</a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link @DocsNavPages.Groups(ViewContext)" asp-page="./Groups">Groups</a>
     </li>
 </ul>
