@@ -16,13 +16,16 @@ namespace CourseSchedulingSystem.Data.Models
         {
         }
 
-        public ScheduleType(string code, string name)
+        public ScheduleType(Guid id, string code, string name)
         {
+            Id = id;
             Code = code;
             Name = name;
         }
 
         public Guid Id { get; set; }
+        
+        public bool IsTemplate { get; set; }
         
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]

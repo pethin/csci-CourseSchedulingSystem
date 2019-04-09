@@ -31,7 +31,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
                 return NotFound();
             }
 
-            Building = await _context.Building.FirstOrDefaultAsync(m => m.Id == id);
+            Building = await _context.Buildings.FirstOrDefaultAsync(m => m.Id == id);
 
             if (Building == null)
             {
@@ -49,7 +49,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
 
             _context.Attach(Building).State = EntityState.Modified;
 
-            var building = await _context.Building.FindAsync(id);
+            var building = await _context.Buildings.FindAsync(id);
 
             if (await TryUpdateModelAsync(building, "Building", bd => bd.Code, bd => bd.Name))
             {

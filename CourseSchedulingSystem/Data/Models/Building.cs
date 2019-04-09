@@ -16,14 +16,17 @@ namespace CourseSchedulingSystem.Data.Models
         {
         }
 
-        public Building(string code, string name, bool enabled = true)
+        public Building(Guid id, string code, string name, bool enabled = true)
         {
+            Id = id;
             Code = code;
             Name = name;
             IsEnabled = enabled;
         }
 
         public Guid Id { get; set; }
+        
+        public bool IsTemplate { get; set; }
 
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
@@ -59,7 +62,7 @@ namespace CourseSchedulingSystem.Data.Models
             return new AsyncEnumerable<ValidationResult>(async yield =>
             {
                 // Check if any other building has the same code
-                if (await context.Building
+                if (await context.Buildings
                     .Where(bd => bd.Id != Id)
                     .Where(bd => bd.Code == Code)
                     .AnyAsync())
@@ -69,7 +72,7 @@ namespace CourseSchedulingSystem.Data.Models
                 }
 
                 // Check if any other building has the same name
-                if (await context.Building
+                if (await context.Buildings
                     .Where(bd => bd.Id != Id)
                     .Where(bd => bd.NormalizedName == NormalizedName)
                     .AnyAsync())

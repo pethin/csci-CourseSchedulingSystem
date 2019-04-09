@@ -50,7 +50,7 @@ namespace CourseSchedulingSystem.Data.Models
             return new AsyncEnumerable<ValidationResult>(async yield =>
             {
                 // Check if any room has the same number and building
-                if (await context.Room
+                if (await context.Rooms
                     .Where(rm => rm.Id != Id)
                     .Where(rm => rm.BuildingId == BuildingId)
                     .Where(rm => rm.Number == Number)

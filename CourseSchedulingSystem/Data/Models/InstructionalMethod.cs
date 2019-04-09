@@ -16,14 +16,17 @@ namespace CourseSchedulingSystem.Data.Models
         {
         }
 
-        public InstructionalMethod(string code, string name, bool requiresRoom = true)
+        public InstructionalMethod(Guid id, string code, string name, bool requiresRoom = true)
         {
+            Id = id;
             Code = code;
             Name = name;
             IsRoomRequired = requiresRoom;
         }
 
         public Guid Id { get; set; }
+        
+        public bool IsTemplate { get; set; }
         
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]

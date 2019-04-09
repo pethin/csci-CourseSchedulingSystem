@@ -15,12 +15,15 @@ namespace CourseSchedulingSystem.Data.Models
         {
         }
 
-        public CourseAttribute(string name)
+        public CourseAttribute(Guid id, string name)
         {
+            Id = id;
             Name = name;
         }
 
         public Guid Id { get; set; }
+        
+        public bool IsTemplate { get; set; }
 
         [Required]
         public string Name

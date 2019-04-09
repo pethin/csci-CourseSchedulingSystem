@@ -29,7 +29,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return NotFound();
             }
 
-            Room = await _context.Room
+            Room = await _context.Rooms
                 .Include(r => r.Building)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -47,11 +47,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return NotFound();
             }
 
-            Room = await _context.Room.FindAsync(id);
+            Room = await _context.Rooms.FindAsync(id);
 
             if (Room != null)
             {
-                _context.Room.Remove(Room);
+                _context.Rooms.Remove(Room);
                 await _context.SaveChangesAsync();
             }
 

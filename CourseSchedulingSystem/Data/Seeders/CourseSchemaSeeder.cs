@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Async;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
@@ -10,30 +12,32 @@ namespace CourseSchedulingSystem.Data.Seeders
         /// <summary>
         ///     Template for creating departments.
         /// </summary>
-        private static readonly List<Department> DepartmentTemplates = new List<Department>
+        private static readonly List<Department> Departments = new List<Department>
         {
-            new Department("ACFN", "Accounting, Finance, and Economics"),
-            new Department("CSQM", "Computer Science & Quantitative Methods"),
-            new Department("MGMK", "Management & Marketing")
+            new Department(Guid.Parse("00000000-0000-0000-0000-000000000001"), "ACFN",
+                "Accounting, Finance, and Economics"),
+            new Department(Guid.Parse("00000000-0000-0000-0000-000000000002"), "CSQM",
+                "Computer Science & Quantitative Methods"),
+            new Department(Guid.Parse("00000000-0000-0000-0000-000000000003"), "MGMK", "Management & Marketing")
         };
 
         /// <summary>
         ///     Template for creating subjects.
         /// </summary>
-        private static readonly List<Subject> SubjectTemplates = new List<Subject>
+        private static readonly List<Subject> Subjects = new List<Subject>
         {
-            new Subject("ACCT", "Accounting"),
-            new Subject("BADM", "Business Administration"),
-            new Subject("CSCI", "Computer Science"),
-            new Subject("DIFD", "Digital Information Design"),
-            new Subject("ECON", "Economics"),
-            new Subject("ENTR", "Entrepreneurship"),
-            new Subject("FINC", "Finance"),
-            new Subject("HCMT", "Health Care Management"),
-            new Subject("MGMT", "Management"),
-            new Subject("MKTG", "Marketing"),
-            new Subject("QMTH", "Quantitative Methods"),
-            new Subject("SUBU", "Sustainability Studies")
+            new Subject(Guid.Parse("00000000-0000-0000-0000-000000000001"), "ACCT", "Accounting"),
+            new Subject(Guid.Parse("00000000-0000-0000-0000-000000000002"), "BADM", "Business Administration"),
+            new Subject(Guid.Parse("00000000-0000-0000-0000-000000000003"), "CSCI", "Computer Science"),
+            new Subject(Guid.Parse("00000000-0000-0000-0000-000000000004"), "DIFD", "Digital Information Design"),
+            new Subject(Guid.Parse("00000000-0000-0000-0000-000000000005"), "ECON", "Economics"),
+            new Subject(Guid.Parse("00000000-0000-0000-0000-000000000006"), "ENTR", "Entrepreneurship"),
+            new Subject(Guid.Parse("00000000-0000-0000-0000-000000000007"), "FINC", "Finance"),
+            new Subject(Guid.Parse("00000000-0000-0000-0000-000000000008"), "HCMT", "Health Care Management"),
+            new Subject(Guid.Parse("00000000-0000-0000-0000-000000000009"), "MGMT", "Management"),
+            new Subject(Guid.Parse("00000000-0000-0000-0000-00000000000a"), "MKTG", "Marketing"),
+            new Subject(Guid.Parse("00000000-0000-0000-0000-00000000000b"), "QMTH", "Quantitative Methods"),
+            new Subject(Guid.Parse("00000000-0000-0000-0000-00000000000c"), "SUBU", "Sustainability Studies")
         };
 
         /// <summary>
@@ -41,40 +45,40 @@ namespace CourseSchedulingSystem.Data.Seeders
         /// </summary>
         private static readonly List<ScheduleType> ScheduleTypes = new List<ScheduleType>
         {
-            new ScheduleType("FLD", "Field Studies"),
-            new ScheduleType("ISD", "Independent Study/Research"),
-            new ScheduleType("INT", "Internship"),
-            new ScheduleType("LAB", "Laboratory/Clinical"),
-            new ScheduleType("LEC", "Lecture"),
-            new ScheduleType("LLC", "Lecture/Lab-Clinical"),
-            new ScheduleType("PRT", "Practice Teaching"),
-            new ScheduleType("PRC", "Practicum/Cooperative edu"),
-            new ScheduleType("PRI", "Private Instruction"),
-            new ScheduleType("SEM", "Seminar/Recitation"),
-            new ScheduleType("STU", "Studio/PE"),
-            new ScheduleType("THS", "Thesis")
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-000000000001"), "FLD", "Field Studies"),
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-000000000002"), "ISD", "Independent Study/Research"),
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-000000000003"), "INT", "Internship"),
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-000000000004"), "LAB", "Laboratory/Clinical"),
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-000000000005"), "LEC", "Lecture"),
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-000000000006"), "LLC", "Lecture/Lab-Clinical"),
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-000000000007"), "PRT", "Practice Teaching"),
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-000000000008"), "PRC", "Practicum/Cooperative edu"),
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-000000000009"), "PRI", "Private Instruction"),
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-00000000000a"), "SEM", "Seminar/Recitation"),
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-00000000000b"), "STU", "Studio/PE"),
+            new ScheduleType(Guid.Parse("00000000-0000-0000-0000-00000000000c"), "THS", "Thesis")
         };
 
         /// <summary>
         ///     List of course attributes to seed.
         /// </summary>
-        private static readonly List<CourseAttribute> AttributeTypes = new List<CourseAttribute>
+        private static readonly List<CourseAttribute> CourseAttributes = new List<CourseAttribute>
         {
-            new CourseAttribute("Capstone Course"),
-            new CourseAttribute("Constitution Requirement"),
-            new CourseAttribute("Global Perspective"),
-            new CourseAttribute("Historical Perspective"),
-            new CourseAttribute("Humanities and Arts"),
-            new CourseAttribute("Intensive Writing"),
-            new CourseAttribute("Logic Language and Semiotics"),
-            new CourseAttribute("Natural Science - Earth"),
-            new CourseAttribute("Natural Science - Life"),
-            new CourseAttribute("Natural Science - Physical"),
-            new CourseAttribute("Oral Communication"),
-            new CourseAttribute("Physical Activity"),
-            new CourseAttribute("Quantitative Skills Req"),
-            new CourseAttribute("Social Science"),
-            new CourseAttribute("Technology Requirement")
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-000000000001"), "Capstone Course"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-000000000002"), "Constitution Requirement"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-000000000003"), "Global Perspective"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-000000000004"), "Historical Perspective"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-000000000005"), "Humanities and Arts"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-000000000006"), "Intensive Writing"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-000000000007"), "Logic Language and Semiotics"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-000000000008"), "Natural Science - Earth"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-000000000009"), "Natural Science - Life"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-00000000000a"), "Natural Science - Physical"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-00000000000b"), "Oral Communication"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-00000000000c"), "Physical Activity"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-00000000000d"), "Quantitative Skills Req"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-00000000000e"), "Social Science"),
+            new CourseAttribute(Guid.Parse("00000000-0000-0000-0000-00000000000f"), "Technology Requirement")
         };
 
         private readonly ApplicationDbContext _context;
@@ -89,61 +93,65 @@ namespace CourseSchedulingSystem.Data.Seeders
             await SeedDepartmentsAsync();
             await SeedSubjectsAsync();
             await SeedScheduleTypesAsync();
-            await SeedAttributeTypesAsync();
+            await SeedCourseAttributesAsync();
         }
 
         private async Task SeedDepartmentsAsync()
         {
-            var departmentCodes = DepartmentTemplates.Select(d => d.Code).ToHashSet();
-            var createdCodes = _context.Departments
-                .Where(d => departmentCodes.Contains(d.Code))
-                .Select(d => d.Code)
+            var templateIds = Departments.Select(d => d.Id).ToHashSet();
+            var createdTemplatesIds = _context.Departments
+                .Where(d => templateIds.Contains(d.Id))
+                .Select(d => d.Id)
                 .ToHashSet();
 
-            var departments = DepartmentTemplates.Where(dt => !createdCodes.Contains(dt.Code));
-            foreach (var department in departments) await _context.Departments.AddAsync(department);
+            var departments = Departments.Where(dt => !createdTemplatesIds.Contains(dt.Id)).ToList();
+            departments.ForEach(d => d.IsTemplate = true);
+            _context.Departments.AddRange(departments);
 
             await _context.SaveChangesAsync();
         }
 
         private async Task SeedSubjectsAsync()
         {
-            var subjectCodes = SubjectTemplates.Select(d => d.Code).ToHashSet();
-            var createdCodes = _context.Subjects
-                .Where(s => subjectCodes.Contains(s.Code))
-                .Select(s => s.Code)
+            var templateIds = Subjects.Select(s => s.Id).ToHashSet();
+            var createdTemplatesIds = _context.Subjects
+                .Where(s => templateIds.Contains(s.Id))
+                .Select(s => s.Id)
                 .ToHashSet();
 
-            var subjects = SubjectTemplates.Where(dt => !createdCodes.Contains(dt.Code));
-            foreach (var subject in subjects) await _context.Subjects.AddAsync(subject);
+            var subjects = Subjects.Where(st => !createdTemplatesIds.Contains(st.Id)).ToList();
+            subjects.ForEach(s => s.IsTemplate = true);
+            _context.Subjects.AddRange(subjects);
 
             await _context.SaveChangesAsync();
         }
 
         private async Task SeedScheduleTypesAsync()
         {
-            var scheduleTypeCodes = ScheduleTypes.Select(d => d.NormalizedName).ToHashSet();
-            var createdCodes = _context.ScheduleTypes
-                .Where(st => scheduleTypeCodes.Contains(st.NormalizedName))
-                .Select(st => st.NormalizedName)
+            var templateIds = ScheduleTypes.Select(t => t.Id).ToHashSet();
+            var createdTemplatesIds = _context.ScheduleTypes
+                .Where(m => templateIds.Contains(m.Id))
+                .Select(m => m.Id)
                 .ToHashSet();
 
-            var scheduleTypes = ScheduleTypes.Where(st => !createdCodes.Contains(st.NormalizedName));
-            foreach (var scheduleType in scheduleTypes) await _context.ScheduleTypes.AddAsync(scheduleType);
+            var scheduleTypes = ScheduleTypes.Where(t => !createdTemplatesIds.Contains(t.Id)).ToList();
+            scheduleTypes.ForEach(s => s.IsTemplate = true);
+            _context.ScheduleTypes.AddRange(scheduleTypes);
 
             await _context.SaveChangesAsync();
         }
 
-        private async Task SeedAttributeTypesAsync()
+        private async Task SeedCourseAttributesAsync()
         {
-            var attributeTypeCodes = AttributeTypes.Select(d => d.NormalizedName).ToHashSet();
-            var createdCodes = _context.CourseAttributes
-                .Where(st => attributeTypeCodes.Contains(st.NormalizedName))
-                .Select(st => st.NormalizedName)
+            var templateIds = CourseAttributes.Select(t => t.Id).ToHashSet();
+            var createdTemplatesIds = _context.CourseAttributes
+                .Where(m => templateIds.Contains(m.Id))
+                .Select(m => m.Id)
                 .ToHashSet();
 
-            var attributeTypes = AttributeTypes.Where(st => !createdCodes.Contains(st.NormalizedName));
-            foreach (var attributeType in attributeTypes) await _context.CourseAttributes.AddAsync(attributeType);
+            var courseAttributes = CourseAttributes.Where(t => !createdTemplatesIds.Contains(t.Id)).ToList();
+            courseAttributes.ForEach(s => s.IsTemplate = true);
+            _context.CourseAttributes.AddRange(courseAttributes);
 
             await _context.SaveChangesAsync();
         }

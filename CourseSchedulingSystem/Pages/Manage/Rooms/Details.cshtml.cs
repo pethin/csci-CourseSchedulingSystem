@@ -28,7 +28,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return NotFound();
             }
 
-            Room = await _context.Room
+            Room = await _context.Rooms
                 .Include(r => r.Building).FirstOrDefaultAsync(m => m.Id == id);
 
             if (Room == null)

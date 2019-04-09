@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
@@ -10,14 +11,14 @@ namespace CourseSchedulingSystem.Data.Seeders
         /// <summary>
         ///     Template for creating buildings.
         /// </summary>
-        private static readonly List<Building> BuildingsTemplate = new List<Building>
+        private static readonly List<Building> Buildings = new List<Building>
         {
-            new Building("CARR", "Carroll Hall", true),
-            new Building("INTR", "Via Internet", true),
-            new Building("JOHN", "Johnson Hall", true),
-            new Building("OWEN", "Owens Hall", true),
-            new Building("RUTL", "Rutledge Building", true),
-            new Building("THUR", "Thurmond Hall", true)
+            new Building(Guid.Parse("00000000-0000-0000-0000-000000000001"), "CARR", "Carroll Hall", true),
+            new Building(Guid.Parse("00000000-0000-0000-0000-000000000002"), "INTR", "Via Internet", true),
+            new Building(Guid.Parse("00000000-0000-0000-0000-000000000003"), "JOHN", "Johnson Hall", true),
+            new Building(Guid.Parse("00000000-0000-0000-0000-000000000004"), "OWEN", "Owens Hall", true),
+            new Building(Guid.Parse("00000000-0000-0000-0000-000000000005"), "RUTL", "Rutledge Building", true),
+            new Building(Guid.Parse("00000000-0000-0000-0000-000000000006"), "THUR", "Thurmond Hall", true)
         };
 
         private readonly ApplicationDbContext _context;
@@ -34,15 +35,15 @@ namespace CourseSchedulingSystem.Data.Seeders
 
         private async Task SeedBuildingsAsync()
         {
-            var buildingCodes = BuildingsTemplate.Select(m => m.Code).ToHashSet();
-            var createdBuildings = _context.Building
-                .Where(m => buildingCodes.Contains(m.Code))
-                .Select(m => m.Code)
+            var templateIds = Buildings.Select(t => t.Id).ToHashSet();
+            var createdTemplatesIds = _context.Buildings
+                .Where(m => templateIds.Contains(m.Id))
+                .Select(m => m.Id)
                 .ToHashSet();
 
-            var buildings = BuildingsTemplate.Where(b => !createdBuildings.Contains(b.Code));
-            foreach (var building in buildings)
-                _context.Building.Add(building);
+            var buildings = Buildings.Where(t => !createdTemplatesIds.Contains(t.Id)).ToList();
+            buildings.ForEach(s => s.IsTemplate = true);
+            _context.Buildings.AddRange(buildings);
 
             await _context.SaveChangesAsync();
         }

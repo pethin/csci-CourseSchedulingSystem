@@ -23,7 +23,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
         public IActionResult OnGet()
         {
-        ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled==true), "Id", "Code");
+        ViewData["BuildingId"] = new SelectList(_context.Buildings.Where(bd => bd.IsEnabled==true), "Id", "Code");
             return Page();
         }
 
@@ -37,7 +37,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return Page();
             }
 
-            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true), "Id", "Code");
+            ViewData["BuildingId"] = new SelectList(_context.Buildings.Where(bd => bd.IsEnabled == true), "Id", "Code");
 
             var room = new Room();
 
@@ -51,7 +51,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.Room.Add(Room);
+                _context.Rooms.Add(Room);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }
