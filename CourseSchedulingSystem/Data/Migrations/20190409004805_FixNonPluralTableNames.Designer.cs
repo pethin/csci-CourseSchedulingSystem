@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourseSchedulingSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190409003230_AddIsTemplatePropertiesForSeeding")]
-    partial class AddIsTemplatePropertiesForSeeding
+    [Migration("20190409004805_FixNonPluralTableNames")]
+    partial class FixNonPluralTableNames
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -109,8 +109,6 @@ namespace CourseSchedulingSystem.Data.Migrations
 
                     b.Property<bool>("IsEnabled");
 
-                    b.Property<bool>("IsTemplate");
-
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -166,8 +164,6 @@ namespace CourseSchedulingSystem.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("IsTemplate");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -248,8 +244,6 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.Property<string>("Code")
                         .IsRequired();
 
-                    b.Property<bool>("IsTemplate");
-
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -289,8 +283,6 @@ namespace CourseSchedulingSystem.Data.Migrations
                         .IsRequired();
 
                     b.Property<bool>("IsRoomRequired");
-
-                    b.Property<bool>("IsTemplate");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -341,8 +333,6 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.Property<string>("Code")
                         .IsRequired();
 
-                    b.Property<bool>("IsTemplate");
-
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -389,8 +379,6 @@ namespace CourseSchedulingSystem.Data.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired();
-
-                    b.Property<bool>("IsTemplate");
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -478,8 +466,6 @@ namespace CourseSchedulingSystem.Data.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired();
-
-                    b.Property<bool>("IsTemplate");
 
                     b.Property<string>("Name")
                         .IsRequired();

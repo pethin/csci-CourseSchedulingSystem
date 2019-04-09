@@ -22,8 +22,6 @@ namespace CourseSchedulingSystem.Data.Models
         }
 
         public Guid Id { get; set; }
-        
-        public bool IsTemplate { get; set; }
 
         [Required]
         public string Name

@@ -25,8 +25,6 @@ namespace CourseSchedulingSystem.Data.Models
         }
 
         public Guid Id { get; set; }
-        
-        public bool IsTemplate { get; set; }
 
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]

@@ -52,7 +52,6 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .ToHashSet();
 
             var instructionalMethods = InstructionalMethods.Where(t => !createdTemplatesIds.Contains(t.Id)).ToList();
-            instructionalMethods.ForEach(s => s.IsTemplate = true);
             _context.InstructionalMethods.AddRange(instructionalMethods);
 
             await _context.SaveChangesAsync();
@@ -67,7 +66,6 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .ToHashSet();
 
             var meetingTypes = MeetingTypes.Where(t => !createdTemplatesIds.Contains(t.Id)).ToList();
-            meetingTypes.ForEach(s => s.IsTemplate = true);
             _context.MeetingTypes.AddRange(meetingTypes);
 
             await _context.SaveChangesAsync();

@@ -105,7 +105,6 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .ToHashSet();
 
             var departments = Departments.Where(dt => !createdTemplatesIds.Contains(dt.Id)).ToList();
-            departments.ForEach(d => d.IsTemplate = true);
             _context.Departments.AddRange(departments);
 
             await _context.SaveChangesAsync();
@@ -120,7 +119,6 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .ToHashSet();
 
             var subjects = Subjects.Where(st => !createdTemplatesIds.Contains(st.Id)).ToList();
-            subjects.ForEach(s => s.IsTemplate = true);
             _context.Subjects.AddRange(subjects);
 
             await _context.SaveChangesAsync();
@@ -135,7 +133,6 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .ToHashSet();
 
             var scheduleTypes = ScheduleTypes.Where(t => !createdTemplatesIds.Contains(t.Id)).ToList();
-            scheduleTypes.ForEach(s => s.IsTemplate = true);
             _context.ScheduleTypes.AddRange(scheduleTypes);
 
             await _context.SaveChangesAsync();
@@ -150,7 +147,6 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .ToHashSet();
 
             var courseAttributes = CourseAttributes.Where(t => !createdTemplatesIds.Contains(t.Id)).ToList();
-            courseAttributes.ForEach(s => s.IsTemplate = true);
             _context.CourseAttributes.AddRange(courseAttributes);
 
             await _context.SaveChangesAsync();

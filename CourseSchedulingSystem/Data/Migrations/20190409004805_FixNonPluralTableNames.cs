@@ -2,7 +2,7 @@
 
 namespace CourseSchedulingSystem.Data.Migrations
 {
-    public partial class AddIsTemplatePropertiesForSeeding : Migration
+    public partial class FixNonPluralTableNames : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -44,48 +44,6 @@ namespace CourseSchedulingSystem.Data.Migrations
                 name: "IX_Building_Code",
                 table: "Buildings",
                 newName: "IX_Buildings_Code");
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsTemplate",
-                table: "Subjects",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsTemplate",
-                table: "ScheduleTypes",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsTemplate",
-                table: "MeetingTypes",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsTemplate",
-                table: "InstructionalMethods",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsTemplate",
-                table: "Departments",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsTemplate",
-                table: "CourseAttributes",
-                nullable: false,
-                defaultValue: false);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsTemplate",
-                table: "Buildings",
-                nullable: false,
-                defaultValue: false);
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_Rooms",
@@ -130,34 +88,6 @@ namespace CourseSchedulingSystem.Data.Migrations
 
             migrationBuilder.DropPrimaryKey(
                 name: "PK_Buildings",
-                table: "Buildings");
-
-            migrationBuilder.DropColumn(
-                name: "IsTemplate",
-                table: "Subjects");
-
-            migrationBuilder.DropColumn(
-                name: "IsTemplate",
-                table: "ScheduleTypes");
-
-            migrationBuilder.DropColumn(
-                name: "IsTemplate",
-                table: "MeetingTypes");
-
-            migrationBuilder.DropColumn(
-                name: "IsTemplate",
-                table: "InstructionalMethods");
-
-            migrationBuilder.DropColumn(
-                name: "IsTemplate",
-                table: "Departments");
-
-            migrationBuilder.DropColumn(
-                name: "IsTemplate",
-                table: "CourseAttributes");
-
-            migrationBuilder.DropColumn(
-                name: "IsTemplate",
                 table: "Buildings");
 
             migrationBuilder.RenameTable(

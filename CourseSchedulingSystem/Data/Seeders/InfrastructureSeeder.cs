@@ -42,7 +42,6 @@ namespace CourseSchedulingSystem.Data.Seeders
                 .ToHashSet();
 
             var buildings = Buildings.Where(t => !createdTemplatesIds.Contains(t.Id)).ToList();
-            buildings.ForEach(s => s.IsTemplate = true);
             _context.Buildings.AddRange(buildings);
 
             await _context.SaveChangesAsync();
