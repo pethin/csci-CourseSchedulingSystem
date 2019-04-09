@@ -20,9 +20,11 @@ namespace CourseSchedulingSystem.Data.Models
         public Guid MeetingTypeId { get; set; }
         public MeetingType MeetingType { get; set; }
 
-        public DateTime? StartTime { get; set; }
+        [DataType(DataType.Time)]
+        public TimeSpan? StartTime { get; set; }
         
-        public DateTime? EndTime { get; set; }
+        [DataType(DataType.Time)]
+        public TimeSpan? EndTime { get; set; }
 
         public bool Monday { get; set; }
         public bool Tuesday { get; set; }

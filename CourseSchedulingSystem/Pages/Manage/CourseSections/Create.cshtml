@@ -1,0 +1,55 @@
+﻿@page
+@model CourseSchedulingSystem.Pages.Manage.CourseSections.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>CourseSection</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CourseSection.TermPartId" class="control-label"></label>
+                <select asp-for="CourseSection.TermPartId" class ="form-control" asp-items="ViewBag.TermPartId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CourseSection.CourseId" class="control-label"></label>
+                <select asp-for="CourseSection.CourseId" class ="form-control" asp-items="ViewBag.CourseId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CourseSection.Section" class="control-label"></label>
+                <input asp-for="CourseSection.Section" class="form-control" />
+                <span asp-validation-for="CourseSection.Section" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CourseSection.ScheduleTypeId" class="control-label"></label>
+                <select asp-for="CourseSection.ScheduleTypeId" class ="form-control" asp-items="ViewBag.ScheduleTypeId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CourseSection.InstructionalMethodId" class="control-label"></label>
+                <select asp-for="CourseSection.InstructionalMethodId" class ="form-control" asp-items="ViewBag.InstructionalMethodId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CourseSection.MaximumCapacity" class="control-label"></label>
+                <input asp-for="CourseSection.MaximumCapacity" class="form-control" />
+                <span asp-validation-for="CourseSection.MaximumCapacity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,15 @@
+﻿@page "{handler}"
+@model CourseSchedulingSystem.Pages.Manage.CourseSections.SelectTermModel
+
+@{
+    ViewData["Title"] = "Select a Term";
+}
+
+<h1>Select a Term</h1>
+<form method="post">
+    <div class="form-group">
+        <label asp-for="TermId" class="control-label"></label>
+        <select asp-for="TermId" class="form-control" asp-items="Model.TermsOptions"></select>
+        <span asp-validation-for="TermId" class="text-danger"></span>
+    </div>
+</form>

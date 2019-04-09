@@ -4,14 +4,16 @@ using CourseSchedulingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CourseSchedulingSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190409020351_ChangeScheduledMeetingTimeTimesToTimeSpan")]
+    partial class ChangeScheduledMeetingTimeTimesToTimeSpan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -213,8 +215,6 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.Property<Guid>("InstructionalMethodId");
 
                     b.Property<int>("MaximumCapacity");
-
-                    b.Property<string>("Notes");
 
                     b.Property<Guid>("ScheduleTypeId");
 

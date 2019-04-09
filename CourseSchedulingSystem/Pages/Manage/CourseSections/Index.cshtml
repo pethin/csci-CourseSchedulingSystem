@@ -1,0 +1,66 @@
+﻿@page
+@model CourseSchedulingSystem.Pages.Manage.CourseSections.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CourseSection[0].TermPart)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CourseSection[0].Course)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CourseSection[0].Section)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CourseSection[0].ScheduleType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CourseSection[0].InstructionalMethod)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CourseSection[0].MaximumCapacity)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.CourseSection) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TermPart.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.Number)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Section)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ScheduleType.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InstructionalMethod.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaximumCapacity)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

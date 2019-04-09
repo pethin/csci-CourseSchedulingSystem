@@ -29,6 +29,8 @@ namespace CourseSchedulingSystem.Data.Models
         public Guid InstructionalMethodId { get; set; }
         public InstructionalMethod InstructionalMethod { get; set; }
         
+        public string Notes { get; set; }
+        
         [Required]
         public int MaximumCapacity { get; set; }
         

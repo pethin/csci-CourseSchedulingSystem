@@ -67,6 +67,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Resources\Fixtures\Terms" />
       <Folder Include="wwwroot\lib" />
     </ItemGroup>
 

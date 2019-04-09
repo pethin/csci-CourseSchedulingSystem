@@ -1,16 +1,16 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem.Data.Seeders
 {
-    public class DatabaseSeeder : ISeeder
+    public class ExcelSeeder : ISeeder
     {
-        private readonly ILogger<DatabaseSeeder> _logger;
+        private readonly ILogger _logger;
         private readonly IServiceProvider _provider;
 
-        public DatabaseSeeder(IServiceProvider provider, ILogger<DatabaseSeeder> logger)
+        public ExcelSeeder(IServiceProvider provider, ILogger<DatabaseSeeder> logger)
         {
             _provider = provider;
             _logger = logger;
@@ -18,12 +18,10 @@ namespace CourseSchedulingSystem.Data.Seeders
 
         public async Task SeedAsync()
         {
-            await CallAsync<IdentitySeeder>();
-            await CallAsync<CourseSchemaSeeder>();
-            await CallAsync<InfrastructureSeeder>();
-            await CallAsync<SchedulingSchemaSeeder>();
+            await CallAsync<CourseSeeder>();
+            await CallAsync<SchedulesSeeder>();
         }
-
+        
         /// <summary>
         ///     Runs a seeder.
         /// </summary>
