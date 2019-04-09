@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
@@ -53,7 +54,14 @@ namespace CourseSchedulingSystem.Data.Models
 
         [NotMapped] public string Identifier => $@"{Building?.Code ?? $"{BuildingId.ToString()} - "}{Number}";
 
-        public virtual ICollection<RoomRoomCapability> RoomRoomCapability { get; set; }
+        public virtual ICollection<RoomRoomCapability> RoomRoomCapabilities { get; set; }
+        [Display(Name = "Room Capabilities")]
+        public IEnumerable<Guid> RoomRoomCapabilityIds { get; set; } = new List<Guid>();
+        public IEnumerable<SelectListItem> RoomCapabilityOptions => Context.RoomCapability.Select(st => new SelectListItem
+        {
+            Value = st.Id.ToString(),
+            Text = st.Name
+        });
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )
