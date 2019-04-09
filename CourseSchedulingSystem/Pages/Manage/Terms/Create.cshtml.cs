@@ -1,7 +1,7 @@
-﻿using System.Collections.Async;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -32,18 +32,14 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
             if (await TryUpdateModelAsync(
                 term,
                 "Term",
-                t => t.Name, t => t.StartDate, t => t.EndDate))
+                t => t.Name))
             {
-                await term.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
-
+                await term.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
                 if (!ModelState.IsValid) return Page();
 
                 _context.Terms.Add(term);
                 await _context.SaveChangesAsync();
-                return RedirectToPage("./Index");
+                return RedirectToPage("./Edit", new {id = term.Id});
             }
 
             return Page();

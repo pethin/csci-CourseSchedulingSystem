@@ -1,12 +1,12 @@
 ﻿@page
 @model CourseSchedulingSystem.Pages.Manage.IndexModel
 @{
-    ViewData["Title"] = "Administration";
+    ViewData["Title"] = "Admin Panel";
 }
 
 <h1>Administration</h1>
 <hr/>
-@foreach (var panelSection in IndexSections.Sections)
+@foreach (var panelSection in Model.Sections)
 {
     <div class="card mb-4">
         <div class="card-header bg-info text-white">
@@ -23,11 +23,17 @@
                             <small>@row.Description</small>
                         }
                     </div>
-                    @if (row.Link != null)
+                    @if (row.AddLink != null || row.ManageLink != null)
                     {
                         <span>
-                            <a asp-page="@row.Link/Create" class="btn btn-outline-success"><i class="fa fa-plus"></i> Add</a>
-                            <a asp-page="@row.Link/Index" class="btn btn-outline-primary"><i class="fa fa-pencil-alt"></i> Manage</a>
+                            @if (row.AddLink != null)
+                            {
+                                <a href="@row.AddLink" class="btn btn-outline-success"><i class="fa fa-plus"></i> Add</a>
+                            }
+                            @if (row.ManageLink != null)
+                            {
+                                <a href="@row.ManageLink" class="btn btn-outline-primary"><i class="fa fa-pencil-alt"></i> Manage</a>
+                            }
                         </span>
                     }
                     else

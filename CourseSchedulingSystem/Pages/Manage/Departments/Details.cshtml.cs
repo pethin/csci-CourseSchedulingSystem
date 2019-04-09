@@ -23,7 +23,12 @@ namespace CourseSchedulingSystem.Pages.Manage.Departments
         {
             if (id == null) return NotFound();
 
-            Department = await _context.Departments.FirstOrDefaultAsync(m => m.Id == id);
+            Department = await _context.Departments
+                .Include(d => d.DepartmentUsers)
+                .ThenInclude(du => du.User)
+                .Include(d => d.Courses)
+                .ThenInclude(c => c.Subject)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Department == null) return NotFound();
             return Page();

@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Users
 {
     public class DetailsModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _context;
 
-        public DetailsModel(UserManager<ApplicationUser> userManager)
+        public DetailsModel(ApplicationDbContext context)
         {
-            _userManager = userManager;
+            _context = context;
         }
 
         public ApplicationUser ApplicationUser { get; set; }
@@ -22,9 +24,13 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
         {
             if (id == null) return NotFound();
 
-            ApplicationUser = await _userManager.FindByIdAsync(id.ToString());
+            ApplicationUser = await _context.Users
+                .Include(u => u.DepartmentUsers)
+                .ThenInclude(du => du.Department)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (ApplicationUser == null) return NotFound();
+            
             return Page();
         }
     }

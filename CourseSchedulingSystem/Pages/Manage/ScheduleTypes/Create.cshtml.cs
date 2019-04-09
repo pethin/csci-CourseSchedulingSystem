@@ -32,6 +32,7 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
             if (await TryUpdateModelAsync(
                 scheduleType,
                 "ScheduleType",
+                st => st.Code,
                 st => st.Name))
             {
                 await scheduleType.DbValidateAsync(_context).ForEachAsync(result =>

@@ -45,6 +45,8 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
 
         public IActionResult OnPost(string provider, string returnUrl = null)
         {
+            returnUrl = returnUrl ?? Url.Content("~/");
+            
             // Request a redirect to the external login provider.
             var redirectUrl = Url.Page("./ExternalLogin", "Callback", new {returnUrl});
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);

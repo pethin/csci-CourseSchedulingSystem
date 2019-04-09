@@ -23,7 +23,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
 
         public async Task OnGetAsync()
         {
-            Building = await _context.Building
+            Building = await _context.Buildings
                 .OrderBy(bd => bd.Code)
                 .ToListAsync();
         }

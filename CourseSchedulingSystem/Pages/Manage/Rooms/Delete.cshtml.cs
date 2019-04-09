@@ -29,8 +29,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return NotFound();
             }
 
-            Room = await _context.Room
-                .Include(r => r.Building).FirstOrDefaultAsync(m => m.Id == id);
+            Room = await _context.Rooms
+                .Include(r => r.Building)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Room == null)
             {
@@ -46,11 +47,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return NotFound();
             }
 
-            Room = await _context.Room.FindAsync(id);
+            Room = await _context.Rooms.FindAsync(id);
 
             if (Room != null)
             {
-                _context.Room.Remove(Room);
+                _context.Rooms.Remove(Room);
                 await _context.SaveChangesAsync();
             }
 

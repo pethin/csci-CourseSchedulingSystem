@@ -1,5 +1,9 @@
 ﻿using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,17 +26,22 @@ namespace CourseSchedulingSystem.Areas.Identity.Pages.Account
 
         public IActionResult OnGet()
         {
-            return NotFound();
+            return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public IActionResult OnPost(string returnUrl = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
 
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
-
-            return LocalRedirect(returnUrl);
+            var redirectUrl = Url.Page("./Login", new {returnUrl});
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(AuthenticationConstants.WinthropScheme, redirectUrl);
+            return SignOut(
+                properties,
+                IdentityConstants.ApplicationScheme,
+                IdentityConstants.ExternalScheme,
+                IdentityConstants.TwoFactorUserIdScheme,
+                AuthenticationConstants.WinthropScheme
+            );
         }
     }
 }

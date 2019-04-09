@@ -1,0 +1,34 @@
+﻿@page "{id:Guid}"
+@model CourseSchedulingSystem.Pages.Manage.CourseAttributes.DetailsModel
+
+@{
+    ViewData["Title"] = "Attribute Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Course Attribute</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-1">
+            @Html.DisplayNameFor(model => model.CourseAttribute.Name)
+        </dt>
+        <dd class="col-sm-11">
+            @Html.DisplayFor(model => model.CourseAttribute.Name)
+        </dd>
+        <dt class="col-sm-12">Courses</dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var courseAttribute in @Model.CourseAttribute.CourseCourseAttributes)
+                {
+                    <li><a asp-page="../Courses/Details" asp-route-id="@courseAttribute.CourseId">@courseAttribute.Course.Identifier - @courseAttribute.Course.Title</a></li>
+                }
+            </ul>
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.CourseAttribute.Id">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

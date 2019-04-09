@@ -30,7 +30,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return NotFound();
             }
 
-            Room = await _context.Room
+            Room = await _context.Rooms
                 .Include(r => r.Building).FirstOrDefaultAsync(m => m.Id == id);
 
             if (Room == null)
@@ -40,7 +40,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
             //Can change to Enabled Buildings or keep the current one
             ViewData["BuildingId"] =
-                new SelectList(_context.Building.Where(bd => bd.IsEnabled == true || bd.Id == Room.BuildingId), "Id",
+                new SelectList(_context.Buildings.Where(bd => bd.IsEnabled == true || bd.Id == Room.BuildingId), "Id",
                     "Code");
             return Page();
         }
@@ -53,13 +53,13 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             }
 
             ViewData["BuildingId"] =
-                new SelectList(_context.Building.Where(bd => bd.IsEnabled == true || bd.Id == Room.BuildingId), "Id",
+                new SelectList(_context.Buildings.Where(bd => bd.IsEnabled == true || bd.Id == Room.BuildingId), "Id",
                     "Code");
 
             _context.Attach(Room).State = EntityState.Modified;
 
 
-            var room = await _context.Room.FindAsync(id);
+            var room = await _context.Rooms.FindAsync(id);
 
             if (await TryUpdateModelAsync(room, "Room", rm => rm.Number, rm => rm.BuildingId))
             {
@@ -79,7 +79,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
         private bool RoomExists(Guid id)
         {
-            return _context.Room.Any(e => e.Id == id);
+            return _context.Rooms.Any(e => e.Id == id);
         }
     }
 }

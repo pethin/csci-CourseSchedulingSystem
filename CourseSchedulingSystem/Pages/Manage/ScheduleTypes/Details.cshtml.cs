@@ -23,7 +23,11 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
         {
             if (id == null) return NotFound();
 
-            ScheduleType = await _context.ScheduleTypes.FirstOrDefaultAsync(m => m.Id == id);
+            ScheduleType = await _context.ScheduleTypes
+                .Include(st => st.CourseScheduleTypes)
+                .ThenInclude(cst => cst.Course)
+                .ThenInclude(c => c.Subject)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (ScheduleType == null) return NotFound();
             return Page();

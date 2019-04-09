@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Async;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,13 +23,22 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
 
         [BindProperty] public Term Term { get; set; }
 
+        public string SourceTermName { get; set; }
+
+        public string SuccessMessage { get; set; }
+
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
             if (id == null) return NotFound();
 
-            Term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == id);
+            Term = await _context.Terms
+                .Include(t => t.TermParts)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Term == null) return NotFound();
+
+            SourceTermName = Term.Name;
+
             return Page();
         }
 
@@ -34,22 +46,28 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
         {
             if (!ModelState.IsValid) return Page();
 
-            var term = await _context.Terms.FindAsync(id);
+            Term = await _context.Terms
+                .Include(t => t.TermParts)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (Term != null)
+            {
+                SourceTermName = Term.Name;
+            }
 
             if (await TryUpdateModelAsync(
-                term,
+                Term,
                 "Term",
-                t => t.Name, t => t.StartDate, t => t.EndDate))
+                s => s.Name))
             {
-                await term.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
+                await Term.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
                 if (!ModelState.IsValid) return Page();
 
                 await _context.SaveChangesAsync();
-                return RedirectToPage("./Index");
+
+                SuccessMessage = "Name successfully updated!";
+                return Page();
             }
 
             return Page();

@@ -17,8 +17,9 @@ namespace CourseSchedulingSystem.Data.Models
         {
         }
 
-        public Department(string code, string name)
+        public Department(Guid id, string code, string name)
         {
+            Id = id;
             Code = code;
             Name = name;
         }
@@ -30,7 +31,7 @@ namespace CourseSchedulingSystem.Data.Models
         public string Code
         {
             get => _code;
-            set => _code = value.Trim().ToUpper();
+            set => _code = value?.Trim().ToUpperInvariant();
         }
 
         [Required]
@@ -39,15 +40,15 @@ namespace CourseSchedulingSystem.Data.Models
             get => _name;
             set
             {
-                _name = value.Trim();
-                NormalizedName = _name.ToUpper();
+                _name = value?.Trim();
+                NormalizedName = _name?.ToUpperInvariant();
             }
         }
 
         public string NormalizedName { get; private set; }
 
-        public virtual ICollection<DepartmentUser> DepartmentUsers { get; set; }
-        public virtual ICollection<Course> Courses { get; set; }
+        public List<DepartmentUser> DepartmentUsers { get; set; }
+        public List<Course> Courses { get; set; }
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context

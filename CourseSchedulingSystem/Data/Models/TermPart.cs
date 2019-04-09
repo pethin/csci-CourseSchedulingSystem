@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
-    public class TermPart
+    public class TermPart : IValidatableObject
     {
         private string _name;
 
@@ -27,7 +27,7 @@ namespace CourseSchedulingSystem.Data.Models
         public Guid Id { get; set; }
 
         public Guid TermId { get; set; }
-        public virtual Term Term { get; set; }
+        public Term Term { get; set; }
 
         [Required]
         public string Name
@@ -35,8 +35,8 @@ namespace CourseSchedulingSystem.Data.Models
             get => _name;
             set
             {
-                _name = value.Trim();
-                NormalizedName = _name.ToUpper();
+                _name = value?.Trim();
+                NormalizedName = _name?.ToUpperInvariant();
             }
         }
 
@@ -45,12 +45,12 @@ namespace CourseSchedulingSystem.Data.Models
         [Required]
         [Display(Name = "Start Date")]
         [DataType(DataType.Date)]
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         [Required]
         [Display(Name = "End Date")]
         [DataType(DataType.Date)]
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -70,6 +70,7 @@ namespace CourseSchedulingSystem.Data.Models
                 // Check if any term part has the same name
                 if (await context.TermParts
                     .Where(tp => tp.Id != Id)
+                    .Where(tp => tp.TermId == TermId)
                     .Where(tp => tp.NormalizedName == NormalizedName)
                     .AnyAsync())
                     await yield.ReturnAsync(new ValidationResult($"A term part already exists with the name {Name}."));

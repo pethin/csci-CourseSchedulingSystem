@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.InstructionalMethods.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Details Instructional Method";
 }
 
 <h1>Details</h1>
@@ -11,6 +11,12 @@
     <h4>Instructional Method</h4>
     <hr/>
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InstructionalMethod.Code)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InstructionalMethod.Code)
+        </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.InstructionalMethod.Name)
         </dt>

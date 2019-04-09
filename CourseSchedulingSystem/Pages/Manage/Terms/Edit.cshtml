@@ -2,13 +2,17 @@
 @model CourseSchedulingSystem.Pages.Manage.Terms.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = $"Edit {Model.SourceTermName}";
 }
 
 <h1>Edit</h1>
 
 <h4>Term</h4>
 <hr/>
+@if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
 <div class="row">
     <div class="col-md-4">
         <form method="post">
@@ -19,21 +23,54 @@
                 <span asp-validation-for="Term.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Term.StartDate" class="control-label"></label>
-                <input asp-for="Term.StartDate" class="form-control"/>
-                <span asp-validation-for="Term.StartDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Term.EndDate" class="control-label"></label>
-                <input asp-for="Term.EndDate" class="form-control"/>
-                <span asp-validation-for="Term.EndDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary"/>
             </div>
         </form>
     </div>
 </div>
+<hr/>
+<h4 class="mb-0">Parts of Term</h4>
+<small>Course Sections are scheduled to a Part of Term.</small>
+<div class="mb-2"></div>
+<p>
+    <a asp-page="./TermParts/Create" asp-route-termId="@Model.Term.Id">Create New</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Term.TermParts[0].Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Term.TermParts[0].StartDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Term.TermParts[0].EndDate)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Term.TermParts)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
+            </td>
+            <td>
+                <a asp-page="./TermParts/Edit" asp-route-termId="@Model.Term.Id" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action("")">Edit</a> |
+                <a asp-page="./TermParts/Delete" asp-route-termId="@Model.Term.Id" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action("")">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
 
 <div>
     <a asp-page="./Index">Back to List</a>

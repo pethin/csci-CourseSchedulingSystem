@@ -34,7 +34,6 @@ namespace CourseSchedulingSystem.Tests
                 // Create a new service provider.
                 var serviceProvider = new ServiceCollection()
                     .AddEntityFrameworkSqlite()
-                    .AddEntityFrameworkProxies()
                     .BuildServiceProvider();
 
                 // Add a database context (ApplicationDbContext) using an in-memory 

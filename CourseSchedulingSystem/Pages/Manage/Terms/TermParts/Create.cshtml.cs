@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Async;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -18,9 +20,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
             _context = context;
         }
 
-        public Term Term { get; set; }
-
         [BindProperty] public TermPart TermPart { get; set; }
+
+        public Term Term { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? termId)
         {
@@ -45,25 +47,23 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
 
             var termPart = new TermPart
             {
-                Term = Term,
                 TermId = Term.Id
             };
 
             if (await TryUpdateModelAsync(
                 termPart,
                 "TermPart",
-                tp => tp.Name, tp => tp.StartDate, tp => tp.EndDate))
+                tp => tp.Name,
+                tp => tp.StartDate,
+                tp => tp.EndDate))
             {
-                await termPart.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
+                await termPart.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
                 if (!ModelState.IsValid) return Page();
 
                 _context.TermParts.Add(termPart);
                 await _context.SaveChangesAsync();
-                return RedirectToPage("./Index", new {termId = Term.Id});
+                return RedirectToPage("../Edit", new {id = Term.Id});
             }
 
             return Page();

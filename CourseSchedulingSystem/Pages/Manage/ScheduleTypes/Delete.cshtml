@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.ScheduleTypes.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Schedule Type";
 }
 
 <h1>Delete</h1>
@@ -11,18 +11,39 @@
 <div>
     <h4>Schedule Type</h4>
     <hr/>
+    @if (Model.InUse)
+    {
+        <div class="alert alert-primary">
+            This schedule type can not be deleted. It is currently in use by the listed courses.
+        </div>
+    }
     <dl class="row">
-        <dt class="col-sm-2">
+        <dt class="col-sm-1">
+            @Html.DisplayNameFor(model => model.ScheduleType.Code)
+        </dt>
+        <dd class="col-sm-11">
+            @Html.DisplayFor(model => model.ScheduleType.Code)
+        </dd>
+        <dt class="col-sm-1">
             @Html.DisplayNameFor(model => model.ScheduleType.Name)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-11">
             @Html.DisplayFor(model => model.ScheduleType.Name)
+        </dd>
+        <dt class="col-sm-12">Courses</dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var cst in @Model.ScheduleType.CourseScheduleTypes)
+                {
+                    <li><a asp-page="../Courses/Details" asp-route-id="@cst.CourseId">@cst.Course.Identifier - @cst.Course.Title</a></li>
+                }
+            </ul>
         </dd>
     </dl>
 
     <form method="post">
         <input type="hidden" asp-for="ScheduleType.Id"/>
-        <input type="submit" value="Delete" class="btn btn-danger"/> |
+        <input type="submit" value="Delete" class="btn btn-danger" disabled="@(Model.InUse ? "" : null)"/> |
         <a asp-page="./Index">Back to List</a>
     </form>
 </div>

@@ -2,15 +2,14 @@
 @model CourseSchedulingSystem.Pages.Manage.Users.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
-    Layout = "~/Pages/Shared/_Layout.cshtml";
+    ViewData["Title"] = $"{Model.ApplicationUser.UserName} Details";
 }
 
 <h1>Details</h1>
 
 <div>
     <h4>User</h4>
-    <hr/>
+    <hr />
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ApplicationUser.UserName)
@@ -23,6 +22,15 @@
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ApplicationUser.IsLockedOut)
+        </dd>
+        <dt class="col-sm-12">Departments</dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var du in Model.ApplicationUser.DepartmentUsers)
+                {
+                    <li><a asp-page="../Departments/Details" asp-route-id="@du.DepartmentId">@du.Department.Name</a></li>
+                }
+            </ul>
         </dd>
     </dl>
 </div>

@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.ScheduleTypes.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Schedule Types";
 }
 
 <h1>Schedule Types</h1>
@@ -14,6 +14,9 @@
     <thead>
     <tr>
         <th>
+            @Html.DisplayNameFor(model => model.ScheduleTypes[0].Code)
+        </th>
+        <th>
             @Html.DisplayNameFor(model => model.ScheduleTypes[0].Name)
         </th>
         <th></th>
@@ -23,6 +26,9 @@
     @foreach (var item in Model.ScheduleTypes)
     {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>

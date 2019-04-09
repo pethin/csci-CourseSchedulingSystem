@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,19 +11,20 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _context;
 
-        public IndexModel(UserManager<ApplicationUser> userManager)
+        public IndexModel(ApplicationDbContext context)
         {
-            _userManager = userManager;
+            _context = context;
         }
 
         public IList<ApplicationUser> ApplicationUser { get; set; }
 
         public async Task OnGetAsync()
         {
-            ApplicationUser = await _userManager.Users
-                .OrderBy(u => u.NormalizedUserName)
+            ApplicationUser = await _context.Users
+                .Include(u => u.DepartmentUsers)
+                .ThenInclude(du => du.Department)
                 .ToListAsync();
         }
     }

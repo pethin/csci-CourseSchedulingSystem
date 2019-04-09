@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.InstructionalMethods.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Instructional Method";
 }
 
 <h1>Delete</h1>
@@ -12,6 +12,12 @@
     <h4>Instructional Method</h4>
     <hr/>
     <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InstructionalMethod.Code)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InstructionalMethod.Code)
+        </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.InstructionalMethod.Name)
         </dt>

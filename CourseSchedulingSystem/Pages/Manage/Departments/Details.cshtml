@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.Departments.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = $"{Model.Department.Code} Details";
 }
 
 <h1>Details</h1>
@@ -11,17 +11,35 @@
     <h4>Department</h4>
     <hr/>
     <dl class="row">
-        <dt class="col-sm-2">
+        <dt class="col-sm-1">
             @Html.DisplayNameFor(model => model.Department.Code)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-11">
             @Html.DisplayFor(model => model.Department.Code)
         </dd>
-        <dt class="col-sm-2">
+        <dt class="col-sm-1">
             @Html.DisplayNameFor(model => model.Department.Name)
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-11">
             @Html.DisplayFor(model => model.Department.Name)
+        </dd>
+        <dt class="col-sm-12">Users</dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var du in Model.Department.DepartmentUsers)
+                {
+                    <li><a asp-page="../Users/Detail" asp-route-id="@du.UserId">@du.User.UserName</a></li>
+                }
+            </ul>
+        </dd>
+        <dt class="col-sm-12">Courses</dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var course in Model.Department.Courses)
+                {
+                    <li><a asp-page="../Course/Detail" asp-route-id="@course.Id">@course.Identifier - @course.Title</a></li>
+                }
+            </ul>
         </dd>
     </dl>
 </div>

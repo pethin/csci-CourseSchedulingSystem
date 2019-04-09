@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.ScheduleTypes.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Schedule Type";
 }
 
 <h1>Create</h1>
@@ -13,6 +13,11 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ScheduleType.Code" class="control-label"></label>
+                <input asp-for="ScheduleType.Code" class="form-control"/>
+                <span asp-validation-for="ScheduleType.Code" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="ScheduleType.Name" class="control-label"></label>
                 <input asp-for="ScheduleType.Name" class="form-control"/>

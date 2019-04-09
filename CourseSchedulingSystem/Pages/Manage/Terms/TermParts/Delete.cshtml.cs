@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -19,32 +20,48 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
 
         [BindProperty] public TermPart TermPart { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public bool InUse => false;
+
+        public async Task<IActionResult> OnGetAsync(Guid? termId, Guid? id, string returnUrl = null)
         {
-            if (id == null) return NotFound();
+            if (termId == null || id == null)
+            {
+                return NotFound();
+            }
 
             TermPart = await _context.TermParts
                 .Include(t => t.Term)
+                .Where(tp => tp.TermId == termId)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (TermPart == null) return NotFound();
+            if (TermPart == null)
+            {
+                return NotFound();
+            }
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync(Guid? termId, Guid? id, string returnUrl = null)
         {
-            if (id == null) return NotFound();
+            if (termId == null || id == null) return NotFound();
 
-            TermPart = await _context.TermParts.FindAsync(id);
+            TermPart = await _context.TermParts
+                .Include(t => t.Term)
+                .Where(tp => tp.TermId == termId)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (TermPart != null)
+            if (TermPart == null) return NotFound();
+
+            if (InUse)
             {
-                _context.TermParts.Remove(TermPart);
-                await _context.SaveChangesAsync();
+                return Page();
             }
 
-            return RedirectToPage("./Index");
+            _context.TermParts.Remove(TermPart);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("../Edit", new {id = TermPart.TermId});
         }
     }
 }

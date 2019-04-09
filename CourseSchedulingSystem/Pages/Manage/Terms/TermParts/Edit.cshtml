@@ -1,19 +1,19 @@
-﻿@page "{id:Guid}"
+﻿@page "{termId:Guid}/{id:Guid}"
 @model CourseSchedulingSystem.Pages.Manage.Terms.TermParts.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = $"Edit {Model.TermPart.Name} - {Model.TermPart.Term.Name}";
 }
 
 <h1>Edit</h1>
 
-<h4>@Model.TermPart.Term.Name</h4>
 <h4>Part of Term</h4>
 <hr/>
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="TermPart.Id"/>
             <div class="form-group">
                 <label asp-for="TermPart.Name" class="control-label"></label>
                 <input asp-for="TermPart.Name" class="form-control"/>
@@ -37,7 +37,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index" asp-route-termId="@Model.TermPart.TermId">Back to List</a>
+    <a asp-page="../Edit" asp-route-id="@Model.TermPart.TermId">Back to Term</a>
 </div>
 
 @section Scripts {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -19,11 +20,16 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
 
         [BindProperty] public Subject Subject { get; set; }
 
+        public bool InUse => Subject.Courses.Any();
+
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
             if (id == null) return NotFound();
 
-            Subject = await _context.Subjects.FirstOrDefaultAsync(m => m.Id == id);
+            Subject = await _context.Subjects
+                .Include(s => s.Courses)
+                .ThenInclude(c => c.Subject)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Subject == null) return NotFound();
             return Page();
@@ -33,10 +39,17 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
         {
             if (id == null) return NotFound();
 
-            Subject = await _context.Subjects.FindAsync(id);
+            Subject = await _context.Subjects
+                .Include(s => s.Courses)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Subject != null)
             {
+                if (InUse)
+                {
+                    return Page();
+                }
+
                 _context.Subjects.Remove(Subject);
                 await _context.SaveChangesAsync();
             }

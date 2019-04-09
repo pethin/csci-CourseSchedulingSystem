@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.Terms.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Terms";
 }
 
 <h1>Terms</h1>
@@ -40,7 +40,6 @@
             </td>
             <td>
                 <a asp-page="../CourseSections" asp-route-termId="@item.Id">Course Sections</a> |
-                <a asp-page="./TermParts/Index" asp-route-termId="@item.Id">Parts of Term</a> |
                 <a asp-page="./Duplicate" asp-route-id="@item.Id">Duplicate</a> |
                 <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |

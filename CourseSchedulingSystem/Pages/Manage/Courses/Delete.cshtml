@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.Courses.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = $"Delete {Model.Course.Identifier}";
 }
 
 <h1>Delete</h1>
@@ -11,90 +11,68 @@
 <div>
     <h4>Course</h4>
     <hr/>
-    <table class="table">
-        <tbody>
-        <tr>
-            <th scope="row">
-                @Html.DisplayNameFor(model => model.Course.Department)
-            </th>
-            <td>
-                @Html.DisplayFor(model => model.Course.Department.Code)
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                @Html.DisplayNameFor(model => model.Course.Subject)
-            </th>
-            <td>
-                @Html.DisplayFor(model => model.Course.Subject.Code)
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                @Html.DisplayNameFor(model => model.Course.Number)
-            </th>
-            <td>
-                @Html.DisplayFor(model => model.Course.Number)
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                @Html.DisplayNameFor(model => model.Course.Title)
-            </th>
-            <td>
-                @Html.DisplayFor(model => model.Course.Title)
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                @Html.DisplayNameFor(model => model.Course.CreditHours)
-            </th>
-            <td>
-                @Html.DisplayFor(model => model.Course.CreditHours)
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                Course Levels
-            </th>
-            <td>
-                @if (Model.Course.IsUndergraduate)
-                {
-                    @Html.DisplayNameFor(model => model.Course.IsUndergraduate)
-                    <br/>
-                }
-                @if (Model.Course.IsGraduate)
-                {
-                    @Html.DisplayNameFor(model => model.Course.IsGraduate)
-                }
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                Schedule Types
-            </th>
-            <td>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Course.Department)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Course.Department.Code)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Course.Subject)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Course.Subject.Code)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Course.Number)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Course.Number)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Course.Title)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Course.Title)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Course.CreditHours)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Course.CreditHours)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Course.IsUndergraduate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Course.IsUndergraduate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Course.IsGraduate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Course.IsGraduate)
+        </dd>
+        <dt class="col-sm-12">Schedule Types</dt>
+        <dd class="col-sm-12">
+            <ul>
                 @foreach (var cst in Model.Course.CourseScheduleTypes)
                 {
-                    @cst.ScheduleType.Name
-                    <br/>
+                    <li><a asp-page="../ScheduleTypes/Details" asp-route-id="@cst.ScheduleTypeId">@cst.ScheduleType.Name</a></li>
                 }
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                Course Attributes
-            </th>
-            <td>
-                @foreach (var cat in Model.Course.CourseAttributeTypes)
+            </ul>
+        </dd>
+        <dt class="col-sm-12">Course Attributes</dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var cca in Model.Course.CourseCourseAttributes)
                 {
-                    @cat.AttributeType.Name
-                    <br/>
+                    <li><a asp-page="../CourseAttributes/Details" asp-route-id="@cca.CourseAttributeId">@cca.CourseAttribute.Name</a></li>
                 }
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            </ul>
+        </dd>
+    </dl>
 
     <form method="post">
         <input type="hidden" asp-for="Course.Id"/>

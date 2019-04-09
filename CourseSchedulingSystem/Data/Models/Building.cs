@@ -16,11 +16,12 @@ namespace CourseSchedulingSystem.Data.Models
         {
         }
 
-        public Building(string name, string code, bool isEnabled)
+        public Building(Guid id, string code, string name, bool enabled = true)
         {
-            Name = name;
+            Id = id;
             Code = code;
-            IsEnabled = isEnabled;
+            Name = name;
+            IsEnabled = enabled;
         }
 
         public Guid Id { get; set; }
@@ -30,7 +31,7 @@ namespace CourseSchedulingSystem.Data.Models
         public string Code
         {
             get => _code;
-            set => _code = value.Trim().ToUpper();
+            set => _code = value?.Trim().ToUpperInvariant();
         }
 
         [Required]
@@ -39,18 +40,18 @@ namespace CourseSchedulingSystem.Data.Models
             get => _name;
             set
             {
-                _name = value.Trim();
-                NormalizedName = _name.ToUpper();
+                _name = value?.Trim();
+                NormalizedName = _name?.ToUpperInvariant();
             }
         }
 
         [Required]
-        [Display(Name = "Building Enabled")]
+        [Display(Name = "Enabled")]
         public bool IsEnabled { get; set; }
 
         public string NormalizedName { get; private set; }
 
-        public virtual ICollection<Room> Rooms { get; set; }
+        public List<Room> Rooms { get; set; }
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
@@ -59,7 +60,7 @@ namespace CourseSchedulingSystem.Data.Models
             return new AsyncEnumerable<ValidationResult>(async yield =>
             {
                 // Check if any other building has the same code
-                if (await context.Building
+                if (await context.Buildings
                     .Where(bd => bd.Id != Id)
                     .Where(bd => bd.Code == Code)
                     .AnyAsync())
@@ -69,7 +70,7 @@ namespace CourseSchedulingSystem.Data.Models
                 }
 
                 // Check if any other building has the same name
-                if (await context.Building
+                if (await context.Buildings
                     .Where(bd => bd.Id != Id)
                     .Where(bd => bd.NormalizedName == NormalizedName)
                     .AnyAsync())

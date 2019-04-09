@@ -7,7 +7,7 @@ namespace CourseSchedulingSystem.Data.Seeders
 {
     public class DatabaseSeeder : ISeeder
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<DatabaseSeeder> _logger;
         private readonly IServiceProvider _provider;
 
         public DatabaseSeeder(IServiceProvider provider, ILogger<DatabaseSeeder> logger)
@@ -20,6 +20,7 @@ namespace CourseSchedulingSystem.Data.Seeders
         {
             await CallAsync<IdentitySeeder>();
             await CallAsync<CourseSchemaSeeder>();
+            await CallAsync<InfrastructureSeeder>();
             await CallAsync<SchedulingSchemaSeeder>();
         }
 

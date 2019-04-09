@@ -1,0 +1,45 @@
+﻿@page "{id:Guid}"
+@model CourseSchedulingSystem.Pages.Manage.CourseAttributes.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete Course Attribute";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Course Attribute</h4>
+    <hr/>
+    @if (Model.InUse)
+    {
+        <div class="alert alert-primary">
+            This attribute can not be deleted. It is currently in use by the listed courses.
+        </div>
+    }
+    <dl class="row">
+        <dt class="col-sm-1">
+            @Html.DisplayNameFor(model => model.CourseAttribute.Name)
+        </dt>
+        <dd class="col-sm-11">
+            @Html.DisplayFor(model => model.CourseAttribute.Name)
+        </dd>
+        <dt class="col-sm-12">Courses</dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var courseAttribute in @Model.CourseAttribute.CourseCourseAttributes)
+                {
+                    <li>
+                        <a asp-page="../Courses/Details" asp-route-id="@courseAttribute.CourseId">@courseAttribute.Course.Identifier - @courseAttribute.Course.Title</a>
+                    </li>
+                }
+            </ul>
+        </dd>
+    </dl>
+
+    <form method="post">
+        <input type="hidden" asp-for="CourseAttribute.Id"/>
+        <input type="submit" value="Delete" class="btn btn-danger" disabled="@(Model.InUse ? "" : null)"/> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

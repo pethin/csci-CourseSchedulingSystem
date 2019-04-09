@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.InstructionalMethods.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Instructional Methods";
 }
 
 <h1>Instructional Methods</h1>
@@ -13,6 +13,9 @@
 <table class="table">
     <thead>
     <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.InstructionalMethod[0].Code)
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.InstructionalMethod[0].Name)
         </th>
@@ -26,6 +29,9 @@
     @foreach (var item in Model.InstructionalMethod)
     {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
