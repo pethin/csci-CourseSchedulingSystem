@@ -26,7 +26,8 @@ namespace CourseSchedulingSystem.Data.Models
         public Guid Id { get; set; }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
+        //Any {4} letters.
+        [RegularExpression(@"^[a-zA-Z]{4}$", ErrorMessage = "Entry must consist of four letters." )]
         public string Code
         {
             get => _code;
