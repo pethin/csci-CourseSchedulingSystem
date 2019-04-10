@@ -1,5 +1,8 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -7,18 +10,6 @@ namespace CourseSchedulingSystem.Services.TestingAuthentication
 {
     public static class TestingAuthenticationExtensions
     {
-        public static void AddTesting<TKey, TUser, TGroup>(this AuthenticationOptions options)
-            where TKey : IEquatable<TKey>
-            where TUser : IdentityUser<TKey>, new()
-            where TGroup : IdentityRole<TKey>, new()
-        {
-            options.DefaultAuthenticateScheme = TestingAuthenticationDefaults.AuthenticationScheme;
-            
-            options.AddScheme<TestingAuthenticationHandler<TKey, TUser, TGroup>>(
-                TestingAuthenticationDefaults.AuthenticationScheme,
-                TestingAuthenticationDefaults.AuthenticationScheme);
-        }
-
         public static AuthenticationBuilder AddTesting<TKey, TUser, TGroup>(this AuthenticationBuilder builder)
             where TKey : IEquatable<TKey>
             where TUser : IdentityUser<TKey>, new()
@@ -57,8 +48,25 @@ namespace CourseSchedulingSystem.Services.TestingAuthentication
             where TUser : IdentityUser<TKey>, new()
             where TGroup : IdentityRole<TKey>, new()
         {
-            return builder.AddScheme<TestingAuthenticationOptions, TestingAuthenticationHandler<TKey, TUser, TGroup>>(
-                authenticationScheme, configureOptions);
+            return builder
+                .AddPolicyScheme(
+                    TestingAuthenticationDefaults.IdentityFallbackScheme,
+                    TestingAuthenticationDefaults.IdentityFallbackScheme,
+                    options =>
+                    {
+                        options.ForwardDefaultSelector = context =>
+                        {
+                            var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+                            if (authHeader != null)
+                            {
+                                return TestingAuthenticationDefaults.AuthenticationScheme;
+                            }
+
+                            return IdentityConstants.ApplicationScheme;
+                        };
+                    })
+                .AddScheme<TestingAuthenticationOptions, TestingAuthenticationHandler<TKey, TUser, TGroup>>(
+                    authenticationScheme, configureOptions);
         }
     }
 }

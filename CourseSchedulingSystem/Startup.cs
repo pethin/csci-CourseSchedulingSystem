@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -29,6 +30,8 @@ namespace CourseSchedulingSystem
         public IConfiguration Configuration { get; }
         public IHostingEnvironment CurrentEnvironment { get; }
 
+        public bool IsTestingEnvironment => CurrentEnvironment.IsEnvironment("Testing");
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public virtual void ConfigureServices(IServiceCollection services)
         {
@@ -40,19 +43,27 @@ namespace CourseSchedulingSystem
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthentication(options =>
+            var authenticationBuilder = services.AddAuthentication(options =>
+            {
+                if (IsTestingEnvironment)
                 {
-                    if (CurrentEnvironment.IsEnvironment("Testing"))
-                    {
-                        options.AddTesting<Guid, ApplicationUser, ApplicationRole>();
-                    }
-                })
-                .AddWsFederation(AuthenticationConstants.WinthropScheme, "Sign in with Winthrop",
-                    options =>
-                    {
-                        options.MetadataAddress = Configuration.GetValue<string>("WsFederation:MetadataAddress");
-                        options.Wtrealm = Configuration.GetValue<string>("WsFederation:Wtrealm");
-                    });
+                    options.DefaultScheme = TestingAuthenticationDefaults.IdentityFallbackScheme;
+                    options.DefaultAuthenticateScheme = TestingAuthenticationDefaults.IdentityFallbackScheme;
+                    options.DefaultChallengeScheme = TestingAuthenticationDefaults.IdentityFallbackScheme;
+                }
+            });
+
+            if (IsTestingEnvironment)
+            {
+                authenticationBuilder.AddTesting<Guid, ApplicationUser, ApplicationRole>();
+            }
+
+            authenticationBuilder.AddWsFederation(AuthenticationConstants.WinthropScheme, "Sign in with Winthrop",
+                options =>
+                {
+                    options.MetadataAddress = Configuration.GetValue<string>("WsFederation:MetadataAddress");
+                    options.Wtrealm = Configuration.GetValue<string>("WsFederation:Wtrealm");
+                });
 
             services.AddMvc(options =>
                 {
