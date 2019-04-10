@@ -25,8 +25,9 @@ namespace CourseSchedulingSystem.Data.Models
         public Guid SubjectId { get; set; }
         public Subject Subject { get; set; }
 
+        //Only 3-4 characters allowed
         [Required]
-        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
+        [RegularExpression(@"^[0-9]{3}[a-zA-Z]{0,1}$", ErrorMessage = "Only three numbers followed by an optional letter.")]
         public string Number
         {
             get => _number;
@@ -44,7 +45,7 @@ namespace CourseSchedulingSystem.Data.Models
 
         [Required]
         [Column(TypeName = "decimal(5, 3)")]
-        [Range(0.000, double.MaxValue, ErrorMessage = "Credit hours must be between greater than or equal to zero.")]
+        [Range(0.000, double.MaxValue, ErrorMessage = "Credit hours must be zero or greater")]
         [Display(Name = "Credit Hours")]
         [DisplayFormat(DataFormatString = "{0:F3}", ApplyFormatInEditMode = true)]
         public decimal CreditHours { get; set; }
