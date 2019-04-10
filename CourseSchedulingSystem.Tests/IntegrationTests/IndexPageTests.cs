@@ -27,7 +27,6 @@ namespace CourseSchedulingSystem.Tests.IntegrationTests
         {
             // Act
             var client = _factory
-                .WithWebHostBuilder(builder => { builder.UseEnvironment("Production"); })
                 .CreateClient(
                     new WebApplicationFactoryClientOptions
                     {

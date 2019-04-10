@@ -13,7 +13,6 @@ namespace CourseSchedulingSystem.Services.TestingAuthentication
             where TGroup : IdentityRole<TKey>, new()
         {
             options.DefaultAuthenticateScheme = TestingAuthenticationDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = TestingAuthenticationDefaults.AuthenticationScheme;
             
             options.AddScheme<TestingAuthenticationHandler<TKey, TUser, TGroup>>(
                 TestingAuthenticationDefaults.AuthenticationScheme,

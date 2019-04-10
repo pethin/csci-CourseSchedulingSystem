@@ -18,6 +18,8 @@ namespace CourseSchedulingSystem.Services.TestingAuthentication
     {
         private const string AuthorizationHeaderName = "Authorization";
         private const string BasicSchemeName = "Basic";
+        
+        private readonly SignInManager<TUser> _signInManager;
         private readonly UserManager<TUser> _userManager;
 
         public TestingAuthenticationHandler(
@@ -25,15 +27,16 @@ namespace CourseSchedulingSystem.Services.TestingAuthentication
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
+            SignInManager<TUser> signInManager,
             UserManager<TUser> userManager)
             : base(options, logger, encoder, clock)
         {
+            _signInManager = signInManager;
             _userManager = userManager;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            Console.WriteLine("Testing Auth Handler");
             if (!Request.Headers.ContainsKey(AuthorizationHeaderName))
             {
                 //Authorization header not in request
@@ -81,10 +84,7 @@ namespace CourseSchedulingSystem.Services.TestingAuthentication
                 }
             }
 
-            var claims = await _userManager.GetClaimsAsync(user);
-            claims.Add(new Claim(ClaimTypes.Name, user.UserName));
-            
-            var identity = new ClaimsIdentity(claims, Scheme.Name);         
+            var identity = await _signInManager.ClaimsFactory.CreateAsync(user);
             var principal = new ClaimsPrincipal(identity);
             var ticket = new AuthenticationTicket(principal, Scheme.Name);
             return AuthenticateResult.Success(ticket);
@@ -92,7 +92,7 @@ namespace CourseSchedulingSystem.Services.TestingAuthentication
 
         protected override async Task HandleChallengeAsync(AuthenticationProperties properties)
         {
-            Response.Headers["WWW-Authenticate"] = "Basic, charset=\"UTF-8\"";
+            Response.Headers["WWW-Authenticate"] = "Basic realm=\"\", charset=\"UTF-8\"";
             await base.HandleChallengeAsync(properties);
         }
     }
