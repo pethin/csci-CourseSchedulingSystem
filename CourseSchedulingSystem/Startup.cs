@@ -1,6 +1,9 @@
+using System;
+using System.Runtime.InteropServices;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Services;
+using CourseSchedulingSystem.Services.TestingAuthentication;
 using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -17,12 +20,14 @@ namespace CourseSchedulingSystem
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostingEnvironment environment)
         {
             Configuration = configuration;
+            CurrentEnvironment = environment;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment CurrentEnvironment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public virtual void ConfigureServices(IServiceCollection services)
@@ -35,12 +40,19 @@ namespace CourseSchedulingSystem
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddAuthentication()
-                .AddWsFederation(AuthenticationConstants.WinthropScheme, "Sign in with Winthrop", options =>
+            services.AddAuthentication(options =>
                 {
-                    options.MetadataAddress = Configuration.GetValue<string>("WsFederation:MetadataAddress");
-                    options.Wtrealm = Configuration.GetValue<string>("WsFederation:Wtrealm");
-                });
+                    if (CurrentEnvironment.IsEnvironment("Testing"))
+                    {
+                        options.AddTesting<Guid, ApplicationUser, ApplicationRole>();
+                    }
+                })
+                .AddWsFederation(AuthenticationConstants.WinthropScheme, "Sign in with Winthrop",
+                    options =>
+                    {
+                        options.MetadataAddress = Configuration.GetValue<string>("WsFederation:MetadataAddress");
+                        options.Wtrealm = Configuration.GetValue<string>("WsFederation:Wtrealm");
+                    });
 
             services.AddMvc(options =>
                 {

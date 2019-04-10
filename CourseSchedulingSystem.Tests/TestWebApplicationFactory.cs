@@ -28,6 +28,9 @@ namespace CourseSchedulingSystem.Tests
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
+            // Set env to testing
+            builder.UseEnvironment("Testing");
+
             // Add services
             builder.ConfigureServices(services =>
             {
@@ -77,10 +80,6 @@ namespace CourseSchedulingSystem.Tests
             // Replace services
             builder.ConfigureTestServices(services =>
             {
-                // Add ImpersonationController for authenticating test HTTP clients
-                services
-                    .AddMvcCore()
-                    .AddApplicationPart(typeof(ImpersonationController).GetTypeInfo().Assembly);
             });
 
             base.ConfigureWebHost(builder);

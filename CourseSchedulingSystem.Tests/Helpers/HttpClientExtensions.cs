@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AngleSharp.Html.Dom;
 using CourseSchedulingSystem.Data.Models;
@@ -10,13 +11,13 @@ namespace CourseSchedulingSystem.Tests.Helpers
 {
     public static class HttpClientExtensions
     {
-        public static async Task<HttpClient> ActAsAsync(this HttpClient client, ApplicationUser user)
+        public static async Task<HttpClient> ActAs(this HttpClient client, string userName)
         {
-            var response = await client.PostAsync("/api/Impersonation", new FormUrlEncodedContent(new[]
-            {
-                new KeyValuePair<string, string>("Id", user.Id.ToString())
-            }));
-            response.EnsureSuccessStatusCode();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                "Basic",
+                Convert.ToBase64String(
+                    System.Text.Encoding.ASCII.GetBytes(
+                        $"{userName}:")));
 
             return client;
         }
