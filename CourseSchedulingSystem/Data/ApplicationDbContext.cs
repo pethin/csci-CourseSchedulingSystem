@@ -153,7 +153,7 @@ namespace CourseSchedulingSystem.Data
                 b.HasIndex(s => s.NormalizedName).IsUnique();
             });
 
-            // Capabilities
+            // Room Capabilities
             builder.Entity<RoomCapability>()
                .HasIndex(cp => cp.NormalizedName)
                .IsUnique();

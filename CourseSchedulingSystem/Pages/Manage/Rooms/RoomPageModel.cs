@@ -9,21 +9,30 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace CourseSchedulingSystem.Pages.Manage.Rooms
 {
     public class RoomPageModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext Context;
+        protected readonly ApplicationDbContext _context;
 
         public RoomPageModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
         {
-            Context = context;
+            _context = context;
         }
-        protected void LoadDropdownData()
+        public IEnumerable<SelectListItem> RoomCapabilityOptions => _context.RoomCapability.Select(st => new SelectListItem
         {
-            ViewData["DepartmentId"] = Context.Departments
-                .Select(d => new SelectListItem { Value = d.Id.ToString(), Text = d.Name});
+            Value = st.Id.ToString(),
+            Text = st.Name
+        });
+
+        public class RoomInputModel
+        {
+            public Guid Id { get; set; }
+
+            [Display(Name = "Room Capabilities")]
+            public IEnumerable<Guid> RoomCapabilityIds { get; set; } = new List<Guid>();
         }
 
     }

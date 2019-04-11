@@ -101,7 +101,7 @@ namespace CourseSchedulingSystem.Pages.Manage
                     {
                         Title = "Room Capabilities",
                         Description = "Capabilities and features are assigned to rooms.",
-                        Link = "./Capabilities"
+                        Link = "./RoomCapabilities"
                     }
                 }
             },

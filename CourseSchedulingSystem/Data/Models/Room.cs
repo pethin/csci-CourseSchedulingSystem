@@ -30,9 +30,7 @@ namespace CourseSchedulingSystem.Data.Models
         public Guid BuildingId { get; set; }
         public virtual Building Building { get; set; }
 
-
-        public Guid CapabilityId { get; set; }
-        public virtual RoomCapability Capability { get; set; }
+        public virtual ICollection<RoomRoomCapability> RoomRoomCapability { get; set; }
 
 
 
@@ -54,14 +52,7 @@ namespace CourseSchedulingSystem.Data.Models
 
         [NotMapped] public string Identifier => $@"{Building?.Code ?? $"{BuildingId.ToString()} - "}{Number}";
 
-        public virtual ICollection<RoomRoomCapability> RoomRoomCapabilities { get; set; }
-        [Display(Name = "Room Capabilities")]
-        public IEnumerable<Guid> RoomRoomCapabilityIds { get; set; } = new List<Guid>();
-        public IEnumerable<SelectListItem> RoomCapabilityOptions => Context.RoomCapability.Select(st => new SelectListItem
-        {
-            Value = st.Id.ToString(),
-            Text = st.Name
-        });
+
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )

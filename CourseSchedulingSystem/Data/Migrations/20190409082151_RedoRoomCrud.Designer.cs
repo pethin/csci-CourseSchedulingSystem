@@ -4,14 +4,16 @@ using CourseSchedulingSystem.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CourseSchedulingSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190409082151_RedoRoomCrud")]
+    partial class RedoRoomCrud
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -298,7 +300,11 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.Property<string>("Number")
                         .IsRequired();
 
+                    b.Property<Guid>("RoomCapabilityId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RoomCapabilityId");
 
                     b.HasIndex("BuildingId", "Number")
                         .IsUnique();
@@ -566,6 +572,11 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.HasOne("CourseSchedulingSystem.Data.Models.Building", "Building")
                         .WithMany("Rooms")
                         .HasForeignKey("BuildingId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("CourseSchedulingSystem.Data.Models.RoomCapability", "RoomCapability")
+                        .WithMany()
+                        .HasForeignKey("RoomCapabilityId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
