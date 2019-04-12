@@ -157,6 +157,7 @@ namespace CourseSchedulingSystem.Data
             builder.Entity<RoomCapability>()
                .HasIndex(cp => cp.NormalizedName)
                .IsUnique();
+
             // Room
             builder.Entity<Room>()
                 //Room >>-- Building
@@ -175,7 +176,7 @@ namespace CourseSchedulingSystem.Data
                 b.HasOne(rc => rc.RoomCapability)
                     .WithMany(rcc => rcc.RoomRoomCapability)
                     .HasForeignKey(rc => rc.RoomCapabilityId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    /*.OnDelete(DeleteBehavior.Restrict)*/;
             });
         }
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using System.Collections.Async;
 
 namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 {
@@ -39,7 +40,7 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
             if (!ModelState.IsValid)
             {
@@ -48,23 +49,20 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 
             _context.Attach(RoomCapability).State = EntityState.Modified;
 
-            try
+            var roomCapability = await _context.RoomCapability.FindAsync(id);
+            if (await TryUpdateModelAsync(roomCapability, "RoomCapability", cp => cp.Name))
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RoomCapabilityExists(RoomCapability.Id))
+                await roomCapability.DbValidateAsync(_context).ForEachAsync(result =>
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
-            return RedirectToPage("./Index");
+                if (!ModelState.IsValid) return Page();
+
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
+            return Page();
         }
 
         private bool RoomCapabilityExists(Guid id)

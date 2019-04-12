@@ -51,7 +51,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             }
 
 
-            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Code");
+            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true), "Id", "Code");
             return Page();
         }
 
@@ -61,7 +61,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             {
                 return Page();
             }
-            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Code");
+            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true), "Id", "Code");
             _context.Attach(Room).State = EntityState.Modified;
 
             Room = await _context.Room.FirstOrDefaultAsync(m => m.Id == id);
@@ -82,14 +82,19 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             cca => cca.RoomCapabilityId);
 
 
-            await room.DbValidateAsync(_context).ForEachAsync(result =>
+            if (await TryUpdateModelAsync(room, "Room", r => r.Number, r => r.BuildingId))
             {
-                ModelState.AddModelError(string.Empty, result.ErrorMessage);
-            });
+                await room.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
-            await _context.SaveChangesAsync();
+                if (!ModelState.IsValid) return Page();
 
-            return RedirectToPage("./Index");
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
+            return Page();
         }
 
         private bool RoomExists(Guid id)

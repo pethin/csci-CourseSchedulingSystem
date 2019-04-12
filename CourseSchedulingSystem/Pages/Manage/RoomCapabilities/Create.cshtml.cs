@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using System.Collections.Async;
 
 namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 {
@@ -33,11 +34,22 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
             {
                 return Page();
             }
+            var roomCapability = new RoomCapability();
 
-            _context.RoomCapability.Add(RoomCapability);
-            await _context.SaveChangesAsync();
+            if (await TryUpdateModelAsync(roomCapability, "RoomCapability", cp => cp.Name))
+            {
+                await roomCapability.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
-            return RedirectToPage("./Index");
+                if (!ModelState.IsValid) return Page();
+
+                _context.RoomCapability.Add(RoomCapability);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
+            return Page();
         }
     }
 }

@@ -50,7 +50,6 @@ namespace CourseSchedulingSystem.Data.Models
         [Display(Name = "Room Enabled")]
         public bool IsEnabled { get; set; }
 
-        [NotMapped] public string Identifier => $@"{Building?.Code ?? $"{BuildingId.ToString()} - "}{Number}";
 
 
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
@@ -66,7 +65,7 @@ namespace CourseSchedulingSystem.Data.Models
                     .Where(rm => rm.Number == Number)
                     .AnyAsync())
                     await yield.ReturnAsync(
-                        new ValidationResult($"A room in this building exists with the identifier {Identifier}."));
+                        new ValidationResult($"A room in this building exists with the number {Number}."));
             });
         }
     }

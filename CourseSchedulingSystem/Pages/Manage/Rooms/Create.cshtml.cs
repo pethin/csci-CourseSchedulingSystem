@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using System.Collections.Async;
 
 namespace CourseSchedulingSystem.Pages.Manage.Rooms
 {
@@ -21,7 +22,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
         public IActionResult OnGet()
         {
-        ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Code");
+            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true), "Id", "Code");
             return Page();
         }
 
@@ -34,10 +35,10 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             {
                 return Page();
             }
-            ViewData["BuildingId"] = new SelectList(_context.Building, "Id", "Code");
-
-            _context.Room.Add(Room);
+            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true), "Id", "Code");
             await _context.SaveChangesAsync();
+
+            var room = new Room();
 
             var RoomCapabilityTypes = _context.RoomCapability
             .Where(at => RoomModel.RoomCapabilityIds.Contains(at.Id))
@@ -48,9 +49,20 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             });
             _context.RoomRoomCapability.AddRange(RoomCapabilityTypes);
 
-            await _context.SaveChangesAsync();
+            if (await TryUpdateModelAsync(room, "Room", r => r.Number, r => r.BuildingId))
+            {
+                await room.DbValidateAsync(_context).ForEachAsync(result =>
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                });
 
-            return RedirectToPage("./Index");
+                if (!ModelState.IsValid) return Page();
+
+                _context.Room.Add(Room);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
+            return Page();
         }
     }
 }
