@@ -34,6 +34,8 @@ namespace CourseSchedulingSystem.Data.Models
             }
         }
 
+
+        //Retrieve dates from the term parts associated with term.
         public string NormalizedName { get; private set; }
 
         [NotMapped]

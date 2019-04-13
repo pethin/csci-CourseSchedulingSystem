@@ -1,17 +1,32 @@
 @page
 
-<p>The term precedes most time based variables in the app. Parts of term, which can be assigned to courses, can only be createed after a term is created.</p>
-<br />
+<section style="border-bottom: groove">
+    <p>
+        The Term variable in this software refers to time based variables that can have courses assigned to them. Terms contain term parts, a sub-variable consisting of a name and two dates. The earliest date and latest date in a term, even if they belong to different Parts of Term, create the total date range of the overarching Term.
+    </p>
+</section>
 
 <section style="border-bottom: groove">
     <br />
     <h2>Creating Terms</h2>
     <img src="~/images/Add_Term.PNG" alt="Add Term" />
     <br />
-    <p>Enter the start date, either by keyboard or with the drop down calender menu. Enter the end date with the same method. Give the term an appropriate name (I.e. Fall 2019). Then click create.</p>
+    <p>
+       The initial creation of a term variable is simply the name of the term. It would be wise to use a descriptive name. The most common name is a combination of a semester and a year (I.E. Spring 2019).
+    </p>
+    <img src="~/images/Add_Term_Extended.PNG" />
     <br />
-    <p>The new term will be added to the database and the software will navigate to the management page. NOTE: No two terms may have the same name.</p>
+    <p>
+        Once the term is created, the add page will change. It now includes a list of Term Parts and more accurately reflects the Term Edit page. After the initial create, this list will be empty, only containing the headers. Click "Create New" in the new section to add a Part of Term.
+    </p>
+    <img src="~/images/Add_Part_of_Term.PNG" />
     <br />
+    <p>
+        Each part of term consists of a name and two dates. The name should be descriptive (such as First Half). The Start Date and End Date must be in sequential order.
+    </p>
+    <p>
+        Note that, in addition to traditional keyboard entry, the date fields also contain intuitive entry navigation menus. These menus contain calendar views, arrow buttons, and calendars by year.
+    </p>
 </section>
 
 <section>
@@ -19,19 +34,26 @@
     <h2>Managing Terms</h2>
     <img src="~/images/Manage_Terms.PNG" alt="Manage Terms" />
     <br />
-    <p>This screen can be reached by clicking the "Manage" button, or after entering a new term. If no terms have been entered, this page will appear blank, and the buttons will not be present.</p>
-    <br />
-    <p>Terms have some specialized buttons attached to their management page:</p>
+    <p>
+        This page lists the names of the terms, as well as the earliest Start Date and latest End Date of all that terms Parts. There are also a few additional links to the standard Manage page trio:
+    </p>
     <br />
 
     <ul>
         <li>Course Sections</li>
-        <p>This navigates to the time blocks(?) available within the given term. [For viewing only]</p>
-        <br />
-        <li>Parts of Term</li>
-        <p>The sections associated with the term (half semester, full semester, etc.). [For viewing only]</p>
-        <br />
+        <p>
+            This lists the courses that have been assigned to a Term and its subsequent Parts.
+        </p>
         <li>Duplicate</li>
-        <p>{What is this for?}</p>
+        <p>
+            This function mimics the Edit/Create function, except that it retains all details of an existing term. So it copies an existing term, the user assigns a new name, and the term is added to the database.
+        </p>
+        <p>
+            It is generally good practice to use the Edit link to adjust the recent copy's Parts of Term dates to more accurately reflect the weekly schedule it takes part in. For instance, duplicating Fall 2019 to create Fall 2020, one would adjust the Start and End dates of Fall 2020 to ensure they fall on weekdays.
+        </p>
+        <li>Details</li>
+        <p>
+            Displays the Term name and a list of its associated Term Parts.
+        </p>
     </ul>
 </section>
