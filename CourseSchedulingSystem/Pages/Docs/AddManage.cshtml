@@ -1,33 +1,75 @@
 @page
 
+<section style="border-bottom: groove">
+    <p>
+        While the most common way to reach these respective pages is through the main menu, users should note that there are other navigation links throughout the app that will also move to these pages. The Add and Manage pages are paired with one another based on the current variable.
+    </p>
+    <img src="~/images/Create_New_Link.PNG" style="margin-left: initial" />
+    <p>
+        This link also navigates to the Add page. It typically appears at the top of a Manage page.
+    </p>
+    <img src="~/images/Back_To_List_Link.PNG" style="margin-left: initial" />
+    <p>
+        This link also navigates to the Manage page. It typically appears at the bottom of an Add page.
+    </p>
+</section>
+
 <section style="border-bottom:groove">
-    <h2>Add</h2>
-    <p>The add button navigates to a creation page for the selected variable type. The fields will typically include a name field and at least one limited entry field. Limited entry refers to a component that is limited by the number of entry characters or the type of charscters entered</p>
     <br />
+    <h2>Add</h2>
     <img src="~/images/Standard_Add_Page.PNG" alt="Example Add Page" />
     <br />
-    <p>For instance, terms have a name entry and two date entries. The date fields are limited to numerical entries of mm/dd/yyyy.</p>
-    <br />
+
+    <p>
+        The Add button navigates to a creation page for the selected variable. While the create page varies for each variable, it most commonly features at least one name input field and a limited entry field.
+    </p>
+    <p>
+        Limited entry means that the component may only accept a specific number and/or types of characters. If the entered characters are incorrect, a message will display under the field, clarifying what must be entered. As an example, the date might need to be entered as mm/dd/yyyy, with each of the characters being a number.
+    </p>
+    <p>
+        Some variable creation pages will contain drop-down menus occupied by pre-existing choices. Often, these choices will be other variables handled by the software. SImply choose the desired variable clicking on it. Users can find them via scrolling or entering the first few letters in the name to quick-search for it.
+    </p>
+    <p>
+        If a required field is left blank, it will display a message upon clicking the create button. As a rule of thumb, most open-entry and drop-down menu fields are required. More detailed information on the required fields can be viewed in each variable's manual page.
+    </p>
+    <p>
+        Note that some variable fields are not allowed to match those of other variables. For instance, there can not be two Departments with the code MM, nor two Subjects with the name Mathematics.
+    </p>
 </section>
 
 <section>
+    <br />
     <h2>Manage</h2>
     <img src="~/images/Standard_Manage_Page.PNG" alt="Example Manage Page" />
     <br />
-    <p>The Manage page of every variable will have at least these three buttons. Their functions are as follows:</p>
+    
+    <p>
+        The manage button navigates to a list of variables already contained in the system. They will typically display in the list by name. There are buttons out to the side of each entry in the list. They are typically:
+    </p>
     <br />
 
     <ul>
         <li>Edit</li>
-        <p>Navigates to a page wherein the user may change details of the variable already in the database.</p>
-        <br />
+        <p>
+            This link navigates to a page very similar to the given variable's create page. The fields will be filled in with the information about the selected variable. These fields can be altered and saved. They follow the rules of the Add page.
+        </p>
         <li>Details</li>
-        <p>Lists the details associated with the specified variable.</p>
-        <br />
+        <p>
+            While the name and one or two additional bits of information are presented in the Manage list, many variables have additional information that can be viewed with this link. It will also display linked variables, such as the courses attached to a department.
+        </p>
+
+        <!--I don't think we need a screenshot of the delete page here. Nor do we need a whole other section of the manual for it.-->
         <li>Delete</li>
-        <p>This will delete the specified variable. A second screen will appear to double check the decision. Some deletes may not be possible due to codependence. [Screenshot of delete warning page]</p>
+        <p>
+            This will navigate to the Delete page of a specified variable. The page will ask if you are sure you want to proceed, display information about the selected variable, a delete button, and "Back to List" link at the bottom.
+        </p>
+        <p>
+            Some variables may not be deleted due to their connection to dependence by another variable. A message will display at the top of the delete page, and the Delete button will be unclickable.
+        </p>
     </ul>
 
     <br />
-    <p>** Additional buttons within management pages will be covered in their matching sections of the tutorial. **</p>
+    <p>
+        Note that the above are not the only buttons that will display in the Manage screen. They are simply the most common. Additional buttons will be explained as they appear in their appropriate variable manual pages.
+    </p>
 </section>
