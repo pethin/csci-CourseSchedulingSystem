@@ -31,12 +31,12 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return NotFound();
             }
 
-            var room = await _context.Room
+            var room = await _context.Rooms
                 .Include(r => r.RoomRoomCapability)
                 .ThenInclude(cat => cat.RoomCapability)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            Room = await _context.Room.FirstOrDefaultAsync(m => m.Id == id);
+            Room = await _context.Rooms.FirstOrDefaultAsync(m => m.Id == id);
 
             RoomModel = new RoomInputModel
             {
@@ -51,7 +51,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             }
 
 
-            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true), "Id", "Code");
+            ViewData["BuildingId"] = new SelectList(_context.Buildings.Where(bd => bd.IsEnabled == true), "Id", "Code");
             return Page();
         }
 
@@ -61,12 +61,12 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             {
                 return Page();
             }
-            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true), "Id", "Code");
+            ViewData["BuildingId"] = new SelectList(_context.Buildings.Where(bd => bd.IsEnabled == true), "Id", "Code");
             _context.Attach(Room).State = EntityState.Modified;
 
-            Room = await _context.Room.FirstOrDefaultAsync(m => m.Id == id);
+            Room = await _context.Rooms.FirstOrDefaultAsync(m => m.Id == id);
 
-            var room = await _context.Room
+            var room = await _context.Rooms
                 .Include(r => r.RoomRoomCapability)
                 .ThenInclude(cat => cat.RoomCapability)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -99,7 +99,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
         private bool RoomExists(Guid id)
         {
-            return _context.Room.Any(e => e.Id == id);
+            return _context.Rooms.Any(e => e.Id == id);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
                 return NotFound();
             }
 
-            RoomCapability = await _context.RoomCapability.FirstOrDefaultAsync(m => m.Id == id);
+            RoomCapability = await _context.RoomCapabilities.FirstOrDefaultAsync(m => m.Id == id);
 
             if (RoomCapability == null)
             {
@@ -49,7 +49,7 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 
             _context.Attach(RoomCapability).State = EntityState.Modified;
 
-            var roomCapability = await _context.RoomCapability.FindAsync(id);
+            var roomCapability = await _context.RoomCapabilities.FindAsync(id);
             if (await TryUpdateModelAsync(roomCapability, "RoomCapability", cp => cp.Name))
             {
                 await roomCapability.DbValidateAsync(_context).ForEachAsync(result =>
@@ -67,7 +67,7 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 
         private bool RoomCapabilityExists(Guid id)
         {
-            return _context.RoomCapability.Any(e => e.Id == id);
+            return _context.RoomCapabilities.Any(e => e.Id == id);
         }
     }
 }

@@ -21,8 +21,8 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomRoomCapabilities
 
         public IActionResult OnGet()
         {
-        ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Number");
-        ViewData["RoomCapabilityId"] = new SelectList(_context.RoomCapability, "Id", "Name");
+        ViewData["RoomId"] = new SelectList(_context.Rooms, "Id", "Number");
+        ViewData["RoomCapabilityId"] = new SelectList(_context.RoomCapabilities, "Id", "Name");
             return Page();
         }
 
@@ -36,7 +36,7 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomRoomCapabilities
                 return Page();
             }
 
-            _context.RoomRoomCapability.Add(RoomRoomCapability);
+            _context.RoomRoomCapabilities.Add(RoomRoomCapability);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

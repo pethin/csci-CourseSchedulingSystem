@@ -45,7 +45,7 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.RoomCapability.Add(RoomCapability);
+                _context.RoomCapabilities.Add(RoomCapability);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }

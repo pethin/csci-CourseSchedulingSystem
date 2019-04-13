@@ -23,7 +23,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
         public async Task OnGetAsync()
         {
-            Room = await _context.Room
+            Room = await _context.Rooms
                 .Include(r => r.Building).ToListAsync();
         }
     }

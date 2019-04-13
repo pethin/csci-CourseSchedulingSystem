@@ -46,7 +46,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
                 
                 if (!ModelState.IsValid) return Page();
 
-                _context.Building.Add(Building);
+                _context.Buildings.Add(Building);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }

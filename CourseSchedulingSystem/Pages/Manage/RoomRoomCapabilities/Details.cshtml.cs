@@ -28,7 +28,7 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomRoomCapabilities
                 return NotFound();
             }
 
-            RoomRoomCapability = await _context.RoomRoomCapability
+            RoomRoomCapability = await _context.RoomRoomCapabilities
                 .Include(r => r.Room)
                 .Include(r => r.RoomCapability).FirstOrDefaultAsync(m => m.RoomId == id);
 

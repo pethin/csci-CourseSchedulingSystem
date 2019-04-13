@@ -23,7 +23,7 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
 
         public async Task OnGetAsync()
         {
-            RoomCapability = await _context.RoomCapability.ToListAsync();
+            RoomCapability = await _context.RoomCapabilities.ToListAsync();
         }
     }
 }

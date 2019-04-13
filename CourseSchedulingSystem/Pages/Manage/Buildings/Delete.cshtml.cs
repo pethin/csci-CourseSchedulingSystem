@@ -29,7 +29,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
                 return NotFound();
             }
 
-            Building = await _context.Building.FirstOrDefaultAsync(m => m.Id == id);
+            Building = await _context.Buildings.FirstOrDefaultAsync(m => m.Id == id);
 
             if (Building == null)
             {
@@ -45,11 +45,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
                 return NotFound();
             }
 
-            Building = await _context.Building.FindAsync(id);
+            Building = await _context.Buildings.FindAsync(id);
 
             if (Building != null)
             {
-                _context.Building.Remove(Building);
+                _context.Buildings.Remove(Building);
                 await _context.SaveChangesAsync();
             }
 

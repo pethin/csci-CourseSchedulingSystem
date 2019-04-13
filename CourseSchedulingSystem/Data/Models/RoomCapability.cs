@@ -43,7 +43,7 @@ namespace CourseSchedulingSystem.Data.Models
             return new AsyncEnumerable<ValidationResult>(async yield =>
             {
                 // Check if any schedule type has the same name
-                if (await context.RoomCapability
+                if (await context.RoomCapabilities
                     .Where(cp => cp.Id != Id)
                     .Where(cp => cp.NormalizedName == NormalizedName)
                     .AnyAsync())

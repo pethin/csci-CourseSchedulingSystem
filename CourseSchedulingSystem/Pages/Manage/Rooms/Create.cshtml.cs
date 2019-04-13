@@ -22,7 +22,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
         public IActionResult OnGet()
         {
-            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true), "Id", "Code");
+            ViewData["BuildingId"] = new SelectList(_context.Buildings.Where(bd => bd.IsEnabled == true), "Id", "Code");
             return Page();
         }
 
@@ -35,19 +35,19 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             {
                 return Page();
             }
-            ViewData["BuildingId"] = new SelectList(_context.Building.Where(bd => bd.IsEnabled == true), "Id", "Code");
+            ViewData["BuildingId"] = new SelectList(_context.Buildings.Where(bd => bd.IsEnabled == true), "Id", "Code");
             await _context.SaveChangesAsync();
 
             var room = new Room();
 
-            var RoomCapabilityTypes = _context.RoomCapability
+            var RoomCapabilityTypes = _context.RoomCapabilities
             .Where(at => RoomModel.RoomCapabilityIds.Contains(at.Id))
             .Select(at => new RoomRoomCapability
             {
                 RoomId = Room.Id,
                 RoomCapabilityId = at.Id
             });
-            _context.RoomRoomCapability.AddRange(RoomCapabilityTypes);
+            _context.RoomRoomCapabilities.AddRange(RoomCapabilityTypes);
 
             if (await TryUpdateModelAsync(room, "Room", r => r.Number, r => r.BuildingId))
             {
@@ -58,7 +58,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.Room.Add(Room);
+                _context.Rooms.Add(Room);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }

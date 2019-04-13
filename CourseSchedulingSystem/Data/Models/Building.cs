@@ -59,7 +59,7 @@ namespace CourseSchedulingSystem.Data.Models
             return new AsyncEnumerable<ValidationResult>(async yield =>
             {
                 // Check if any other building has the same code
-                if (await context.Building
+                if (await context.Buildings
                     .Where(bd => bd.Id != Id)
                     .Where(bd => bd.Code == Code)
                     .AnyAsync())
@@ -69,7 +69,7 @@ namespace CourseSchedulingSystem.Data.Models
                 }
 
                 // Check if any other building has the same name
-                if (await context.Building
+                if (await context.Buildings
                     .Where(bd => bd.Id != Id)
                     .Where(bd => bd.NormalizedName == NormalizedName)
                     .AnyAsync())

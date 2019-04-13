@@ -29,7 +29,7 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
                 return NotFound();
             }
 
-            RoomCapability = await _context.RoomCapability.FirstOrDefaultAsync(m => m.Id == id);
+            RoomCapability = await _context.RoomCapabilities.FirstOrDefaultAsync(m => m.Id == id);
 
             if (RoomCapability == null)
             {
@@ -45,14 +45,14 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomCapabilities
                 return NotFound();
             }
 
-            RoomCapability = await _context.RoomCapability
+            RoomCapability = await _context.RoomCapabilities
                  .Include(ca => ca.RoomRoomCapability)
                  .ThenInclude(cca => cca.Room)
                  .FirstOrDefaultAsync(m => m.Id == id);
 
             if (RoomCapability != null)
             {
-                _context.RoomCapability.Remove(RoomCapability);
+                _context.RoomCapabilities.Remove(RoomCapability);
                 await _context.SaveChangesAsync();
             }
 

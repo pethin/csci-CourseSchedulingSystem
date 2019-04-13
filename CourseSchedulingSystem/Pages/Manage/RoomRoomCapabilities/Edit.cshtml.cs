@@ -30,7 +30,7 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomRoomCapabilities
                 return NotFound();
             }
 
-            RoomRoomCapability = await _context.RoomRoomCapability
+            RoomRoomCapability = await _context.RoomRoomCapabilities
                 .Include(r => r.Room)
                 .Include(r => r.RoomCapability).FirstOrDefaultAsync(m => m.RoomId == id);
 
@@ -38,8 +38,8 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomRoomCapabilities
             {
                 return NotFound();
             }
-           ViewData["RoomId"] = new SelectList(_context.Room, "Id", "Number");
-           ViewData["RoomCapabilityId"] = new SelectList(_context.RoomCapability, "Id", "Name");
+           ViewData["RoomId"] = new SelectList(_context.Rooms, "Id", "Number");
+           ViewData["RoomCapabilityId"] = new SelectList(_context.RoomCapabilities, "Id", "Name");
             return Page();
         }
 
@@ -73,7 +73,7 @@ namespace CourseSchedulingSystem.Pages.Manage.RoomRoomCapabilities
 
         private bool RoomRoomCapabilityExists(Guid id)
         {
-            return _context.RoomRoomCapability.Any(e => e.RoomId == id);
+            return _context.RoomRoomCapabilities.Any(e => e.RoomId == id);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
         {
             _context = context;
         }
-        public IEnumerable<SelectListItem> RoomCapabilityOptions => _context.RoomCapability.Select(st => new SelectListItem
+        public IEnumerable<SelectListItem> RoomCapabilityOptions => _context.RoomCapabilities.Select(st => new SelectListItem
         {
             Value = st.Id.ToString(),
             Text = st.Name
