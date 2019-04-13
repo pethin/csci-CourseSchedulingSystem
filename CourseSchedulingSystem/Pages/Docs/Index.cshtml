@@ -3,18 +3,26 @@
 <section>
     <h2>Introduction</h2>
 
-    <p>This manual is included with the software to assist with familiarization. It will also include brief descriptions of individual elements and how they interact with each other, to further assist in your understanding.</p>
-    <br />
-    <p>To see information on a particular software element, simply click its name in the left panel.</p>
-    <br />
-    <p>The components of this software can be viewed in a loose processive tier. Various variables can be created to describe and categorize courses. Other variables, such as terms and buildings, are assigned courses in the creation of a schedule. The schedule is the culmination of the time, location, person, and course variables.</p>
-    <br />
-    <p>This means that some of the variables are dependent on other variables. For instance, a Course MUST have a subject variable assigned to it upon creation. These limitations are accounted for, so do not worry about breaking the database by deleting something that other variables depend on. [Assumed that subjects can’t be deleted if active courses rely on them]</p>
-    <br />
-    <p>[Maybe a diagram?]</p>
-    <br />
-    <p>These variables are stored in a basic SQL database. Each variable has its own table, and they are connected to each other through certain values. For instance, a Subject has its own table of values, and every Course (also in its own table) will reference a value from that table. This database is not stored locally, which means the elements are accessible to all approved Users. Any created variable or schedule may be accessed by any other approved user.</p>
-    <br />
-    <p>{^Without the implementation of groups, Is this accurate?}</p>
+    <p>
+        This manual is included with the software to assist with familiarization. It will also include brief descriptions of individual elements and how they interact with each other, to further assist in your understanding.
+    </p>
+    <p>
+        To see information on a particular software element, simply click its name in the left panel.
+    </p>
+    <p>
+        The components of this software can be viewed in a loose processive tier. Various variables can be created to describe and categorize courses. Other variables, such as terms and buildings, are assigned courses in the creation of a schedule. The schedule is the culmination of the time, location, person, and course variables.
+    </p>
+    <p>
+        This means that some of the variables are dependent on other variables. For instance, a Course MUST have a subject variable assigned to it upon creation. These limitations are accounted for, so do not worry about breaking the database by deleting something that other variables depend on.
+    </p>
+    <p>
+        [Maybe a diagram?]
+    </p>
+    <p>
+        These variables are stored in a basic SQL database. Each variable has its own table, and they are connected to each other through certain values. For instance, a Subject has its own table of values, and every Course (also in its own table) will reference a value from that table. This database is not stored locally, which means the elements are accessible to all approved Users. Any created variable or schedule may be accessed by any other approved user.
+    </p>
+    <p>
+        {^Without the implementation of groups, Is this accurate?}
+    </p>
 </section>
 
