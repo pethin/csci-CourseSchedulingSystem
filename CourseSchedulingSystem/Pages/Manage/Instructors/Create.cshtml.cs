@@ -32,7 +32,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
             if (await TryUpdateModelAsync(
                 instructor,
                 "Instructor",
-                i => i.FirstName, i => i.Middle, i => i.LastName))
+                i => i.FirstName, i => i.Middle, i => i.LastName, i => i.IsActive))
             {
                 await instructor.DbValidateAsync(_context).ForEachAsync(result =>
                 {

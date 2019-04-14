@@ -23,16 +23,15 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
 
         [BindProperty] public TermPart TermPart { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? termId, Guid? id, string returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (termId == null || id == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             TermPart = await _context.TermParts
                 .Include(t => t.Term)
-                .Where(tp => tp.TermId == termId)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (TermPart == null)
@@ -43,7 +42,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? termId, Guid? id, string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
             if (!ModelState.IsValid)
             {
@@ -52,7 +51,6 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
 
             var termPart = await _context.TermParts
                 .Include(t => t.Term)
-                .Where(tp => tp.TermId == termId)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (await TryUpdateModelAsync(

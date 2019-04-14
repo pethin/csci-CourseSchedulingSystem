@@ -1,60 +1,117 @@
-﻿@page
+﻿@page "{id:Guid}"
+@using Microsoft.EntityFrameworkCore
 @model CourseSchedulingSystem.Pages.Manage.CourseSections.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = $"Edit Course Section - {Model.Term.Name}";
 }
 
 <h1>Edit</h1>
 
-<h4>CourseSection</h4>
-<hr />
+<h4>@Model.Term.Name - Course Section</h4>
+<hr/>
+@if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
+{
+    <div class="alert alert-success">@Model.SuccessMessage</div>
+}
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-8">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CourseSection.Id" />
-            <div class="form-group">
-                <label asp-for="CourseSection.TermPartId" class="control-label"></label>
-                <select asp-for="CourseSection.TermPartId" class="form-control" asp-items="ViewBag.TermPartId"></select>
-                <span asp-validation-for="CourseSection.TermPartId" class="text-danger"></span>
-            </div>
             <div class="form-group">
                 <label asp-for="CourseSection.CourseId" class="control-label"></label>
-                <select asp-for="CourseSection.CourseId" class="form-control" asp-items="ViewBag.CourseId"></select>
-                <span asp-validation-for="CourseSection.CourseId" class="text-danger"></span>
+                <select asp-for="CourseSection.CourseId" class="form-control" asp-items="Model.CourseIds"></select>
             </div>
             <div class="form-group">
                 <label asp-for="CourseSection.Section" class="control-label"></label>
-                <input asp-for="CourseSection.Section" class="form-control" />
+                <input asp-for="CourseSection.Section" class="form-control"/>
                 <span asp-validation-for="CourseSection.Section" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CourseSection.ScheduleTypeId" class="control-label"></label>
-                <select asp-for="CourseSection.ScheduleTypeId" class="form-control" asp-items="ViewBag.ScheduleTypeId"></select>
-                <span asp-validation-for="CourseSection.ScheduleTypeId" class="text-danger"></span>
+                <select asp-for="CourseSection.ScheduleTypeId" class="form-control" asp-items="Model.ScheduleTypeIds"></select>
             </div>
             <div class="form-group">
                 <label asp-for="CourseSection.InstructionalMethodId" class="control-label"></label>
-                <select asp-for="CourseSection.InstructionalMethodId" class="form-control" asp-items="ViewBag.InstructionalMethodId"></select>
-                <span asp-validation-for="CourseSection.InstructionalMethodId" class="text-danger"></span>
+                <select asp-for="CourseSection.InstructionalMethodId" class="form-control" asp-items="Model.InstructionalMethodIds"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="CourseSection.TermPartId" class="control-label"></label>
+                <select asp-for="CourseSection.TermPartId" class="form-control" asp-items="Model.TermPartIds"></select>
             </div>
             <div class="form-group">
                 <label asp-for="CourseSection.MaximumCapacity" class="control-label"></label>
-                <input asp-for="CourseSection.MaximumCapacity" class="form-control" />
+                <input asp-for="CourseSection.MaximumCapacity" class="form-control"/>
                 <span asp-validation-for="CourseSection.MaximumCapacity" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary"/>
             </div>
         </form>
     </div>
 </div>
+<hr/>
+<h4 class="mb-0">Scheduled Meeting Times</h4>
+<div class="mb-2"></div>
+<p>
+    <a asp-page="./ScheduledMeetingTimes/Create" asp-route-sectionId="@Model.CourseSection.Id">Create New</a>
+</p>
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CourseSection.ScheduledMeetingTimes[0].MeetingTypeId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CourseSection.ScheduledMeetingTimes[0].StartTimeText)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CourseSection.ScheduledMeetingTimes[0].EndTimeText)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CourseSection.ScheduledMeetingTimes[0].DaysOfWeek)
+        </th>
+        <th>Instructor</th>
+        <th>Location</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.CourseSection.ScheduledMeetingTimes.OrderBy(smt => smt.MeetingType.Code))
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.MeetingType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTimeText)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndTimeText)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DaysOfWeek)
+            </td>
+            <td>TODO</td>
+            <td>TODO</td>
+            <td>
+                <form method="post" class="d-inline">
+                    <input type="hidden" name="meetingTimeId" value="@item.Id"/>
+                    <input value="Duplicate" class="btn btn-link p-0 cancel" type="submit" asp-page-handler="DuplicateMeetingTime">
+                </form> |
+                <a asp-page="./ScheduledMeetingTimes/Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./ScheduledMeetingTimes/Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./ScheduledMeetingTimes/Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Index" asp-route-termId="@Model.Term.Id">Back to List</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

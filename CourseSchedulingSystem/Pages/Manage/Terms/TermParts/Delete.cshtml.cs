@@ -20,18 +20,18 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
 
         [BindProperty] public TermPart TermPart { get; set; }
 
-        public bool InUse => false;
-
-        public async Task<IActionResult> OnGetAsync(Guid? termId, Guid? id, string returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(Guid? id)
         {
-            if (termId == null || id == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
             TermPart = await _context.TermParts
                 .Include(t => t.Term)
-                .Where(tp => tp.TermId == termId)
+                .Include(t => t.CourseSections)
+                .ThenInclude(cs => cs.Course)
+                .ThenInclude(c => c.Subject)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (TermPart == null)
@@ -42,21 +42,18 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? termId, Guid? id, string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
-            if (termId == null || id == null) return NotFound();
+            if (id == null) return NotFound();
 
             TermPart = await _context.TermParts
                 .Include(t => t.Term)
-                .Where(tp => tp.TermId == termId)
+                .Include(t => t.CourseSections)
+                .ThenInclude(cs => cs.Course)
+                .ThenInclude(c => c.Subject)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (TermPart == null) return NotFound();
-
-            if (InUse)
-            {
-                return Page();
-            }
 
             _context.TermParts.Remove(TermPart);
             await _context.SaveChangesAsync();

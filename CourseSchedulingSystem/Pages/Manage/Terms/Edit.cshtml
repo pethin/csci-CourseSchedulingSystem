@@ -64,8 +64,9 @@
                 @Html.DisplayFor(modelItem => item.EndDate)
             </td>
             <td>
-                <a asp-page="./TermParts/Edit" asp-route-termId="@Model.Term.Id" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action("")">Edit</a> |
-                <a asp-page="./TermParts/Delete" asp-route-termId="@Model.Term.Id" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action("")">Delete</a>
+                <a asp-page="./TermParts/Details" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action("")">Details</a> |
+                <a asp-page="./TermParts/Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./TermParts/Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
     }

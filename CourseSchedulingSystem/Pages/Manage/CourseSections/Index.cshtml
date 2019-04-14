@@ -1,59 +1,72 @@
-﻿@page
+﻿@page "{termId:Guid}"
+@using Microsoft.EntityFrameworkCore
 @model CourseSchedulingSystem.Pages.Manage.CourseSections.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = $"{Model.Term.Name} - Course Sections";
 }
 
-<h1>Index</h1>
+<h1><a asp-page="../Terms/Details" asp-route-id="@Model.Term.Id">@Model.Term.Name</a> - Course Sections</h1>
 
 <p>
-    <a asp-page="Create">Create New</a>
+    <a asp-page="Create" asp-route-termId="@Model.Term.Id">Create New</a>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.CourseSection[0].TermPart)
+                @Html.DisplayNameFor(model => model.CourseSections[0].CourseId)
+            </th>
+            <th class="text-right">
+                @Html.DisplayNameFor(model => model.CourseSections[0].Section)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CourseSection[0].Course)
+                @Html.DisplayNameFor(model => model.CourseSections[0].ScheduleTypeId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CourseSection[0].Section)
+                @Html.DisplayNameFor(model => model.CourseSections[0].InstructionalMethodId)
+            </th>
+            <th class="text-right">
+                @Html.DisplayNameFor(model => model.CourseSections[0].MaximumCapacity)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CourseSection[0].ScheduleType)
+                @Html.DisplayNameFor(model => model.CourseSections[0].TermPartId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CourseSection[0].InstructionalMethod)
+                @Html.DisplayNameFor(model => model.CourseSections[0].TermPart.StartDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CourseSection[0].MaximumCapacity)
+                @Html.DisplayNameFor(model => model.CourseSections[0].TermPart.EndDate)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.CourseSection) {
+@foreach (var item in Model.CourseSections) {
         <tr>
+            <td>
+                <a asp-page="../Courses/Details" asp-route-id="@item.CourseId">@Html.DisplayFor(modelItem => item.Course.Identifier)</a>
+            </td>
+            <td class="text-right">
+                @Html.DisplayFor(modelItem => item.Section)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ScheduleType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InstructionalMethod.Name)
+            </td>
+            <td class="text-right">
+                @Html.DisplayFor(modelItem => item.MaximumCapacity)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.TermPart.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Course.Number)
+                @Html.DisplayFor(modelItem => item.TermPart.StartDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Section)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ScheduleType.Code)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InstructionalMethod.Code)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaximumCapacity)
+                @Html.DisplayFor(modelItem => item.TermPart.EndDate)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |

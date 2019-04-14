@@ -1,26 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
+using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Pages.Manage.CourseSections
 {
     public class DeleteModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DeleteModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public DeleteModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        [BindProperty]
-        public CourseSection CourseSection { get; set; }
+        [BindProperty] public CourseSection CourseSection { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -30,15 +27,21 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             }
 
             CourseSection = await _context.CourseSections
+                .Include(c => c.TermPart)
+                .ThenInclude(tp => tp.Term)
                 .Include(c => c.Course)
+                .ThenInclude(c => c.Subject)
                 .Include(c => c.InstructionalMethod)
                 .Include(c => c.ScheduleType)
-                .Include(c => c.TermPart).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(c => c.ScheduledMeetingTimes)
+                .ThenInclude(smt => smt.MeetingType)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (CourseSection == null)
             {
                 return NotFound();
             }
+
             return Page();
         }
 
@@ -49,15 +52,19 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 return NotFound();
             }
 
-            CourseSection = await _context.CourseSections.FindAsync(id);
+            CourseSection = await _context.CourseSections
+                .Include(cs => cs.TermPart)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (CourseSection != null)
+            if (CourseSection == null)
             {
-                _context.CourseSections.Remove(CourseSection);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
 
-            return RedirectToPage("./Index");
+            _context.CourseSections.Remove(CourseSection);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("./Index", new {termId = CourseSection.TermPart.TermId});
         }
     }
 }

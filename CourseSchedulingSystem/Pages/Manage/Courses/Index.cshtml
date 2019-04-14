@@ -61,6 +61,7 @@
                 $displayEl.empty().append($btn);
             };
             var grid = $('#grid').grid({
+                uiLibrary: 'bootstrap4',
                 dataSource: "@Url.Page("Index", "data")",
                 paramNames: {
                     page: 'pageNumber'
