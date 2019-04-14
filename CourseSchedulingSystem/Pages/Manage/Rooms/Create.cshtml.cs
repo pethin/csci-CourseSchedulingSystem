@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using System.Collections.Async;
+using CourseSchedulingSystem.Utilities;
 
 namespace CourseSchedulingSystem.Pages.Manage.Rooms
 {
@@ -39,6 +40,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             await _context.SaveChangesAsync();
 
             var room = new Room();
+            await room.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
+            _context.Rooms.Add(Room);
+            await _context.SaveChangesAsync();
 
             var RoomCapabilityTypes = _context.RoomCapabilities
             .Where(at => RoomModel.RoomCapabilityIds.Contains(at.Id))
@@ -49,20 +53,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             });
             _context.RoomRoomCapabilities.AddRange(RoomCapabilityTypes);
 
-            if (await TryUpdateModelAsync(room, "Room", r => r.Number, r => r.BuildingId))
-            {
-                await room.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
 
                 if (!ModelState.IsValid) return Page();
 
-                _context.Rooms.Add(Room);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
-            }
-            return Page();
         }
     }
 }
