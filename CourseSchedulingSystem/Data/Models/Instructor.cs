@@ -63,10 +63,15 @@ namespace CourseSchedulingSystem.Data.Models
         public string NormalizedName { get; private set; }
 
         [NotMapped]
+        [Display(Name = "Name")]
         public string FullName =>
             string.Join(" ",
                 new List<String> {FirstName, Middle, LastName}
                     .Where(part => !string.IsNullOrWhiteSpace(part)));
+        
+        [Required]
+        [Display(Name = "Active?")]
+        public bool IsActive { get; set; }
         
         public List<ScheduledMeetingTimeInstructor> ScheduledMeetingTimeInstructors { get; set; }
 

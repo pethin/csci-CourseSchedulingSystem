@@ -14,13 +14,10 @@
     <thead>
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Instructor[0].FirstName)
+            @Html.DisplayNameFor(model => model.Instructor[0].FullName)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.Instructor[0].Middle)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Instructor[0].LastName)
+            @Html.DisplayNameFor(model => model.Instructor[0].IsActive)
         </th>
         <th></th>
     </tr>
@@ -30,13 +27,10 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
+                @Html.DisplayFor(modelItem => item.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Middle)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
+                @Html.DisplayFor(modelItem => item.IsActive)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |

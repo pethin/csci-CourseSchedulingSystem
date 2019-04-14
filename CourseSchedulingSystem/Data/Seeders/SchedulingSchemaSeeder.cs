@@ -26,8 +26,8 @@ namespace CourseSchedulingSystem.Data.Seeders
         /// </summary>
         private static readonly List<MeetingType> MeetingTypes = new List<MeetingType>
         {
-            new MeetingType(Guid.Parse("00000000-0000-0000-0000-000000000001"), "CLAS", "Class"),
-            new MeetingType(Guid.Parse("00000000-0000-0000-0000-000000000002"), "CLSS", "Additional Class time")
+            MeetingType.ClassMeetingType,
+            MeetingType.AdditionalClassTimeMeetingType
         };
 
         private readonly ApplicationDbContext _context;
