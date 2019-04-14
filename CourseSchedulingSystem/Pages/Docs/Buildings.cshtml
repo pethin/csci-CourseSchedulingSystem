@@ -1,18 +1,32 @@
 @page
 
-<p>Every so often, a new building is added to the campus, or an old building is refurbished for instructional use. This section is for future proofing such circumstances.</p>
+<section>
+    <p>
+        Every so often, a new building is added to the campus or an old building is refurbished for instructional use. The ability to create or modify this variable is intended for future proofing such circumstances.
+    </p>
+    <p>
+        Buildings are a derived variable from Room assignment in the scheduling tool. When a room is assigned a course at a certain time, then the building containing that room, by extension, is also assigned that course.
+    </p>
+</section>
+
 
 <section style="border-bottom: groove">
     <br />
     <h2>Creating Buildings</h2>
     <img src="~/images/Add_Building.PNG" alt="Create Building Page" />
     <br />
-    <p>Every Building has a code and a name. The code is purely for indexing purposes, while the name will be the colloquial that most students and staff use to identify the building.</p>
-    Note also the checkbox that reads "Buidling Enabled". This indicates if the new building will be available for courses. Unchecking the box insures the building will not be listed when constructing schedules.
-    <br />
+    <p>
+        Buildings require a code and a name. The code is typically four letters, derived from the building's name, and will be the aspect of the building most frequently seen in the rest of the software. The letters are automatically capitalized in the system.
+    </p>
+    <p>
+        They are also assigned a flag value that signals their usage as class hosting structures. A checked box next to "Enable Building" allows that building to show up in the Room variable's creation page. For instance, Carroll is a class building, but Wofford is a dormitory; Carroll can host classes and Wofford can not.
+    </p>
 </section>
 
 <section>
     <br />
     <h2>Managing Buildings</h2>
+    <p>
+        "Details" displays the code, name, and enablement status of the selected building. It will also list the rooms within it, [as well as the total number of rooms].
+    </p>
 </section>
