@@ -51,6 +51,8 @@ namespace CourseSchedulingSystem.Data.Models
         [Display(Name = "End Date")]
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
+        
+        public List<CourseSection> CourseSections { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

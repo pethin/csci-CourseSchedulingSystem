@@ -1,4 +1,5 @@
 ﻿@page "{termId:Guid}"
+@using Microsoft.EntityFrameworkCore
 @model CourseSchedulingSystem.Pages.Manage.Terms.TermParts.CreateModel
 
 @{
@@ -7,7 +8,7 @@
 
 <h1>Create</h1>
 
-<h4>Part of Term</h4>
+<h4>@Model.Term.Name - Part of Term</h4>
 <hr/>
 <div class="row">
     <div class="col-md-4">
@@ -40,5 +41,27 @@
 </div>
 
 @section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#TermPart_StartDate').datepicker({
+                uiLibrary: 'bootstrap4',
+                iconsLibrary: 'fontawesome',
+                format: 'yyyy-mm-dd',
+                minDate: moment(),
+                maxDate: function () {
+                    return $('#TermPart_EndDate').val();
+                }
+            });
+            $('#TermPart_EndDate').datepicker({
+                uiLibrary: 'bootstrap4',
+                iconsLibrary: 'fontawesome',
+                format: 'yyyy-mm-dd',
+                minDate: function () {
+                    return $('#TermPart_StartDate').val();
+                }
+            });
+        });
+    </script>
+    
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

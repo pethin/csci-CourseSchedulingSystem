@@ -1,0 +1,50 @@
+﻿@page "{id:Guid}"
+@model CourseSchedulingSystem.Pages.Manage.Terms.TermParts.DetailsModel
+
+@{
+    ViewData["Title"] = $"Details {Model.TermPart.Name} - {Model.TermPart.Term.Name}";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>@Model.TermPart.Term.Name - Part of Term</h4>
+    <hr/>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TermPart.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TermPart.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TermPart.StartDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TermPart.StartDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TermPart.EndDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TermPart.EndDate)
+        </dd>
+        <dt class="col-sm-12">Course Sections</dt>
+        <dd class="col-sm-12">
+            <ul>
+                @for (int i = 0; i < Model.TermPart.CourseSections.Count; i++)
+                {
+                    <li>
+                        <a asp-page="../../CourseSections/Details" asp-route-id="@Model.TermPart.CourseSections[i].Id">
+                            @Model.TermPart.CourseSections[i].Course.Identifier @Html.DisplayFor(model => model.TermPart.CourseSections[i].Section)
+                        </a>
+                    </li>
+                }
+            </ul>
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.TermPart.Id">Edit</a> |
+    <a href="@Model.ReturnUrl">Back to Term</a>
+</div>
