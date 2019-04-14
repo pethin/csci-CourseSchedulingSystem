@@ -1,27 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.CourseSections
 {
-    public class EditModel : PageModel
+    public class EditModel : CourseSectionsPageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
-
-        public EditModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
 
         [BindProperty]
         public CourseSection CourseSection { get; set; }
+        
+        public Term Term { get; set; }
+        public string SuccessMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -29,55 +28,129 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             {
                 return NotFound();
             }
-
-            CourseSection = await _context.CourseSections
-                .Include(c => c.Course)
-                .Include(c => c.InstructionalMethod)
-                .Include(c => c.ScheduleType)
-                .Include(c => c.TermPart).FirstOrDefaultAsync(m => m.Id == id);
+            
+            CourseSection = await Context.CourseSections
+                .Include(c => c.TermPart)
+                .ThenInclude(tp => tp.Term)
+                .Include(cs => cs.ScheduledMeetingTimes)
+                .ThenInclude(smt => smt.MeetingType)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (CourseSection == null)
             {
                 return NotFound();
             }
-           ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Number");
-           ViewData["InstructionalMethodId"] = new SelectList(_context.InstructionalMethods, "Id", "Code");
-           ViewData["ScheduleTypeId"] = new SelectList(_context.ScheduleTypes, "Id", "Code");
-           ViewData["TermPartId"] = new SelectList(_context.TermParts, "Id", "Name");
+            
+            TermPartIds = Context.TermParts
+                .Where(tp => tp.TermId == CourseSection.TermPart.TermId)
+                .OrderBy(tp => tp.Name)
+                .Select(tp => new SelectListItem
+                {
+                    Value = tp.Id.ToString(),
+                    Text = tp.Name + " | " + tp.StartDate.Value.ToString("MM/dd/yyyy") + " - " +
+                           tp.EndDate.Value.ToString("MM/dd/yyyy")
+                });
+            
+            Term = CourseSection.TermPart.Term;
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(Guid? id)
         {
+            if (id == null) return NotFound();
+            
             if (!ModelState.IsValid)
             {
                 return Page();
             }
+            
+            CourseSection = await Context.CourseSections
+                .Include(cs => cs.TermPart)
+                .ThenInclude(tp => tp.Term)
+                .Include(cs => cs.ScheduledMeetingTimes)
+                .ThenInclude(smt => smt.MeetingType)
+                .Where(cs => cs.Id == id)
+                .FirstOrDefaultAsync();
 
-            _context.Attach(CourseSection).State = EntityState.Modified;
+            if (CourseSection == null) return NotFound();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CourseSectionExists(CourseSection.Id))
+            Term = CourseSection.TermPart.Term;
+            
+            TermPartIds = Context.TermParts
+                .Where(tp => tp.TermId == CourseSection.TermPart.TermId)
+                .OrderBy(tp => tp.Name)
+                .Select(tp => new SelectListItem
                 {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                    Value = tp.Id.ToString(),
+                    Text = tp.Name + " | " + tp.StartDate.Value.ToString("MM/dd/yyyy") + " - " +
+                           tp.EndDate.Value.ToString("MM/dd/yyyy")
+                });
+
+            if (await TryUpdateModelAsync(
+                CourseSection,
+                "CourseSection",
+                cs => cs.TermPartId,
+                cs => cs.CourseId,
+                cs => cs.Section,
+                cs => cs.ScheduleTypeId,
+                cs => cs.InstructionalMethodId,
+                cs => cs.MaximumCapacity))
+            {
+                await CourseSection.DbValidateAsync(Context).AddErrorsToModelState(ModelState);
+
+                if (!ModelState.IsValid) return Page();
+
+                await Context.SaveChangesAsync();
+                
+                SuccessMessage = "Course section successfully updated!";
+                return Page();
             }
 
-            return RedirectToPage("./Index");
+            return Page();
         }
-
-        private bool CourseSectionExists(Guid id)
+        
+        public async Task<IActionResult> OnPostDuplicateMeetingTimeAsync(Guid? id, Guid? meetingTimeId)
         {
-            return _context.CourseSections.Any(e => e.Id == id);
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            if (meetingTimeId == null)
+            {
+                ModelState.AddModelError(string.Empty, "Could not duplicate meeting time: missing ID.");
+                return await OnGetAsync(id);
+            }
+
+            var scheduledMeetingTime = await Context.ScheduledMeetingTimes
+                .Include(smt => smt.ScheduledMeetingTimeRooms)
+                .Include(smt => smt.ScheduledMeetingTimeInstructors)
+                .Where(smt => smt.Id == meetingTimeId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (scheduledMeetingTime == null)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $"Could not duplicate meeting time: could not find scheduled meeting time with ID {meetingTimeId}.");
+                return await OnGetAsync(id);
+            }
+            
+            scheduledMeetingTime.Id = Guid.NewGuid();
+            
+            scheduledMeetingTime.MeetingTypeId = MeetingType.AdditionalClassTimeMeetingType.Id;
+            
+            scheduledMeetingTime.ScheduledMeetingTimeRooms
+                .ForEach(smtr => smtr.ScheduledMeetingTimeId = scheduledMeetingTime.Id);
+            
+            scheduledMeetingTime.ScheduledMeetingTimeInstructors
+                .ForEach(smti => smti.ScheduledMeetingTimeId = scheduledMeetingTime.Id);
+
+            Context.ScheduledMeetingTimes.Add(scheduledMeetingTime);
+            await Context.SaveChangesAsync();
+
+            return await OnGetAsync(id);
         }
     }
 }

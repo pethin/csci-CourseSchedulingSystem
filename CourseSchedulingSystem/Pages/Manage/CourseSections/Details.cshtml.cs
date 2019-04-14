@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
+using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Pages.Manage.CourseSections
 {
     public class DetailsModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DetailsModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public DetailsModel(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -29,10 +27,15 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             }
 
             CourseSection = await _context.CourseSections
+                .Include(c => c.TermPart)
+                .ThenInclude(tp => tp.Term)
                 .Include(c => c.Course)
+                .ThenInclude(c => c.Subject)
                 .Include(c => c.InstructionalMethod)
                 .Include(c => c.ScheduleType)
-                .Include(c => c.TermPart).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(c => c.ScheduledMeetingTimes)
+                .ThenInclude(smt => smt.MeetingType)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (CourseSection == null)
             {

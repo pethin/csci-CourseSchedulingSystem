@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
@@ -21,7 +22,9 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         }
         
         [BindProperty]
-        public Guid TermId { get; set; }
+        [Required]
+        [Display(Name = "Term")]
+        public Guid? TermId { get; set; }
 
         public IEnumerable<SelectListItem> TermsOptions => _context.Terms
             .OrderByDescending(term => term.StartDate)
@@ -36,9 +39,33 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         {
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string handler)
         {
-            return Page();
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
+            var term = await _context.Terms
+                .Where(t => t.Id == TermId)
+                .FirstOrDefaultAsync();
+
+            if (term == null)
+            {
+                ModelState.AddModelError(string.Empty, $"Could not find term with id: {TermId}");
+                return Page();
+            }
+
+            switch (handler)
+            {
+                case "AddSection":
+                    return RedirectToPage("Create", new {termId = TermId});
+                case "ManageSections":
+                    return RedirectToPage("Index", new {termId = TermId});
+                default:
+                    ModelState.AddModelError(string.Empty, $"Unknown page handler: {handler}.");
+                    return Page();
+            }
         }
     }
 }

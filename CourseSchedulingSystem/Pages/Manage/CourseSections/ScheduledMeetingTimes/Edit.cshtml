@@ -1,0 +1,134 @@
+﻿@page "{id:Guid}"
+@model CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTimes.EditModel
+
+@{
+    ViewData["Title"] = $"Edit Meeting Time - {Model.CourseSection.Course.Identifier} {Model.CourseSection.Section}";
+}
+
+<h1>Edit</h1>
+
+<h4>@Model.CourseSection.Course.Identifier @Html.DisplayFor(model => model.CourseSection.Section) - Scheduled Meeting Time</h4>
+<hr />
+<form method="post">
+    <div class="row">
+        <div class="col-md-8">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ScheduledMeetingTime.MeetingTypeId" class="control-label"></label>
+                <p class="text-muted">
+                    <small>There should be one <b>Class</b> meeting time. Any additional meeting times should be <b>Additional Class time</b>.</small>
+                </p>
+                <select asp-for="ScheduledMeetingTime.MeetingTypeId" class="form-control" asp-items="Model.MeetingTypeIds"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="ScheduledMeetingTime.StartTime" class="control-label"></label>
+                <input asp-for="ScheduledMeetingTime.StartTime" class="form-control"/>
+                <span asp-validation-for="ScheduledMeetingTime.StartTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ScheduledMeetingTime.EndTime" class="control-label"></label>
+                <input asp-for="ScheduledMeetingTime.EndTime" class="form-control"/>
+                <span asp-validation-for="ScheduledMeetingTime.EndTime" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th class="text-center">
+                        @Html.DisplayNameFor(model => model.ScheduledMeetingTime.Monday)
+                    </th>
+                    <th class="text-center">
+                        @Html.DisplayNameFor(model => model.ScheduledMeetingTime.Tuesday)
+                    </th>
+                    <th class="text-center">
+                        @Html.DisplayNameFor(model => model.ScheduledMeetingTime.Wednesday)
+                    </th>
+                    <th class="text-center">
+                        @Html.DisplayNameFor(model => model.ScheduledMeetingTime.Thursday)
+                    </th>
+                    <th class="text-center">
+                        @Html.DisplayNameFor(model => model.ScheduledMeetingTime.Friday)
+                    </th>
+                    <th class="text-center">
+                        @Html.DisplayNameFor(model => model.ScheduledMeetingTime.Saturday)
+                    </th>
+                    <th class="text-center">
+                        @Html.DisplayNameFor(model => model.ScheduledMeetingTime.Sunday)
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="text-center">
+                        <input asp-for="ScheduledMeetingTime.Monday"/>
+                    </td>
+                    <td class="text-center">
+                        <input asp-for="ScheduledMeetingTime.Tuesday"/>
+                    </td>
+                    <td class="text-center">
+                        <input asp-for="ScheduledMeetingTime.Wednesday"/>
+                    </td>
+                    <td class="text-center">
+                        <input asp-for="ScheduledMeetingTime.Thursday"/>
+                    </td>
+                    <td class="text-center">
+                        <input asp-for="ScheduledMeetingTime.Friday"/>
+                    </td>
+                    <td class="text-center">
+                        <input asp-for="ScheduledMeetingTime.Saturday"/>
+                    </td>
+                    <td class="text-center">
+                        <input asp-for="ScheduledMeetingTime.Sunday"/>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label asp-for="InstructorIds" class="control-label"></label>
+                <select asp-for="InstructorIds" asp-items="Model.InstructorOptions" class="form-control"></select>
+                <span asp-validation-for="InstructorIds" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoomIds" class="control-label"></label>
+                <select asp-for="RoomIds" asp-items="Model.RoomOptions" class="form-control"></select>
+                <span asp-validation-for="RoomIds" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary"/>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-page="../Edit" asp-route-id="@Model.CourseSection.Id">Back to Course Section</a>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#ScheduledMeetingTime_StartTime').timepicker({
+                uiLibrary: 'bootstrap4'
+            });
+            $('#ScheduledMeetingTime_EndTime').timepicker({
+                uiLibrary: 'bootstrap4'
+            });
+
+            $("#InstructorIds").multiSelect();
+            $("#RoomIds").multiSelect();
+        });
+    </script>
+    
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

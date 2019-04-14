@@ -12,7 +12,7 @@ namespace CourseSchedulingSystem.Data.Models
     {
         private string _name;
         private string _code;
-        
+
         public MeetingType()
         {
         }
@@ -23,6 +23,12 @@ namespace CourseSchedulingSystem.Data.Models
             Code = code;
             Name = name;
         }
+
+        [NotMapped] public static readonly MeetingType ClassMeetingType =
+            new MeetingType(Guid.Parse("00000000-0000-0000-0000-000000000001"), "CLAS", "Class");
+
+        [NotMapped] public static readonly MeetingType AdditionalClassTimeMeetingType =
+            new MeetingType(Guid.Parse("00000000-0000-0000-0000-000000000002"), "CLSS", "Additional Class time");
 
         public Guid Id { get; set; }
 
@@ -46,7 +52,7 @@ namespace CourseSchedulingSystem.Data.Models
         }
 
         public string NormalizedName { get; private set; }
-        
+
         public List<ScheduledMeetingTime> ScheduledMeetingTimes { get; set; }
     }
 }
