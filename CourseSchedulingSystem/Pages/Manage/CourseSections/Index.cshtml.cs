@@ -1,33 +1,55 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
+using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Pages.Manage.CourseSections
 {
     public class IndexModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public IndexModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public IndexModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public IList<CourseSection> CourseSection { get;set; }
+        public Term Term { get; set; }
+        public IList<CourseSection> CourseSections { get;set; }
 
-        public async Task OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(Guid? termId)
         {
-            CourseSection = await _context.CourseSections
+            if (termId == null)
+            {
+                return NotFound();
+            }
+
+            Term = await _context.Terms.Where(t => t.Id == termId).FirstOrDefaultAsync();
+
+            if (Term == null)
+            {
+                return NotFound();
+            }
+            
+            CourseSections = await _context.CourseSections
+                .Include(c => c.TermPart)
+                .Where(c => c.TermPart.TermId == Term.Id)
                 .Include(c => c.Course)
+                .ThenInclude(c => c.Subject)
                 .Include(c => c.InstructionalMethod)
                 .Include(c => c.ScheduleType)
-                .Include(c => c.TermPart).ToListAsync();
+                .OrderBy(c => c.Course.Subject.Code)
+                .ThenBy(c => c.Course.Number)
+                .ThenBy(c => c.Section)
+                .ToListAsync();
+
+            return Page();
         }
     }
 }

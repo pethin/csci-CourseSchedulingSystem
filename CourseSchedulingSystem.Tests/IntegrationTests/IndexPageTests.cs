@@ -1,8 +1,11 @@
+using System.Net;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Tests.Factories;
 using CourseSchedulingSystem.Tests.Helpers;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -23,15 +26,18 @@ namespace CourseSchedulingSystem.Tests.IntegrationTests
         public async Task Get_RedirectsToLoginIfNotAuthenticated(string url)
         {
             // Act
-            var client = _factory.CreateClient();
+            var client = _factory
+                .CreateClient(
+                    new WebApplicationFactoryClientOptions
+                    {
+                        AllowAutoRedirect = false
+                    });
             var response = await client.GetAsync(url);
 
             // Assert
-            response.EnsureSuccessStatusCode(); // Status Code 200-299
-            Assert.Equal("text/html; charset=utf-8",
-                response.Content.Headers.ContentType.ToString());
+            Assert.Equal(HttpStatusCode.Redirect, response.StatusCode);
             Assert.StartsWith("/Identity/Account/Login",
-                response.RequestMessage.RequestUri.PathAndQuery);
+                response.Headers.Location.PathAndQuery);
         }
 
         [Theory]
@@ -51,7 +57,7 @@ namespace CourseSchedulingSystem.Tests.IntegrationTests
                 Assert.True(result.Succeeded);
             }
 
-            await client.ActAsAsync(user);
+            await client.ActAs(user.UserName);
 
             var response = await client.GetAsync(url);
 

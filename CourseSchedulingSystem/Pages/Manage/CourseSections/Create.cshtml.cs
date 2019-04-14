@@ -2,46 +2,102 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
+using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.CourseSections
 {
-    public class CreateModel : PageModel
+    public class CreateModel : CourseSectionsPageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
-
-        public CreateModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public CreateModel(ApplicationDbContext context) : base(context)
         {
-            _context = context;
         }
 
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGet(Guid? termId)
         {
-        ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Number");
-        ViewData["InstructionalMethodId"] = new SelectList(_context.InstructionalMethods, "Id", "Code");
-        ViewData["ScheduleTypeId"] = new SelectList(_context.ScheduleTypes, "Id", "Code");
-        ViewData["TermPartId"] = new SelectList(_context.TermParts, "Id", "Name");
+            if (termId == null)
+            {
+                return NotFound();
+            }
+
+            Term = await Context.Terms.Where(t => t.Id == termId).FirstOrDefaultAsync();
+
+            if (Term == null)
+            {
+                return NotFound();
+            }
+
+            TermPartIds = Context.TermParts
+                .Where(tp => tp.TermId == Term.Id)
+                .OrderBy(tp => tp.Name)
+                .Select(tp => new SelectListItem
+                {
+                    Value = tp.Id.ToString(),
+                    Text = tp.Name + " | " + tp.StartDate.Value.ToString("MM/dd/yyyy") + " - " +
+                           tp.EndDate.Value.ToString("MM/dd/yyyy")
+                });
+
             return Page();
         }
 
-        [BindProperty]
-        public CourseSection CourseSection { get; set; }
+        [BindProperty] public CourseSection CourseSection { get; set; }
 
-        public async Task<IActionResult> OnPostAsync()
+        public Term Term { get; set; }
+
+        public async Task<IActionResult> OnPostAsync(Guid? termId)
         {
-            if (!ModelState.IsValid)
+            if (termId == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            _context.CourseSections.Add(CourseSection);
-            await _context.SaveChangesAsync();
+            Term = await Context.Terms.Where(t => t.Id == termId).FirstOrDefaultAsync();
 
-            return RedirectToPage("./Index");
+            if (Term == null)
+            {
+                return NotFound();
+            }
+
+            TermPartIds = Context.TermParts
+                .Where(tp => tp.TermId == Term.Id)
+                .OrderBy(tp => tp.Name)
+                .Select(tp => new SelectListItem
+                {
+                    Value = tp.Id.ToString(),
+                    Text = tp.Name + " | " + tp.StartDate.Value.ToString("MM/dd/yyyy") + " - " +
+                           tp.EndDate.Value.ToString("MM/dd/yyyy")
+                });
+
+            if (!ModelState.IsValid) return Page();
+
+            var courseSection = new CourseSection();
+
+            if (await TryUpdateModelAsync(
+                courseSection,
+                "CourseSection",
+                cs => cs.TermPartId,
+                cs => cs.CourseId,
+                cs => cs.Section,
+                cs => cs.ScheduleTypeId,
+                cs => cs.InstructionalMethodId,
+                cs => cs.MaximumCapacity))
+            {
+                await courseSection.DbValidateAsync(Context).AddErrorsToModelState(ModelState);
+
+                if (!ModelState.IsValid) return Page();
+
+                Context.CourseSections.Add(courseSection);
+                await Context.SaveChangesAsync();
+                return RedirectToPage("./Edit", new {id = courseSection.Id});
+            }
+
+            return Page();
         }
     }
 }
