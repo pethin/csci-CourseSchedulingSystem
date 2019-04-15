@@ -7,15 +7,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
+    /// <summary>
+    /// Represents a building. Buildings contain rooms.
+    /// </summary>
     public class Building
     {
         private string _name;
         private string _code;
 
+        /// <summary>Creates building with default fields.</summary>
         public Building()
         {
         }
 
+        /// <summary>Creates a building with the specified fields.</summary>
         public Building(Guid id, string code, string name, bool enabled = true)
         {
             Id = id;
@@ -24,8 +29,11 @@ namespace CourseSchedulingSystem.Data.Models
             IsEnabled = enabled;
         }
 
+        /// <summary>Gets or sets the primary key for this building.</summary>
         public Guid Id { get; set; }
 
+        /// <summary>Gets or sets the code for this building.</summary>
+        /// <remarks>This field is indexed.</remarks>
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
         public string Code
@@ -34,6 +42,7 @@ namespace CourseSchedulingSystem.Data.Models
             set => _code = value?.Trim().ToUpperInvariant();
         }
 
+        /// <summary>Gets or sets the name for this building.</summary>
         [Required]
         public string Name
         {
@@ -45,14 +54,20 @@ namespace CourseSchedulingSystem.Data.Models
             }
         }
 
+        /// <summary>Gets or sets the enabled flag for this building.</summary>
         [Required]
         [Display(Name = "Enabled")]
         public bool IsEnabled { get; set; }
 
+        /// <summary>Gets the normalized name for this building.</summary>
+        /// <remarks>This field is automated.</remarks>
+        /// <remarks>This field is indexed.</remarks>
         public string NormalizedName { get; private set; }
 
+        /// <summary>Navigation property for the rooms this building has.</summary>
         public List<Room> Rooms { get; set; }
 
+        /// <summary>Returns validation errors for database constraints.</summary>
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )
