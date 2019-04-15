@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
@@ -20,6 +21,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         public CourseSection CourseSection { get; set; }
         
         public Term Term { get; set; }
+        public IEnumerable<ScheduledMeetingTime> ScheduledMeetingTimes { get; set; }
         public string SuccessMessage { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
@@ -29,20 +31,20 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 return NotFound();
             }
             
-            CourseSection = await Context.CourseSections
-                .Include(c => c.TermPart)
-                .ThenInclude(tp => tp.Term)
-                .Include(cs => cs.ScheduledMeetingTimes)
-                .ThenInclude(smt => smt.MeetingType)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            CourseSection = await Context.CourseSections.FirstOrDefaultAsync(m => m.Id == id);
 
             if (CourseSection == null)
             {
                 return NotFound();
             }
+
+            Term = await Context.Terms
+                .Include(t => t.TermParts)
+                .Where(t => t.TermParts.Any(tp => tp.Id == CourseSection.TermPartId))
+                .FirstOrDefaultAsync();
             
             TermPartIds = Context.TermParts
-                .Where(tp => tp.TermId == CourseSection.TermPart.TermId)
+                .Where(tp => tp.TermId == Term.Id)
                 .OrderBy(tp => tp.Name)
                 .Select(tp => new SelectListItem
                 {
@@ -50,8 +52,18 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                     Text = tp.Name + " | " + tp.StartDate.Value.ToString("MM/dd/yyyy") + " - " +
                            tp.EndDate.Value.ToString("MM/dd/yyyy")
                 });
-            
-            Term = CourseSection.TermPart.Term;
+
+            ScheduledMeetingTimes = Context.ScheduledMeetingTimes
+                .Where(smt => smt.CourseSectionId == CourseSection.Id)
+                .Include(smt => smt.ScheduledMeetingTimeInstructors)
+                .ThenInclude(smti => smti.Instructor)
+                .Include(smt => smt.ScheduledMeetingTimeRooms)
+                .ThenInclude(smtr => smtr.Room)
+                .ThenInclude(r => r.Building)
+                .Include(smt => smt.MeetingType)
+                .OrderBy(smt => smt.MeetingType.Code)
+                .ThenBy(smt => smt.StartTime)
+                .ThenBy(smt => smt.EndTime);
 
             return Page();
         }
@@ -60,25 +72,17 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         {
             if (id == null) return NotFound();
             
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-            
-            CourseSection = await Context.CourseSections
-                .Include(cs => cs.TermPart)
-                .ThenInclude(tp => tp.Term)
-                .Include(cs => cs.ScheduledMeetingTimes)
-                .ThenInclude(smt => smt.MeetingType)
-                .Where(cs => cs.Id == id)
+            var courseSection = await Context.CourseSections.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (courseSection == null) return NotFound();
+
+            Term = await Context.Terms
+                .Include(t => t.TermParts)
+                .Where(t => t.TermParts.Any(tp => tp.Id == CourseSection.TermPartId))
                 .FirstOrDefaultAsync();
-
-            if (CourseSection == null) return NotFound();
-
-            Term = CourseSection.TermPart.Term;
             
             TermPartIds = Context.TermParts
-                .Where(tp => tp.TermId == CourseSection.TermPart.TermId)
+                .Where(tp => tp.TermId == Term.Id)
                 .OrderBy(tp => tp.Name)
                 .Select(tp => new SelectListItem
                 {
@@ -87,8 +91,25 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                            tp.EndDate.Value.ToString("MM/dd/yyyy")
                 });
 
+            ScheduledMeetingTimes = Context.ScheduledMeetingTimes
+                .Where(smt => smt.CourseSectionId == CourseSection.Id)
+                .Include(smt => smt.ScheduledMeetingTimeInstructors)
+                .ThenInclude(smti => smti.Instructor)
+                .Include(smt => smt.ScheduledMeetingTimeRooms)
+                .ThenInclude(smtr => smtr.Room)
+                .ThenInclude(r => r.Building)
+                .Include(smt => smt.MeetingType)
+                .OrderBy(smt => smt.MeetingType.Code)
+                .ThenBy(smt => smt.StartTime)
+                .ThenBy(smt => smt.EndTime);
+            
+            if (!ModelState.IsValid)
+            {
+                return Page();
+            }
+
             if (await TryUpdateModelAsync(
-                CourseSection,
+                courseSection,
                 "CourseSection",
                 cs => cs.TermPartId,
                 cs => cs.CourseId,
@@ -97,7 +118,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 cs => cs.InstructionalMethodId,
                 cs => cs.MaximumCapacity))
             {
-                await CourseSection.DbValidateAsync(Context).AddErrorsToModelState(ModelState);
+                await courseSection.DbValidateAsync(Context).AddErrorsToModelState(ModelState);
 
                 if (!ModelState.IsValid) return Page();
 
@@ -150,7 +171,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             Context.ScheduledMeetingTimes.Add(scheduledMeetingTime);
             await Context.SaveChangesAsync();
 
-            return await OnGetAsync(id);
+            return RedirectToAction("");
         }
     }
 }

@@ -80,10 +80,15 @@
                     </th>
                     <th>Instructor</th>
                     <th>Location</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                @foreach (var item in Model.CourseSection.ScheduledMeetingTimes.OrderBy(smt => smt.MeetingType.Code))
+                @foreach (var item in Model.CourseSection
+                    .ScheduledMeetingTimes
+                    .OrderBy(smt => smt.MeetingType.Code)
+                    .ThenBy(smt => smt.StartTime)
+                    .ThenBy(smt => smt.EndTime))
                 {
                     <tr>
                         <td>
@@ -98,8 +103,15 @@
                         <td>
                             @Html.DisplayFor(modelItem => item.DaysOfWeek)
                         </td>
-                        <td>TODO</td>
-                        <td>TODO</td>
+                        <td>
+                            @item.InstructorsText
+                        </td>
+                        <td>
+                            @item.RoomsText
+                        </td>
+                        <td>
+                            <a asp-page="./ScheduledMeetingTimes/Details" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action("")">Details</a>
+                        </td>
                     </tr>
                 }
                 </tbody>

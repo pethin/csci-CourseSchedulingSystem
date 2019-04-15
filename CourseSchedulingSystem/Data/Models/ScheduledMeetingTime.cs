@@ -20,6 +20,7 @@ namespace CourseSchedulingSystem.Data.Models
         [Required]
         [Display(Name = "Meeting Type")]
         public Guid MeetingTypeId { get; set; }
+
         public MeetingType MeetingType { get; set; }
 
         [DataType(DataType.Time)]
@@ -41,12 +42,12 @@ namespace CourseSchedulingSystem.Data.Models
                 return dateTime.ToString("hh:mm tt");
             }
         }
-        
+
 
         [DataType(DataType.Time)]
         [Display(Name = "End Time")]
         public TimeSpan? EndTime { get; set; }
-        
+
         [NotMapped]
         [Display(Name = "End Time")]
         public string EndTimeText
@@ -78,13 +79,13 @@ namespace CourseSchedulingSystem.Data.Models
             get
             {
                 string days = "" +
-                       (Monday ? "M" : "") +
-                       (Tuesday ? "T" : "") +
-                       (Wednesday ? "W" : "") +
-                       (Thursday ? "R" : "") +
-                       (Friday ? "F" : "") +
-                       (Saturday ? "S" : "") +
-                       (Sunday ? "U" : "");
+                              (Monday ? "M" : "") +
+                              (Tuesday ? "T" : "") +
+                              (Wednesday ? "W" : "") +
+                              (Thursday ? "R" : "") +
+                              (Friday ? "F" : "") +
+                              (Saturday ? "S" : "") +
+                              (Sunday ? "U" : "");
 
                 if (string.IsNullOrEmpty(days))
                 {
@@ -95,17 +96,48 @@ namespace CourseSchedulingSystem.Data.Models
             }
         }
 
-        public List<ScheduledMeetingTimeRoom> ScheduledMeetingTimeRooms { get; set; }
+        public List<ScheduledMeetingTimeRoom> ScheduledMeetingTimeRooms { get; set; } =
+            new List<ScheduledMeetingTimeRoom>();
 
-        public List<ScheduledMeetingTimeInstructor> ScheduledMeetingTimeInstructors { get; set; }
-        
+        [NotMapped]
+        public string RoomsText
+        {
+            get
+            {
+                if (ScheduledMeetingTimeRooms.Count == 0)
+                {
+                    return "TBA";
+                }
+
+                return string.Join(", ", ScheduledMeetingTimeRooms.Select(smtr => smtr.Room.Identifier));
+            }
+        }
+
+        public List<ScheduledMeetingTimeInstructor> ScheduledMeetingTimeInstructors { get; set; } =
+            new List<ScheduledMeetingTimeInstructor>();
+
+        [NotMapped]
+        public string InstructorsText
+        {
+            get
+            {
+                if (ScheduledMeetingTimeInstructors.Count == 0)
+                {
+                    return "TBA";
+                }
+
+                return string.Join(", ", ScheduledMeetingTimeInstructors.Select(smti => smti.Instructor.FullName));
+            }
+        }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (StartTime == null && EndTime != null)
             {
-                yield return new ValidationResult("Start time is required if end time is defined.", new[] {"StartTime"});
+                yield return new ValidationResult("Start time is required if end time is defined.",
+                    new[] {"StartTime"});
             }
-            
+
             if (StartTime != null && EndTime == null)
             {
                 yield return new ValidationResult("Start time is required if end time is defined.", new[] {"EndTime"});
@@ -117,16 +149,16 @@ namespace CourseSchedulingSystem.Data.Models
                 {
                     yield return new ValidationResult("Start time must be before end time.", new[] {"StartTime"});
                     yield return new ValidationResult("End time must be after start time.", new[] {"EndTime"});
-                }                
+                }
             }
         }
-        
+
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )
         {
             return new AsyncEnumerable<ValidationResult>(async yield =>
-            {   
+            {
                 // If the scheduled meeting time's meeting type is Class, then check if any other scheduled meeting
                 // time has the same meeting type
                 if (MeetingTypeId == MeetingType.ClassMeetingType.Id)

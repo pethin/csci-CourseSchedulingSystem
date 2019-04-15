@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Utilities;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,19 +17,17 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         {
         }
 
-        public async Task<IActionResult> OnGet(Guid? termId)
+        [BindProperty] public CourseSection CourseSection { get; set; }
+
+        public Term Term { get; set; }
+
+        public async Task<IActionResult> OnGetAsync(Guid? termId)
         {
-            if (termId == null)
-            {
-                return NotFound();
-            }
+            if (termId == null) return NotFound();
 
             Term = await Context.Terms.Where(t => t.Id == termId).FirstOrDefaultAsync();
 
-            if (Term == null)
-            {
-                return NotFound();
-            }
+            if (Term == null) return NotFound();
 
             TermPartIds = Context.TermParts
                 .Where(tp => tp.TermId == Term.Id)
@@ -46,23 +42,48 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             return Page();
         }
 
-        [BindProperty] public CourseSection CourseSection { get; set; }
-
-        public Term Term { get; set; }
-
-        public async Task<IActionResult> OnPostAsync(Guid? termId)
+        public async Task<IActionResult> OnGetNextSectionNumberAsync(Guid? termId, Guid? courseId)
         {
             if (termId == null)
             {
-                return NotFound();
+                return new JsonResult(new {message = "Missing required parameter termId."})
+                    {StatusCode = (int) HttpStatusCode.NotFound};
             }
+
+            if (courseId == null)
+            {
+                return new JsonResult(new {message = "Missing required parameter courseId."})
+                    {StatusCode = (int) HttpStatusCode.NotFound};
+            }
+
+            var course = await Context.Courses.FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (course == null)
+            {
+                return new JsonResult(new {message = "Course not found."})
+                    {StatusCode = (int) HttpStatusCode.NotFound};
+            }
+
+            // Ignore contract courses and restricted courses
+            int nextSectionNumber = await Context.CourseSections
+                .Include(cs => cs.TermPart)
+                .Where(cs => cs.TermPart.TermId == termId)
+                .Where(cs => cs.CourseId == courseId)
+                .Where(cs => (cs.Section < 80) || (cs.Section >= 90 && cs.Section < 600) || (cs.Section >= 700))
+                .OrderByDescending(cs => cs.Section)
+                .Select(cs => cs.Section)
+                .FirstOrDefaultAsync() + 1;
+
+            return new JsonResult(nextSectionNumber);
+        }
+
+        public async Task<IActionResult> OnPostAsync(Guid? termId)
+        {
+            if (termId == null) return NotFound();
 
             Term = await Context.Terms.Where(t => t.Id == termId).FirstOrDefaultAsync();
 
-            if (Term == null)
-            {
-                return NotFound();
-            }
+            if (Term == null) return NotFound();
 
             TermPartIds = Context.TermParts
                 .Where(tp => tp.TermId == Term.Id)

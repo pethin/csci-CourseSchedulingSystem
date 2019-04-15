@@ -29,6 +29,7 @@ This will create the local database if it's not yet created.
 In the server project directory, run:
 ```powershell
 dotnet run seed
+dotnet run seed ExcelSeeder
 ```
 
 ### Add your username

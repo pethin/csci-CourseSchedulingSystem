@@ -9,39 +9,45 @@
 
 <h4 class="mb-0">@Model.Term.Name - Course Section</h4>
 <small>Scheduled Meeting Times can be added after creating a course section.</small>
-<hr />
+<hr/>
 <div class="row">
     <div class="col-md-8">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="CourseSection.CourseId" class="control-label"></label>
-                <select asp-for="CourseSection.CourseId" class ="form-control" asp-items="Model.CourseIds"></select>
+                <select asp-for="CourseSection.CourseId" class="form-control" asp-items="Model.CourseIds"></select>
             </div>
             <div class="form-group">
-                <label asp-for="CourseSection.Section" class="control-label"></label>
-                <input asp-for="CourseSection.Section" class="form-control" />
+                <label asp-for="CourseSection.Section" class="control-label mb-0"></label>
+                <p class="text-muted">
+                    <small><b>600-699</b> = Contract Courses. <b>080</b> = Restricted Courses.</small>
+                </p>
+                <input asp-for="CourseSection.Section" class="form-control"/>
                 <span asp-validation-for="CourseSection.Section" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CourseSection.ScheduleTypeId" class="control-label"></label>
-                <select asp-for="CourseSection.ScheduleTypeId" class ="form-control" asp-items="Model.ScheduleTypeIds"></select>
+                <select asp-for="CourseSection.ScheduleTypeId" class="form-control" asp-items="Model.ScheduleTypeIds"></select>
             </div>
             <div class="form-group">
                 <label asp-for="CourseSection.InstructionalMethodId" class="control-label"></label>
-                <select asp-for="CourseSection.InstructionalMethodId" class ="form-control" asp-items="Model.InstructionalMethodIds"></select>
+                <select asp-for="CourseSection.InstructionalMethodId" class="form-control" asp-items="Model.InstructionalMethodIds"></select>
             </div>
             <div class="form-group">
                 <label asp-for="CourseSection.TermPartId" class="control-label"></label>
-                <select asp-for="CourseSection.TermPartId" class ="form-control" asp-items="Model.TermPartIds"></select>
+                <select asp-for="CourseSection.TermPartId" class="form-control" asp-items="Model.TermPartIds"></select>
             </div>
             <div class="form-group">
-                <label asp-for="CourseSection.MaximumCapacity" class="control-label"></label>
-                <input asp-for="CourseSection.MaximumCapacity" class="form-control" />
+                <label asp-for="CourseSection.MaximumCapacity" class="control-label mb-0"></label>
+                <p class="text-muted">
+                    <small>Should be 0 for contract/restricted courses.</small>
+                </p>
+                <input asp-for="CourseSection.MaximumCapacity" class="form-control" value="@(Model.CourseSection?.MaximumCapacity ?? 0)"/>
                 <span asp-validation-for="CourseSection.MaximumCapacity" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary"/>
             </div>
         </form>
     </div>
@@ -52,5 +58,31 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            var populateSectionField = function() {
+                var params = $.param({
+                    courseId: $('#CourseSection_CourseId').val(),
+                    handler: "NextSectionNumber"
+                });
+
+                fetch('?' + params)
+                    .then(function(response) {
+                        return response.json();
+                    }).then(function(nextSectionNumber) {
+                        $('#CourseSection_Section').val(nextSectionNumber);
+                    });
+            }
+            
+            $('#CourseSection_CourseId').change(function() {
+                populateSectionField();
+            });
+
+            if (!$('#CourseSection_Section').val()) {
+                populateSectionField();
+            }
+        })
+    </script>
+
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

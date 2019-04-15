@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -18,6 +19,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
         }
 
         [BindProperty] public Term Term { get; set; }
+        
+        public bool HasCourseSections { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -28,6 +31,12 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Term == null) return NotFound();
+
+            HasCourseSections = await _context.CourseSections
+                .Include(cs => cs.TermPart)
+                .Where(cs => cs.TermPart.TermId == id)
+                .AnyAsync();
+            
             return Page();
         }
 
@@ -39,7 +48,6 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
                 .Include(t => t.TermParts)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            // TODO: Check if term parts are in use
             if (Term != null)
             {
                 _context.Terms.Remove(Term);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Async;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
@@ -25,18 +26,18 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
         [BindProperty] public Term Term { get; set; }
 
         public string SourceTermName { get; set; }
+        public IEnumerable<TermPart> TermParts { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
             if (id == null) return NotFound();
 
-            Term = await _context.Terms
-                .Include(t => t.TermParts)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == id);
 
             if (Term == null) return NotFound();
 
             SourceTermName = Term.Name;
+            TermParts = _context.TermParts.Where(tp => tp.TermId == Term.Id);
 
             return Page();
         }
@@ -45,41 +46,59 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
         {
             if (!ModelState.IsValid) return Page();
 
-            Term = await _context.Terms
+            var term = await _context.Terms
                 .Include(t => t.TermParts)
+                .ThenInclude(tp => tp.CourseSections)
+                .ThenInclude(cs => cs.ScheduledMeetingTimes)
+                .ThenInclude(smt => smt.ScheduledMeetingTimeInstructors)
+                .Include(t => t.TermParts)
+                .ThenInclude(tp => tp.CourseSections)
+                .ThenInclude(cs => cs.ScheduledMeetingTimes)
+                .ThenInclude(smt => smt.ScheduledMeetingTimeRooms)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Term != null)
+            if (term == null)
             {
-                SourceTermName = Term.Name;
-                Term.Id = new Guid();
+                return NotFound();
             }
 
-            if (await TryUpdateModelAsync(
-                Term,
-                "Term",
-                s => s.Name))
+            SourceTermName = term.Name;
+            
+            // Clone TermId
+            var termId = term.Id;
+            TermParts = _context.TermParts.Where(tp => tp.TermId == termId);
+
+            term.Id = Guid.NewGuid();
+            term.Name = Term.Name;
+
+            await term.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
+
+            if (!ModelState.IsValid) return Page();
+
+            term.TermParts.ForEach(part =>
             {
-                await Term.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
-
-                if (!ModelState.IsValid) return Page();
-
-                // TODO: Also duplicate courses
-                Term.TermParts.ForEach(part =>
+                part.Id = Guid.NewGuid();
+                part.TermId = Term.Id;
+                part.CourseSections.ForEach(courseSection =>
                 {
-                    part.Id = new Guid();
-                    part.TermId = Term.Id;
+                    courseSection.Id = Guid.NewGuid();
+                    courseSection.TermPartId = part.Id;
+                    courseSection.ScheduledMeetingTimes.ForEach(smt =>
+                    {
+                        smt.Id = Guid.NewGuid();
+                        smt.CourseSectionId = courseSection.Id;
+                        smt.ScheduledMeetingTimeInstructors.ForEach(smti => smti.ScheduledMeetingTimeId = smt.Id);
+                        smt.ScheduledMeetingTimeRooms.ForEach(smtr => smtr.ScheduledMeetingTimeId = smt.Id);
+                    });
                 });
+            });
 
-                _context.Terms.Add(Term);
+            _context.Terms.Add(term);
 
-                await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-                return RedirectToPage("Edit", new {id = Term.Id});
-            }
-
-            return Page();
+            return RedirectToPage("Edit", new {id = term.Id});
         }
     }
 }

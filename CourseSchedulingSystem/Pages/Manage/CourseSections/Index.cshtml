@@ -69,6 +69,10 @@
                 @Html.DisplayFor(modelItem => item.TermPart.EndDate)
             </td>
             <td>
+                <form method="post" class="d-inline">
+                    <input type="hidden" name="sectionId" value="@item.Id"/>
+                    <input value="Duplicate" class="btn btn-link p-0 cancel" type="submit" asp-page-handler="Duplicate">
+                </form> |
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>

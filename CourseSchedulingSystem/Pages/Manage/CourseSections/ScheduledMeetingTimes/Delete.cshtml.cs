@@ -1,26 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
+using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTimes
 {
     public class DeleteModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DeleteModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public DeleteModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        [BindProperty]
-        public ScheduledMeetingTime ScheduledMeetingTime { get; set; }
+        [BindProperty] public ScheduledMeetingTime ScheduledMeetingTime { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -31,12 +28,21 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTim
 
             ScheduledMeetingTime = await _context.ScheduledMeetingTimes
                 .Include(s => s.CourseSection)
-                .Include(s => s.MeetingType).FirstOrDefaultAsync(m => m.Id == id);
+                .ThenInclude(cs => cs.Course)
+                .ThenInclude(c => c.Subject)
+                .Include(s => s.MeetingType)
+                .Include(smt => smt.ScheduledMeetingTimeInstructors)
+                .ThenInclude(smti => smti.Instructor)
+                .Include(smt => smt.ScheduledMeetingTimeRooms)
+                .ThenInclude(smtr => smtr.Room)
+                .ThenInclude(r => r.Building)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (ScheduledMeetingTime == null)
             {
                 return NotFound();
             }
+
             return Page();
         }
 
@@ -49,13 +55,15 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTim
 
             ScheduledMeetingTime = await _context.ScheduledMeetingTimes.FindAsync(id);
 
-            if (ScheduledMeetingTime != null)
+            if (ScheduledMeetingTime == null)
             {
-                _context.ScheduledMeetingTimes.Remove(ScheduledMeetingTime);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
 
-            return RedirectToPage("./Index");
+            _context.ScheduledMeetingTimes.Remove(ScheduledMeetingTime);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("../Edit", new {id = ScheduledMeetingTime.CourseSectionId});
         }
     }
 }

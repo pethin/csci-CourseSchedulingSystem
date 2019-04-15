@@ -8,6 +8,12 @@
 <h1>Delete</h1>
 
 <h3>Are you sure you want to delete this?</h3>
+@if (Model.HasCourseSections)
+{
+    <div class="alert alert-warning">
+        This will delete all course sections within this term. This action is irreversible!
+    </div>
+}
 <div>
     <h4>Term</h4>
     <hr />

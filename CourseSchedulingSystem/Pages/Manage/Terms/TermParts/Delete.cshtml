@@ -10,47 +10,49 @@
 <h3>Are you sure you want to delete this?</h3>
 <div>
     <h4>@Model.TermPart.Term.Name - Part of Term</h4>
-    <hr />
+    <hr/>
     @if (Model.TermPart.CourseSections.Any())
     {
         <div class="alert alert-warning">
             This will delete the following course sections. This action is irreversible!
         </div>
     }
-<dl class="row">
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => model.TermPart.Name)
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.TermPart.Name)
-    </dd>
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => model.TermPart.StartDate)
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.TermPart.StartDate)
-    </dd>
-    <dt class="col-sm-2">
-        @Html.DisplayNameFor(model => model.TermPart.EndDate)
-    </dt>
-    <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.TermPart.EndDate)
-    </dd>
-    <dt class="col-sm-12">Course Sections</dt>
-    <dd class="col-sm-12">
-        <ul>
-            @for (int i = 0; i < Model.TermPart.CourseSections.Count; i++)
-            {
-                <li><a asp-page="../../CourseSections/Details" asp-route-id="@Model.TermPart.CourseSections[i].Id">
-                    @Model.TermPart.CourseSections[i].Course.Identifier @Html.DisplayFor(model => model.TermPart.CourseSections[i].Section)
-                </a></li>
-            }
-        </ul>
-    </dd>
-</dl>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TermPart.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TermPart.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TermPart.StartDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TermPart.StartDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.TermPart.EndDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TermPart.EndDate)
+        </dd>
+        <dt class="col-sm-12">Course Sections</dt>
+        <dd class="col-sm-12">
+            <ul>
+                @for (int i = 0; i < Model.TermPart.CourseSections.Count; i++)
+                {
+                    <li>
+                        <a asp-page="../../CourseSections/Details" asp-route-id="@Model.TermPart.CourseSections[i].Id">
+                            @Model.TermPart.CourseSections[i].Course.Identifier @Html.DisplayFor(model => model.TermPart.CourseSections[i].Section)
+                        </a>
+                    </li>
+                }
+            </ul>
+        </dd>
+    </dl>
 
     <form method="post">
-        <input type="hidden" asp-for="TermPart.Id" />
+        <input type="hidden" asp-for="TermPart.Id"/>
         <input type="submit" value="Delete" class="btn btn-danger"/> |
         <a asp-page="../Edit" asp-route-id="@Model.TermPart.TermId">Back to List</a>
     </form>

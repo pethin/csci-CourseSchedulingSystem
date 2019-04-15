@@ -28,7 +28,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
                 return NotFound();
             }
 
-            Building = await _context.Buildings.FirstOrDefaultAsync(m => m.Id == id);
+            Building = await _context.Buildings
+                .Include(b => b.Rooms)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Building == null)
             {

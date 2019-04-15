@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Async;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
@@ -24,6 +25,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
         [BindProperty] public Term Term { get; set; }
 
         public string SourceTermName { get; set; }
+        public IEnumerable<TermPart> TermParts { get; set; }
 
         public string SuccessMessage { get; set; }
 
@@ -31,13 +33,12 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
         {
             if (id == null) return NotFound();
 
-            Term = await _context.Terms
-                .Include(t => t.TermParts)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == id);
 
             if (Term == null) return NotFound();
 
             SourceTermName = Term.Name;
+            TermParts = _context.TermParts.Where(tp => tp.TermId == Term.Id);
 
             return Page();
         }
@@ -46,21 +47,22 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
         {
             if (!ModelState.IsValid) return Page();
 
-            Term = await _context.Terms
-                .Include(t => t.TermParts)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Term != null)
+            if (Term == null)
             {
-                SourceTermName = Term.Name;
+                return NotFound();
             }
+            
+            SourceTermName = Term.Name;
+            TermParts = _context.TermParts.Where(tp => tp.TermId == term.Id);
 
             if (await TryUpdateModelAsync(
-                Term,
+                term,
                 "Term",
                 s => s.Name))
             {
-                await Term.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
+                await term.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
                 if (!ModelState.IsValid) return Page();
 
