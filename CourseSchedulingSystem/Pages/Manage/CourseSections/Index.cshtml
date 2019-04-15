@@ -9,6 +9,9 @@
 <h1><a asp-page="../Terms/Details" asp-route-id="@Model.Term.Id">@Model.Term.Name</a> - Course Sections</h1>
 
 <p>
+    <a asp-page="Calendar" asp-route-termId="@Model.Term.Id">View Calendar</a>
+</p>
+<p>
     <a asp-page="Create" asp-route-termId="@Model.Term.Id">Create New</a>
 </p>
 <table class="table">
