@@ -16,13 +16,7 @@
         This means that some of the variables are dependent on other variables. For instance, a Course MUST have a subject variable assigned to it upon creation. These limitations are accounted for, so do not worry about breaking the database by deleting something that other variables depend on.
     </p>
     <p>
-        [Maybe a diagram?]
-    </p>
-    <p>
         These variables are stored in a basic SQL database. Each variable has its own table, and they are connected to each other through certain values. For instance, a Subject has its own table of values, and every Course (also in its own table) will reference a value from that table. This database is not stored locally, which means the elements are accessible to all approved Users. Any created variable or schedule may be accessed by any other approved user.
-    </p>
-    <p>
-        {^Without the implementation of groups, Is this accurate?}
     </p>
 
     <div align="center">
