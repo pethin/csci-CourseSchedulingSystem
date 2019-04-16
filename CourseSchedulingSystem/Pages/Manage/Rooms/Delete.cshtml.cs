@@ -21,6 +21,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
         [BindProperty]
         public Room Room { get; set; }
+        
+        public bool InUse { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -37,6 +39,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
             {
                 return NotFound();
             }
+
+            InUse = await InUseQueryAsync(id.Value);
+            
             return Page();
         }
 
@@ -51,11 +56,25 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
 
             if (Room != null)
             {
+                InUse = await InUseQueryAsync(id.Value);
+                if (InUse)
+                {
+                    return Page();
+                }
+                
                 _context.Rooms.Remove(Room);
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");
+        }
+        
+        private async Task<bool> InUseQueryAsync(Guid id)
+        {
+            return await _context.Rooms
+                .Where(r => r.Id == id)
+                .Where(r => r.ScheduledMeetingTimeRooms.Any())
+                .AnyAsync();
         }
     }
 }
