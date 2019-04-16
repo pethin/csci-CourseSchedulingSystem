@@ -64,10 +64,13 @@ namespace CourseSchedulingSystem.Data.Models
         /// <summary>Navigation property for the instructional method this course section belongs to.</summary>
         public InstructionalMethod InstructionalMethod { get; set; }
 
+        /// <summary>Gets or sets the footnotes for this course section.</summary>
         public string Footnotes { get; set; }
 
+        /// <summary>Internal column for scheduling notifications property.</summary>
         internal string _SchedulingNotifications { get; set; }
         
+        /// <summary>Gets or sets the scheduling notifications for this course section.</summary>
         [NotMapped]
         public SchedulingNotifications SchedulingNotifications
         {
@@ -77,13 +80,16 @@ namespace CourseSchedulingSystem.Data.Models
             set => _SchedulingNotifications = JsonConvert.SerializeObject(value);
         }
 
+        /// <summary>Gets or sets the maximum capacity for this course section.</summary>
         [Required]
         [Range(0, int.MaxValue, ErrorMessage = "Capacity must be zero or positive.")]
         [Display(Name = "Capacity")]
         public int MaximumCapacity { get; set; }
 
+        /// <summary>Navigation property for the scheduled meeting times this course section has.</summary>
         public List<ScheduledMeetingTime> ScheduledMeetingTimes { get; set; }
 
+        /// <summary>Returns validation errors for database constraints.</summary>
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )

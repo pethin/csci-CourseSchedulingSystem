@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
-    /// <summary>
-    /// Represents a building. Buildings contain rooms.
-    /// </summary>
+    /// <summary>Represents a building, e.g., Thurmond Hall.</summary>
+    /// <remarks>Buildings must have a unique ID, unique Code, and unique Name.</remarks>
+    /// <remarks>A building has many rooms.</remarks>
     public class Building
     {
         private string _name;
@@ -33,6 +33,7 @@ namespace CourseSchedulingSystem.Data.Models
         public Guid Id { get; set; }
 
         /// <summary>Gets or sets the code for this building.</summary>
+        /// <remarks>This field must be unique.</remarks>
         /// <remarks>This field is indexed.</remarks>
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
@@ -43,6 +44,7 @@ namespace CourseSchedulingSystem.Data.Models
         }
 
         /// <summary>Gets or sets the name for this building.</summary>
+        /// <remarks>The normalized version of this field must be unique.</remarks>
         [Required]
         public string Name
         {
@@ -54,15 +56,16 @@ namespace CourseSchedulingSystem.Data.Models
             }
         }
 
+        /// <summary>Gets the normalized name for this building.</summary>
+        /// <remarks>This field is automated.</remarks>
+        /// <remarks>This field must be unique.</remarks>
+        /// <remarks>This field is indexed.</remarks>
+        public string NormalizedName { get; private set; }
+
         /// <summary>Gets or sets the enabled flag for this building.</summary>
         [Required]
         [Display(Name = "Enabled")]
         public bool IsEnabled { get; set; }
-
-        /// <summary>Gets the normalized name for this building.</summary>
-        /// <remarks>This field is automated.</remarks>
-        /// <remarks>This field is indexed.</remarks>
-        public string NormalizedName { get; private set; }
 
         /// <summary>Navigation property for the rooms this building has.</summary>
         public List<Room> Rooms { get; set; }
