@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,11 +8,15 @@ using CourseSchedulingSystem.Data.Models;
 using CourseSchedulingSystem.Utilities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npoi.Mapper;
+using Npoi.Mapper.Attributes;
 using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
 
 namespace CourseSchedulingSystem.Data.Seeders
 {
+    /// <summary>
+    /// Seeds courses from Excel fixture.
+    /// </summary>
     public class CourseSeeder : ISeeder
     {
         private readonly ApplicationDbContext _context;
@@ -26,215 +30,333 @@ namespace CourseSchedulingSystem.Data.Seeders
 
         public async Task SeedAsync()
         {
-            var dataTable = LoadExcelFixture();
-            var courseRows = ConvertDataTableToCourseRows(dataTable);
+            var fixturePath = Path.Combine(PathUtilities.GetResourceDirectory(), "Fixtures", "Courses.xlsx");
+            var courseRows = ConvertExcelToList(fixturePath);
             await InsertCourseRows(courseRows);
         }
 
-        private DataTable LoadExcelFixture()
+        /// <summary>
+        /// Loads the courses Excel file from the filePath and converts it into a list of rows.
+        /// </summary>
+        /// <param name="filePath">The file path to the fixture.</param>
+        /// <returns>A list of Excel rows.</returns>
+        private List<RowInfo<CourseExcelRow>> ConvertExcelToList(string filePath)
         {
-            var coursesFixturePath = Path.Combine(PathUtilities.GetResourceDirectory(), "Fixtures", "Courses.xlsx");
-            var dt = new DataTable();
+            List<RowInfo<CourseExcelRow>> courses;
 
-            using (var stream = new FileStream(coursesFixturePath, FileMode.Open, FileAccess.Read))
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             {
-                var hssfwb = new XSSFWorkbook(stream); // This will read 2007 Excel format
+                // Read the file as a workbook
+                var workbook = WorkbookFactory.Create(stream);
 
-                var sheet = hssfwb.GetSheetAt(0);
-                var headerRow = sheet.GetRow(0);
-                var rows = sheet.GetRowEnumerator();
+                var mapper = new Mapper(workbook);
 
-                int colCount = headerRow.LastCellNum;
+                courses = mapper.Take<CourseExcelRow>(0).ToList();
 
-                // Read header row
-                for (var c = 0; c < colCount; c++) dt.Columns.Add(headerRow.GetCell(c).ToString());
-
-                // Skip header row
-                rows.MoveNext();
-                while (rows.MoveNext())
-                {
-                    IRow row = (XSSFRow) rows.Current;
-                    var dr = dt.NewRow();
-
-                    for (var i = 0; i < colCount; i++)
-                    {
-                        var cell = row.GetCell(i);
-
-                        if (cell != null) dr[i] = cell.ToString();
-                    }
-
-                    dt.Rows.Add(dr);
-                }
-
-                hssfwb.Close();
-            }
-
-            return dt;
-        }
-
-        private ICollection<CourseRow> ConvertDataTableToCourseRows(DataTable dt)
-        {
-            IList<CourseRow> courses = new List<CourseRow>();
-
-            foreach (DataRow dr in dt.Rows)
-            {
-                var newCourse = new CourseRow
-                {
-                    DepartmentCode = dr["Department"].ToString().ToUpper(),
-                    SubjectCode = dr["Subject"].ToString().ToUpper(),
-                    Number = dr["Number"].ToString().ToUpper(),
-                    Name = dr["Name"].ToString(),
-                    CreditHours = Convert.ToDecimal(dr["Credit Hours"])
-                };
-
-                var courseLevels = dr["Levels"].ToString().Split(",").Select(t => t.Trim()).ToHashSet();
-                newCourse.IsGraduate = courseLevels.Contains("Graduate");
-                newCourse.IsUndergraduate = courseLevels.Contains("Undergraduate");
-
-                newCourse.ScheduleTypes = dr["Schedule Types"]
-                    .ToString()
-                    .Split(",")
-                    .Select(st => st.Trim())
-                    .Where(st => !string.IsNullOrEmpty(st))
-                    .ToHashSet();
-                newCourse.CourseAttributes = dr["Course Attributes"]
-                    .ToString()
-                    .Split(",")
-                    .Select(ca => ca.Trim())
-                    .Where(ca => !string.IsNullOrEmpty(ca))
-                    .ToHashSet();
-
-                courses.Add(newCourse);
+                workbook.Close();
             }
 
             return courses;
         }
 
-        private async Task InsertCourseRows(ICollection<CourseRow> courseRows)
+        /// <summary>
+        /// Inserts the course rows into the database.
+        /// </summary>
+        /// <param name="courseRows">The rows to insert.</param>
+        /// <returns></returns>
+        private async Task InsertCourseRows(List<RowInfo<CourseExcelRow>> courseRows)
         {
-            var departments = await _context.Departments.ToListAsync();
-            var subjects = await _context.Subjects.ToListAsync();
-            var scheduleTypes = await _context.ScheduleTypes.ToListAsync();
-            var scheduleTypesNames = scheduleTypes.Select(st => st.Name).ToHashSet();
-            var courseAttributes = await _context.CourseAttributes.ToListAsync();
-            var courseAttributesNames = courseAttributes.Select(ca => ca.Name).ToHashSet();
-
             var errors = new List<string>();
-            
-            foreach (var courseRow in courseRows)
-            {
-                var department = departments.FirstOrDefault(d => d.Code == courseRow.DepartmentCode);
-                if (department == null)
-                {
-                    var error = $"Could not find department with code {courseRow.DepartmentCode} for {courseRow.Name}.";
-                    _logger.LogError(error + " Skipping...", courseRow);
-                    errors.Add(error);
-                    continue;
-                }
 
-                var subject = subjects.FirstOrDefault(s => s.Code == courseRow.SubjectCode);
-                if (subject == null)
-                {
-                    var error = $"Could not find subject with code {courseRow.SubjectCode} for {courseRow.Name}.";
-                    _logger.LogError(error + " Skipping...", courseRow);
-                    errors.Add(error);
-                    continue;
-                }
+            // Get existing departments
+            // Key: Code, Value: Department
+            ConcurrentDictionary<string, Department> departments =
+                new ConcurrentDictionary<string, Department>(
+                    await _context.Departments.ToDictionaryAsync(d => d.Code, d => d));
 
-                if (courseRow.ScheduleTypes.Any(st => !scheduleTypesNames.Contains(st)))
-                {
-                    var missingScheduleTypes = string.Join(", ", courseRow.ScheduleTypes.Except(scheduleTypesNames));
-                    var error = $"Could not find following schedule types for {courseRow.Name}: {missingScheduleTypes}.";
-                    _logger.LogError(error + " Skipping...", courseRow);
-                    errors.Add(error);
-                    continue;
-                }
+            // Get existing subjects
+            // Key: Code, Value: Subject
+            ConcurrentDictionary<string, Subject> subjects =
+                new ConcurrentDictionary<string, Subject>(
+                    await _context.Subjects.ToDictionaryAsync(s => s.Code, s => s));
 
-                if (courseRow.CourseAttributes.Any(ca => !courseAttributesNames.Contains(ca)))
-                {
-                    var missingAttributes = string.Join(", ", courseRow.CourseAttributes.Except(courseAttributesNames));
-                    var error = $"Could not find following attributes for {courseRow.Name}: {missingAttributes}.";
-                    _logger.LogError(error + " Skipping...", courseRow);
-                    errors.Add(error);
-                    continue;
-                }
+            // Get existing schedule types
+            // Key: NormalizedName, Value: ScheduleType
+            ConcurrentDictionary<string, ScheduleType> scheduleTypes =
+                new ConcurrentDictionary<string, ScheduleType>(
+                    await _context.ScheduleTypes.ToDictionaryAsync(st => st.NormalizedName, st => st));
 
-                var course =
+            // Get existing course attributes
+            // Key: NormalizedName, Value: ScheduleType
+            ConcurrentDictionary<string, CourseAttribute> courseAttributes =
+                new ConcurrentDictionary<string, CourseAttribute>(
+                    await _context.CourseAttributes.ToDictionaryAsync(ca => ca.NormalizedName, ca => ca));
+
+            // Get existing courses
+            // Key: (SubjectCode, CourseLevel), Value: Course
+            ConcurrentDictionary<Tuple<string, string>, Course> courses =
+                new ConcurrentDictionary<Tuple<string, string>, Course>(
                     await _context.Courses
+                        .Include(c => c.Subject)
                         .Include(c => c.CourseScheduleTypes)
                         .Include(c => c.CourseCourseAttributes)
-                        .FirstOrDefaultAsync(c => c.SubjectId == subject.Id && c.Number == courseRow.Number);
+                        .ToDictionaryAsync(c => Tuple.Create(c.Subject.Code, c.Number), c => c));
 
-                if (course != null)
+            foreach (var courseRow in courseRows)
+            {
+                if (!string.IsNullOrEmpty(courseRow.ErrorMessage))
                 {
-                    course.DepartmentId = department.Id;
-                    course.Title = courseRow.Name;
-                    course.CreditHours = courseRow.CreditHours;
-                    course.IsGraduate = courseRow.IsGraduate;
-                    course.IsUndergraduate = courseRow.IsUndergraduate;
+                    _logger.LogError(courseRow.ErrorMessage + " Skipping...", courseRow);
+                    errors.Add(courseRow.ErrorMessage);
+                    continue;
                 }
-                else
+
+
+                // Get department
+                departments.TryGetValue(courseRow.Value.DepartmentCode, out Department department);
+                if (department == null)
+                {
+                    var error =
+                        $"Could not find department with code {courseRow.Value.DepartmentCode} for {courseRow.Value.Name}.";
+                    _logger.LogError(error + " Skipping...", courseRow);
+                    errors.Add(error);
+                    continue;
+                }
+
+                // Get subject
+                subjects.TryGetValue(courseRow.Value.SubjectCode, out Subject subject);
+                if (subject == null)
+                {
+                    var error =
+                        $"Could not find subject with code {courseRow.Value.SubjectCode} for {courseRow.Value.Name}.";
+                    _logger.LogError(error + " Skipping...", courseRow);
+                    errors.Add(error);
+                    continue;
+                }
+
+                // Get schedule types
+                var rowScheduleTypes = scheduleTypes
+                    .Where(st => courseRow.Value.NormalizedScheduleTypes.Contains(st.Key))
+                    .Select(st => st.Value)
+                    .ToList();
+
+                if (rowScheduleTypes.Count < courseRow.Value.NormalizedScheduleTypes.Count)
+                {
+                    var missingScheduleTypes = string.Join(", ",
+                        courseRow.Value.NormalizedScheduleTypes.Except(
+                            rowScheduleTypes.Select(rst => rst.NormalizedName)));
+
+                    var error =
+                        $"Could not find following schedule types for {courseRow.Value.Name}: {missingScheduleTypes}.";
+
+                    _logger.LogError(error + " Skipping...", courseRow);
+                    errors.Add(error);
+                    continue;
+                }
+
+                // Get course attributes
+                var rowCourseAttributes = courseAttributes
+                    .Where(st => courseRow.Value.NormalizedCourseAttributes.Contains(st.Key))
+                    .Select(st => st.Value)
+                    .ToList();
+
+                if (rowCourseAttributes.Count < courseRow.Value.NormalizedCourseAttributes.Count)
+                {
+                    var missingCourseAttributes = string.Join(", ",
+                        courseRow.Value.NormalizedCourseAttributes.Except(
+                            rowCourseAttributes.Select(rst => rst.NormalizedName)));
+
+                    var error =
+                        $"Could not find following course attributes for {courseRow.Value.Name}: {missingCourseAttributes}.";
+
+                    _logger.LogError(error + " Skipping...", courseRow);
+                    errors.Add(error);
+                    continue;
+                }
+
+                // Create course if it doesn't exist
+                courses.TryGetValue(Tuple.Create(courseRow.Value.SubjectCode, courseRow.Value.Number),
+                    out Course course);
+
+                if (course == null)
                 {
                     course = new Course
                     {
                         DepartmentId = department.Id,
                         SubjectId = subject.Id,
-                        Number = courseRow.Number,
-                        Title = courseRow.Name,
-                        CreditHours = courseRow.CreditHours,
-                        IsGraduate = courseRow.IsGraduate,
-                        IsUndergraduate = courseRow.IsUndergraduate,
-                        CourseScheduleTypes = new List<CourseScheduleType>(),
-                        CourseCourseAttributes = new List<CourseCourseAttribute>(),
+                        Number = courseRow.Value.Number,
+                        Title = courseRow.Value.Name,
+                        CreditHours = courseRow.Value.CreditHours,
+                        IsGraduate = courseRow.Value.IsGraduate,
+                        IsUndergraduate = courseRow.Value.IsUndergraduate,
                         IsEnabled = true
                     };
-                    _context.Courses.Add(course);
+
+                    // If the course was added, add it to the DB
+                    if (courses.TryAdd(Tuple.Create(subject.Code, course.Number), course))
+                    {
+                        _context.Courses.Add(course);
+
+                        // Add schedule types
+                        _context.CourseScheduleTypes.AddRange(rowScheduleTypes
+                            .Select(st => new CourseScheduleType
+                            {
+                                CourseId = course.Id,
+                                ScheduleTypeId = st.Id
+                            }));
+
+                        // Add course attributes
+                        _context.CourseCourseAttributes.AddRange(rowCourseAttributes
+                            .Select(ca => new CourseCourseAttribute
+                            {
+                                CourseId = course.Id,
+                                CourseAttributeId = ca.Id
+                            }));
+                    }
                 }
+                // If the course already created update values
+                else
+                {
+                    course.DepartmentId = department.Id;
+                    course.Title = courseRow.Value.Name;
+                    course.CreditHours = courseRow.Value.CreditHours;
+                    course.IsGraduate = courseRow.Value.IsGraduate;
+                    course.IsUndergraduate = courseRow.Value.IsUndergraduate;
 
-                await _context.SaveChangesAsync();
+                    // Update schedule types
+                    _context.UpdateManyToMany(course.CourseScheduleTypes,
+                        rowScheduleTypes
+                            .Select(st => new CourseScheduleType
+                            {
+                                CourseId = course.Id,
+                                ScheduleTypeId = st.Id
+                            }),
+                        cst => cst.ScheduleTypeId);
 
-                // Update schedule types
-                _context.UpdateManyToMany(course.CourseScheduleTypes,
-                    scheduleTypes
-                        .Where(st => courseRow.ScheduleTypes.Contains(st.Name))
-                        .Select(st => new CourseScheduleType
-                        {
-                            CourseId = course.Id,
-                            ScheduleTypeId = st.Id
-                        }),
-                    cst => cst.ScheduleTypeId);
-
-                // Update course attributes
-                _context.UpdateManyToMany(course.CourseCourseAttributes,
-                    courseAttributes
-                        .Where(ca => courseRow.CourseAttributes.Contains(ca.Name))
-                        .Select(ca => new CourseCourseAttribute
-                        {
-                            CourseId = course.Id,
-                            CourseAttributeId = ca.Id
-                        }),
-                    cat => cat.CourseAttributeId);
-
-                await _context.SaveChangesAsync();
+                    // Update course attributes
+                    _context.UpdateManyToMany(course.CourseCourseAttributes,
+                        rowCourseAttributes
+                            .Select(ca => new CourseCourseAttribute
+                            {
+                                CourseId = course.Id,
+                                CourseAttributeId = ca.Id
+                            }),
+                        cat => cat.CourseAttributeId);
+                }
             }
 
+            // If any errors occured do not commit changes
             if (errors.Count > 0)
             {
                 _logger.LogError("Errors:" + Environment.NewLine + string.Join(Environment.NewLine, errors));
             }
+            else
+            {
+                await _context.SaveChangesAsync();
+            }
         }
 
-        private class CourseRow
+        /// <summary>
+        /// Mapping class for Excel spreadsheet.
+        /// </summary>
+        private class CourseExcelRow
         {
-            public string DepartmentCode { get; set; }
-            public string SubjectCode { get; set; }
-            public string Number { get; set; }
-            public string Name { get; set; }
-            public decimal CreditHours { get; set; }
-            public bool IsGraduate { get; set; }
-            public bool IsUndergraduate { get; set; }
-            public ICollection<string> ScheduleTypes { get; set; }
-            public ICollection<string> CourseAttributes { get; set; }
+            private string _departmentCode;
+            private string _subjectCode;
+            private string _number;
+            private string _name;
+            private ICollection<string> _scheduleTypes;
+            private ICollection<string> _courseAttributes;
+
+            [Column("Department")]
+            public string DepartmentCode
+            {
+                get => _departmentCode;
+                set => _departmentCode = value?.Trim().ToUpperInvariant();
+            }
+
+            [Column("Subject")]
+            public string SubjectCode
+            {
+                get => _subjectCode;
+                set => _subjectCode = value?.Trim().ToUpperInvariant();
+            }
+
+            [Column("Number")]
+            public string Number
+            {
+                get => _number;
+                set => _number = value?.Trim();
+            }
+
+            [Column("Name")]
+            public string Name
+            {
+                get => _name;
+                set => _name = value?.Trim();
+            }
+
+            [Column("Credit Hours")] public decimal CreditHours { get; set; }
+
+
+            [Column("Levels")]
+            public string Levels
+            {
+                get => string.Join(
+                    ", ",
+                    new[] {IsUndergraduate ? "Undergraduate" : null, IsGraduate ? "Graduate" : null}
+                        .Where(s => !string.IsNullOrWhiteSpace(s)));
+                set
+                {
+                    var courseLevels = value.Split(",").Select(t => t.Trim()).ToHashSet();
+                    IsGraduate = courseLevels.Contains("Graduate");
+                    IsUndergraduate = courseLevels.Contains("Undergraduate");
+                }
+            }
+
+            [Column("Schedule Types")]
+            public string ScheduleTypesColumn
+            {
+                get => string.Join(", ", _scheduleTypes);
+                set
+                {
+                    _scheduleTypes = value?.Split(",")
+                                         .Select(st => st.Trim())
+                                         .Where(st => !string.IsNullOrEmpty(st))
+                                         .ToList() ?? new List<string>();
+
+                    NormalizedScheduleTypes = _scheduleTypes
+                        .Select(st => st.ToUpperInvariant())
+                        .ToHashSet();
+                }
+            }
+
+
+            [Column("Course Attributes")]
+            public string CourseAttributesColumn
+            {
+                get => string.Join(", ", _courseAttributes);
+                set
+                {
+                    _courseAttributes = value?
+                                            .Split(",")
+                                            .Select(st => st.Trim())
+                                            .Where(st => !string.IsNullOrEmpty(st))
+                                            .ToList() ?? new List<string>();
+
+                    NormalizedCourseAttributes = _courseAttributes
+                        .Select(st => st.ToUpperInvariant())
+                        .ToHashSet();
+                }
+            }
+
+            [Ignore] public bool IsGraduate { get; set; }
+
+            [Ignore] public bool IsUndergraduate { get; set; }
+
+            [Ignore] public ICollection<string> NormalizedScheduleTypes { get; set; }
+
+            [Ignore] public ICollection<string> NormalizedCourseAttributes { get; set; }
         }
     }
 }
