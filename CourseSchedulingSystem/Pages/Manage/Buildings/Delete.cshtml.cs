@@ -1,26 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
+using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Pages.Manage.Buildings
 {
     public class DeleteModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DeleteModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public DeleteModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
         [BindProperty]
         public Building Building { get; set; }
+
+        public bool InUse { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -35,6 +36,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
             {
                 return NotFound();
             }
+
+            InUse = await InUseQueryAsync(id.Value);
+            
             return Page();
         }
 
@@ -49,11 +53,25 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
 
             if (Building != null)
             {
+                InUse = await InUseQueryAsync(id.Value);
+                if (InUse)
+                {
+                    return Page();
+                }
+                
                 _context.Buildings.Remove(Building);
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");
+        }
+
+        private async Task<bool> InUseQueryAsync(Guid id)
+        {
+            return await _context.Buildings
+                .Where(b => b.Id == id)
+                .Where(b => b.Rooms.Any(r => r.ScheduledMeetingTimeRooms.Any()))
+                .AnyAsync();
         }
     }
 }
