@@ -178,6 +178,9 @@ namespace CourseSchedulingSystem.Data
                     .WithMany(st => st.CourseSections)
                     .HasForeignKey(cs => cs.ScheduleTypeId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                b.Property(cs => cs._SchedulingNotifications)
+                    .HasColumnName("SchedulingNotifications");
             });
             
             // Meeting Time
@@ -186,6 +189,11 @@ namespace CourseSchedulingSystem.Data
                 b.HasIndex(mt => mt.Code).IsUnique();
                 b.HasIndex(mt => mt.NormalizedName).IsUnique();
             });
+            
+            // Scheduled Meeting Time
+            builder.Entity<ScheduledMeetingTime>()
+                .Property(b => b._SchedulingNotifications)
+                .HasColumnName("SchedulingNotifications");
             
             // Scheduled Meeting Time >>--<< Instructor
             builder.Entity<ScheduledMeetingTimeInstructor>(b =>

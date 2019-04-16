@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace CourseSchedulingSystem.Data.Models
 {
@@ -128,6 +129,17 @@ namespace CourseSchedulingSystem.Data.Models
 
                 return string.Join(", ", ScheduledMeetingTimeInstructors.Select(smti => smti.Instructor.FullName));
             }
+        }
+
+        internal string _SchedulingNotifications { get; set; }
+
+        [NotMapped]
+        public SchedulingNotifications SchedulingNotifications
+        {
+            get => _SchedulingNotifications == null
+                ? null
+                : JsonConvert.DeserializeObject<SchedulingNotifications>(_SchedulingNotifications);
+            set => _SchedulingNotifications = JsonConvert.SerializeObject(value);
         }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
