@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -18,6 +20,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
         }
 
         public Instructor Instructor { get; set; }
+        public IEnumerable<Course> Courses { get; set; }
 
         public async Task<IActionResult> OnGetAsync(Guid? id)
         {
@@ -26,6 +29,14 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
             Instructor = await _context.Instructors.FirstOrDefaultAsync(m => m.Id == id);
 
             if (Instructor == null) return NotFound();
+            
+            Courses = _context.Courses
+                .Include(c => c.Subject)
+                .Where(c => c.CourseSections.Any(cs =>
+                    cs.ScheduledMeetingTimes.Any(smt =>
+                        smt.ScheduledMeetingTimeInstructors.Any(smti =>
+                            smti.InstructorId == id))));
+            
             return Page();
         }
     }

@@ -8,9 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
-    /// <summary>
-    /// Represents a course. A course belongs to a department and subject. A Course is scheduled as a CourseSection.
-    /// </summary>
+    /// <summary>Represents a course, e.g, CSCI 101.</summary>
+    /// <remarks>
+    /// <para>A course must have a unique ID, and unique (Subject, Number).</para>
+    /// <para>A course belongs to a department and subject.</para>
+    /// <para>A course has many schedule types, course attributes, and course sections.</para>
+    /// <para>A Course is scheduled as a CourseSection.</para>
+    /// </remarks>
     public class Course : IValidatableObject
     {
         private string _number;
@@ -86,6 +90,9 @@ namespace CourseSchedulingSystem.Data.Models
         
         /// <summary>Navigation property for the course attribute associations for this course.</summary>
         public List<CourseCourseAttribute> CourseCourseAttributes { get; set; }
+        
+        /// <summary>Navigation property for the course sections this course has.</summary>
+        public List<CourseSection> CourseSections { get; set; }
 
         /// <summary>Returns validation errors this course excluding database constraints.</summary>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

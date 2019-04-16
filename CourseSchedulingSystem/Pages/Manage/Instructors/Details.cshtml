@@ -35,6 +35,17 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Instructor.IsActive)
         </dd>
+        <dt class="col-sm-12">
+            Courses
+        </dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var course in Model.Courses)
+                {
+                    <li><a asp-page="../Courses/Details" asp-route-id="@course.Id">@course.Identifier</a></li>
+                }
+            </ul>
+        </dd>
     </dl>
 </div>
 <div>

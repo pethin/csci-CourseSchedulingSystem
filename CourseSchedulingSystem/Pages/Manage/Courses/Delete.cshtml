@@ -72,6 +72,15 @@
                 }
             </ul>
         </dd>
+        <dt class="col-sm-12">Instructors</dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var i in Model.Instructors)
+                {
+                    <li><a asp-page="../Instructors/Details" asp-route-id="@i.Id">@i.FullName</a></li>
+                }
+            </ul>
+        </dd>
     </dl>
 
     <form method="post">
