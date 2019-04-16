@@ -4,6 +4,7 @@
 
 @{
     ViewData["Title"] = $"{Model.Term.Name} - Course Sections";
+    ViewData["Fluid"] = true;
 }
 
 <h1><a asp-page="../Terms/Details" asp-route-id="@Model.Term.Id">@Model.Term.Name</a> - Course Sections</h1>

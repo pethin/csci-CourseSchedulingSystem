@@ -22,13 +22,13 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         {
             _context = context;
         }
-        
+
         public Term Term { get; set; }
 
         public async Task<IActionResult> OnGet(Guid? termId)
         {
             if (termId == null) return NotFound();
-            
+
             Term = await _context.Terms
                 .Include(t => t.TermParts)
                 .FirstOrDefaultAsync(t => t.Id == termId);
@@ -41,7 +41,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         public async Task<IActionResult> OnGetResourcesAsync(Guid? termId)
         {
             await Task.Yield();
-            
+
             if (termId == null) return NotFound();
 
             var rooms = _context.Rooms
@@ -79,20 +79,15 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 .Where(smtr => smtr.ScheduledMeetingTime.CourseSection.TermPart.EndDate != null)
                 .Where(smtr => smtr.ScheduledMeetingTime.StartTime != null)
                 .Where(smtr => smtr.ScheduledMeetingTime.EndTime != null)
-                .Where(smtr =>
-                    (smtr.ScheduledMeetingTime.CourseSection.TermPart.StartDate < start &&
-                     smtr.ScheduledMeetingTime.CourseSection.TermPart.EndDate > start) ||
-                    (smtr.ScheduledMeetingTime.CourseSection.TermPart.StartDate >= start &&
-                     smtr.ScheduledMeetingTime.CourseSection.TermPart.EndDate <= end) ||
-                    (smtr.ScheduledMeetingTime.CourseSection.TermPart.StartDate < end &&
-                     smtr.ScheduledMeetingTime.CourseSection.TermPart.EndDate > end) ||
-                    (smtr.ScheduledMeetingTime.CourseSection.TermPart.StartDate <= start &&
-                     smtr.ScheduledMeetingTime.CourseSection.TermPart.EndDate >= end))
+                .Where(smtr => !(smtr.ScheduledMeetingTime.CourseSection.TermPart.StartDate < start
+                                 && smtr.ScheduledMeetingTime.CourseSection.TermPart.EndDate < start)
+                               || !(smtr.ScheduledMeetingTime.CourseSection.TermPart.StartDate > end
+                                    && smtr.ScheduledMeetingTime.CourseSection.TermPart.EndDate > end))
                 .Select(smtr => new EventWeekly
                 {
                     ResourceId = smtr.RoomId,
                     Title = smtr.ScheduledMeetingTime.CourseSection.Course.Subject.Code +
-                            smtr.ScheduledMeetingTime.CourseSection.Course.Number + 
+                            smtr.ScheduledMeetingTime.CourseSection.Course.Number +
                             " " +
                             smtr.ScheduledMeetingTime.CourseSection.Section.ToString("D3"),
                     StartDate = smtr.ScheduledMeetingTime.CourseSection.TermPart.StartDate.Value,
@@ -117,11 +112,11 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
 
                 var startDate = weekly.StartDate < start ? start.Value : weekly.StartDate;
                 var endDate = weekly.EndDate > end ? end.Value : weekly.EndDate;
-                
+
                 for (DateTime date = startDate; date.Date <= endDate.Date; date = date.AddDays(1))
                 {
                     DateTime? startDateTime = null, endDateTime = null;
-                    
+
                     if (date.DayOfWeek == DayOfWeek.Monday && weekly.Monday)
                     {
                         startDateTime = date.Date + weekly.StartTime;
@@ -188,7 +183,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             public DateTime Start { get; set; }
             public DateTime End { get; set; }
         }
-        
+
         public class EventWeekly
         {
             public Guid ResourceId { get; set; }

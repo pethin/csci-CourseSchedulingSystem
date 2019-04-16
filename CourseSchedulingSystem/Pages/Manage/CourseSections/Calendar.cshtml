@@ -3,6 +3,7 @@
 
 @{
     ViewData["Title"] = "Calendar";
+    ViewData["Fluid"] = true;
 }
 
 <div>
@@ -27,12 +28,24 @@
     <a href="https://fullcalendar.io/scheduler">Made Possible by Full Calendar Scheduler</a>
 </small>
 
+@section Styles {
+    <style>
+        .fc-content tr td {
+            border-top-width: 1px;
+            border-top-color: #660000;
+            border-bottom-width: 1px;
+            border-bottom-color: #660000;
+        }
+    </style>
+}
+
 @section Scripts {
     <script>
         $(document).ready(function() {
             $('#calendar').fullCalendar({
                 schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
                 themeSystem: 'bootstrap4',
+                height: "auto",
                 header: {
                     left: 'today prev,next',
                     center: 'title',
@@ -48,6 +61,7 @@
                 minTime: '08:00:00',
                 maxTime: '22:00:00',
                 defaultView: 'timelineWeek',
+                resourceAreaWidth: "10em",
                 resourceLabelText: 'Rooms',
                 resourceGroupField: 'building',
                 resources: '@Url.Page("", "Resources")',
