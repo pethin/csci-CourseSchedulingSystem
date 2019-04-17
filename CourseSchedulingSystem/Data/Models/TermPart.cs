@@ -7,14 +7,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
+    /// <summary>Represents a term part, e.g., Full Semester.</summary>
+    /// <remarks>
+    /// <para>A term must have a unique ID and unique (Term, Name).</para>
+    /// <para>A term part has many course sections.</para>
+    /// </remarks>
     public class TermPart : IValidatableObject
     {
         private string _name;
 
+        /// <summary>Creates a term part with no name, start date, or end date.</summary>
         public TermPart()
         {
         }
 
+        /// <summary>Creates a term part with the specified parameters.</summary>
         public TermPart(Term term, string name, DateTime startDate, DateTime endDate)
         {
             TermId = term.Id;
@@ -24,11 +31,18 @@ namespace CourseSchedulingSystem.Data.Models
             EndDate = endDate;
         }
 
+        /// <summary>Gets or sets the primary key for this term part.</summary>
         public Guid Id { get; set; }
 
+        /// <summary>Gets or sets the term ID for this term part.</summary>
+        /// <remarks>This field is a foreign key relation.</remarks>
         public Guid TermId { get; set; }
+        
+        /// <summary>Navigation property for the term this term part belongs to.</summary>
         public Term Term { get; set; }
 
+        /// <summary>Gets or sets the name for this term.</summary>
+        /// <remarks>The normalized version of this field must be unique.</remarks>
         [Required]
         public string Name
         {
@@ -40,20 +54,32 @@ namespace CourseSchedulingSystem.Data.Models
             }
         }
 
+        /// <summary>Gets the normalized name for this term.</summary>
+        /// <remarks>
+        /// <para>This field is automated.</para>
+        /// <para>This field must be unique.</para>
+        /// <para>This field is indexed.</para>
+        /// </remarks>
         public string NormalizedName { get; private set; }
 
+        /// <summary>Gets or sets the start date for this term part.</summary>
+        /// <remarks>This field is indexed.</remarks>
         [Required]
         [Display(Name = "Start Date")]
         [DataType(DataType.Date)]
         public DateTime? StartDate { get; set; }
 
+        /// <summary>Gets or sets the end date for this term part.</summary>
+        /// <remarks>This field is indexed.</remarks>
         [Required]
         [Display(Name = "End Date")]
         [DataType(DataType.Date)]
         public DateTime? EndDate { get; set; }
         
+        /// <summary>Navigation property for the course sections this term has.</summary>
         public List<CourseSection> CourseSections { get; set; }
 
+        /// <summary>Returns validation errors this term part excluding database constraints.</summary>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (StartDate >= EndDate)
@@ -63,6 +89,7 @@ namespace CourseSchedulingSystem.Data.Models
             }
         }
 
+        /// <summary>Returns validation errors for database constraints.</summary>
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )

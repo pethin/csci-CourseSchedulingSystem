@@ -50,7 +50,7 @@ namespace CourseSchedulingSystem.Data.Models
         /// <remarks>This field is indexed.</remarks>
         public string NormalizedName { get; private set; }
 
-        /// <summary>Navigation property for the rooms this building has.</summary>
+        /// <summary>Navigation property for the course attribute associations for this course.</summary>
         public List<CourseCourseAttribute> CourseCourseAttributes { get; set; }
 
         /// <summary>Returns validation errors for database constraints.</summary>

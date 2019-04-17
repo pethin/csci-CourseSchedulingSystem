@@ -15,7 +15,7 @@ namespace CourseSchedulingSystem.Data.Models
         private string _name;
         private string _code;
 
-        /// <summary>Creates building with default fields.</summary>
+        /// <summary>Creates a building with default fields.</summary>
         public Building()
         {
         }
@@ -57,9 +57,11 @@ namespace CourseSchedulingSystem.Data.Models
         }
 
         /// <summary>Gets the normalized name for this building.</summary>
-        /// <remarks>This field is automated.</remarks>
-        /// <remarks>This field must be unique.</remarks>
-        /// <remarks>This field is indexed.</remarks>
+        /// <remarks>
+        /// <para>This field is automated.</para>
+        /// <para>This field must be unique.</para>
+        /// <para>This field is indexed.</para>
+        /// </remarks>
         public string NormalizedName { get; private set; }
 
         /// <summary>Gets or sets the enabled flag for this building.</summary>

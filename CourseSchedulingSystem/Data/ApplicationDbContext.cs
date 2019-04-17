@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data
 {
+    /// <summary>
+    /// The ApplicationDbContext represents the database. The DbSet attributes represent tables. The context
+    /// also represents a unit of work. The unit is committed using SaveChangesAsync().
+    /// </summary>
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
