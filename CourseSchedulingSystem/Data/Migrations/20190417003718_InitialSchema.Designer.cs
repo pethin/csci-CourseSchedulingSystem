@@ -10,14 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CourseSchedulingSystem.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190325043328_UpdateInstructorCombineIndex")]
-    partial class UpdateInstructorCombineIndex
+    [Migration("20190417003718_InitialSchema")]
+    partial class InitialSchema
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.2-servicing-10034")
+                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -99,7 +99,68 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.AttributeType", b =>
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.Building", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code")
+                        .IsRequired();
+
+                    b.Property<bool>("IsEnabled");
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("NormalizedName");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("Buildings");
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.Course", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<decimal>("CreditHours")
+                        .HasColumnType("decimal(5, 3)");
+
+                    b.Property<Guid>("DepartmentId");
+
+                    b.Property<bool>("IsEnabled");
+
+                    b.Property<bool>("IsGraduate");
+
+                    b.Property<bool>("IsUndergraduate");
+
+                    b.Property<string>("Number")
+                        .IsRequired();
+
+                    b.Property<Guid>("SubjectId");
+
+                    b.Property<string>("Title")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DepartmentId");
+
+                    b.HasIndex("SubjectId", "Number")
+                        .IsUnique();
+
+                    b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.CourseAttribute", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -115,54 +176,20 @@ namespace CourseSchedulingSystem.Data.Migrations
                         .IsUnique()
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
-                    b.ToTable("AttributeTypes");
+                    b.ToTable("CourseAttributes");
                 });
 
-            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.Course", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<decimal>("CreditHours")
-                        .HasColumnType("decimal(5, 3)");
-
-                    b.Property<Guid>("DepartmentId");
-
-                    b.Property<string>("Level")
-                        .IsRequired();
-
-                    b.Property<string>("NormalizedTitle");
-
-                    b.Property<Guid>("SubjectId");
-
-                    b.Property<string>("Title")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
-
-                    b.HasIndex("NormalizedTitle")
-                        .IsUnique()
-                        .HasFilter("[NormalizedTitle] IS NOT NULL");
-
-                    b.HasIndex("SubjectId", "Level")
-                        .IsUnique();
-
-                    b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.CourseAttributeType", b =>
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.CourseCourseAttribute", b =>
                 {
                     b.Property<Guid>("CourseId");
 
-                    b.Property<Guid>("AttributeTypeId");
+                    b.Property<Guid>("CourseAttributeId");
 
-                    b.HasKey("CourseId", "AttributeTypeId");
+                    b.HasKey("CourseId", "CourseAttributeId");
 
-                    b.HasIndex("AttributeTypeId");
+                    b.HasIndex("CourseAttributeId");
 
-                    b.ToTable("CourseAttributeTypes");
+                    b.ToTable("CourseCourseAttributes");
                 });
 
             modelBuilder.Entity("CourseSchedulingSystem.Data.Models.CourseScheduleType", b =>
@@ -176,6 +203,42 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.HasIndex("ScheduleTypeId");
 
                     b.ToTable("CourseScheduleTypes");
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.CourseSection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("CourseId");
+
+                    b.Property<string>("Footnotes");
+
+                    b.Property<Guid>("InstructionalMethodId");
+
+                    b.Property<int>("MaximumCapacity");
+
+                    b.Property<Guid>("ScheduleTypeId");
+
+                    b.Property<int>("Section");
+
+                    b.Property<Guid>("TermPartId");
+
+                    b.Property<string>("_SchedulingNotifications")
+                        .HasColumnName("SchedulingNotifications");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("InstructionalMethodId");
+
+                    b.HasIndex("ScheduleTypeId");
+
+                    b.HasIndex("TermPartId", "CourseId", "Section")
+                        .IsUnique();
+
+                    b.ToTable("CourseSections");
                 });
 
             modelBuilder.Entity("CourseSchedulingSystem.Data.Models.Department", b =>
@@ -221,6 +284,9 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("Code")
+                        .IsRequired();
+
                     b.Property<bool>("IsRoomRequired");
 
                     b.Property<string>("Name")
@@ -229,6 +295,9 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.Property<string>("NormalizedName");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
 
                     b.HasIndex("NormalizedName")
                         .IsUnique()
@@ -244,6 +313,8 @@ namespace CourseSchedulingSystem.Data.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired();
+
+                    b.Property<bool>("IsActive");
 
                     b.Property<string>("LastName")
                         .IsRequired();
@@ -261,10 +332,13 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.ToTable("Instructors");
                 });
 
-            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.ScheduleType", b =>
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.MeetingType", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code")
+                        .IsRequired();
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -273,11 +347,126 @@ namespace CourseSchedulingSystem.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("MeetingTypes");
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.Room", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("BuildingId");
+
+                    b.Property<int>("Capacity");
+
+                    b.Property<bool>("IsEnabled");
+
+                    b.Property<string>("Number")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BuildingId", "Number")
+                        .IsUnique();
+
+                    b.ToTable("Rooms");
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.ScheduleType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Code")
+                        .IsRequired();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<string>("NormalizedName");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.HasIndex("NormalizedName")
                         .IsUnique()
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("ScheduleTypes");
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.ScheduledMeetingTime", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("CourseSectionId");
+
+                    b.Property<TimeSpan?>("EndTime");
+
+                    b.Property<bool>("Friday");
+
+                    b.Property<Guid>("MeetingTypeId");
+
+                    b.Property<bool>("Monday");
+
+                    b.Property<bool>("Saturday");
+
+                    b.Property<TimeSpan?>("StartTime");
+
+                    b.Property<bool>("Sunday");
+
+                    b.Property<bool>("Thursday");
+
+                    b.Property<bool>("Tuesday");
+
+                    b.Property<bool>("Wednesday");
+
+                    b.Property<string>("_SchedulingNotifications")
+                        .HasColumnName("SchedulingNotifications");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseSectionId");
+
+                    b.HasIndex("MeetingTypeId");
+
+                    b.ToTable("ScheduledMeetingTimes");
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.ScheduledMeetingTimeInstructor", b =>
+                {
+                    b.Property<Guid>("ScheduledMeetingTimeId");
+
+                    b.Property<Guid>("InstructorId");
+
+                    b.HasKey("ScheduledMeetingTimeId", "InstructorId");
+
+                    b.HasIndex("InstructorId");
+
+                    b.ToTable("ScheduledMeetingTimeInstructors");
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.ScheduledMeetingTimeRoom", b =>
+                {
+                    b.Property<Guid>("ScheduledMeetingTimeId");
+
+                    b.Property<Guid>("RoomId");
+
+                    b.HasKey("ScheduledMeetingTimeId", "RoomId");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("ScheduledMeetingTimeRooms");
                 });
 
             modelBuilder.Entity("CourseSchedulingSystem.Data.Models.Subject", b =>
@@ -310,14 +499,12 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("EndDate");
+                    b.Property<bool>("IsArchived");
 
                     b.Property<string>("Name")
                         .IsRequired();
 
                     b.Property<string>("NormalizedName");
-
-                    b.Property<DateTime>("StartDate");
 
                     b.HasKey("Id");
 
@@ -333,18 +520,24 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("EndDate");
+                    b.Property<DateTime?>("EndDate")
+                        .IsRequired();
 
                     b.Property<string>("Name")
                         .IsRequired();
 
                     b.Property<string>("NormalizedName");
 
-                    b.Property<DateTime>("StartDate");
+                    b.Property<DateTime?>("StartDate")
+                        .IsRequired();
 
                     b.Property<Guid>("TermId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EndDate");
+
+                    b.HasIndex("StartDate");
 
                     b.HasIndex("TermId", "NormalizedName")
                         .IsUnique()
@@ -441,23 +634,23 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.HasOne("CourseSchedulingSystem.Data.Models.Department", "Department")
                         .WithMany("Courses")
                         .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CourseSchedulingSystem.Data.Models.Subject", "Subject")
                         .WithMany("Courses")
                         .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.CourseAttributeType", b =>
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.CourseCourseAttribute", b =>
                 {
-                    b.HasOne("CourseSchedulingSystem.Data.Models.AttributeType", "AttributeType")
-                        .WithMany("CourseAttributeTypes")
-                        .HasForeignKey("AttributeTypeId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("CourseSchedulingSystem.Data.Models.CourseAttribute", "CourseAttribute")
+                        .WithMany("CourseCourseAttributes")
+                        .HasForeignKey("CourseAttributeId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CourseSchedulingSystem.Data.Models.Course", "Course")
-                        .WithMany("CourseAttributeTypes")
+                        .WithMany("CourseCourseAttributes")
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -472,6 +665,29 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.HasOne("CourseSchedulingSystem.Data.Models.ScheduleType", "ScheduleType")
                         .WithMany("CourseScheduleTypes")
                         .HasForeignKey("ScheduleTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.CourseSection", b =>
+                {
+                    b.HasOne("CourseSchedulingSystem.Data.Models.Course", "Course")
+                        .WithMany("CourseSections")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("CourseSchedulingSystem.Data.Models.InstructionalMethod", "InstructionalMethod")
+                        .WithMany("CourseSections")
+                        .HasForeignKey("InstructionalMethodId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CourseSchedulingSystem.Data.Models.ScheduleType", "ScheduleType")
+                        .WithMany("CourseSections")
+                        .HasForeignKey("ScheduleTypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CourseSchedulingSystem.Data.Models.TermPart", "TermPart")
+                        .WithMany("CourseSections")
+                        .HasForeignKey("TermPartId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -485,6 +701,53 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.HasOne("CourseSchedulingSystem.Data.Models.ApplicationUser", "User")
                         .WithMany("DepartmentUsers")
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.Room", b =>
+                {
+                    b.HasOne("CourseSchedulingSystem.Data.Models.Building", "Building")
+                        .WithMany("Rooms")
+                        .HasForeignKey("BuildingId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.ScheduledMeetingTime", b =>
+                {
+                    b.HasOne("CourseSchedulingSystem.Data.Models.CourseSection", "CourseSection")
+                        .WithMany("ScheduledMeetingTimes")
+                        .HasForeignKey("CourseSectionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("CourseSchedulingSystem.Data.Models.MeetingType", "MeetingType")
+                        .WithMany("ScheduledMeetingTimes")
+                        .HasForeignKey("MeetingTypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.ScheduledMeetingTimeInstructor", b =>
+                {
+                    b.HasOne("CourseSchedulingSystem.Data.Models.Instructor", "Instructor")
+                        .WithMany("ScheduledMeetingTimeInstructors")
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CourseSchedulingSystem.Data.Models.ScheduledMeetingTime", "ScheduledMeetingTime")
+                        .WithMany("ScheduledMeetingTimeInstructors")
+                        .HasForeignKey("ScheduledMeetingTimeId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("CourseSchedulingSystem.Data.Models.ScheduledMeetingTimeRoom", b =>
+                {
+                    b.HasOne("CourseSchedulingSystem.Data.Models.Room", "Room")
+                        .WithMany("ScheduledMeetingTimeRooms")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CourseSchedulingSystem.Data.Models.ScheduledMeetingTime", "ScheduledMeetingTime")
+                        .WithMany("ScheduledMeetingTimeRooms")
+                        .HasForeignKey("ScheduledMeetingTimeId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
