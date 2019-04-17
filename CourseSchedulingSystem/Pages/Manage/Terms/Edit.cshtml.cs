@@ -23,8 +23,9 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
         }
 
         [BindProperty] public Term Term { get; set; }
-
+        
         public string SourceTermName { get; set; }
+        public Guid TermId { get; set; }
         public IEnumerable<TermPart> TermParts { get; set; }
 
         public string SuccessMessage { get; set; }
@@ -37,6 +38,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
 
             if (Term == null) return NotFound();
 
+            TermId = Term.Id;
             SourceTermName = Term.Name;
             TermParts = _context.TermParts.Where(tp => tp.TermId == Term.Id);
 
@@ -54,6 +56,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
                 return NotFound();
             }
             
+            TermId = term.Id;
             SourceTermName = Term.Name;
             TermParts = _context.TermParts.Where(tp => tp.TermId == term.Id);
 
@@ -69,6 +72,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
                 await _context.SaveChangesAsync();
 
                 SuccessMessage = "Name successfully updated!";
+                SourceTermName = term.Name;
                 return Page();
             }
 

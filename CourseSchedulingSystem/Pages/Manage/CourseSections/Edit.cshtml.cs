@@ -20,6 +20,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         [BindProperty]
         public CourseSection CourseSection { get; set; }
         
+        public Guid CourseSectionId { get; set; }
+        
         public Term Term { get; set; }
         public IEnumerable<ScheduledMeetingTime> ScheduledMeetingTimes { get; set; }
         public string SuccessMessage { get; set; }
@@ -37,6 +39,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             {
                 return NotFound();
             }
+
+            CourseSectionId = CourseSection.Id;
 
             Term = await Context.Terms
                 .Include(t => t.TermParts)
@@ -75,10 +79,12 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             var courseSection = await Context.CourseSections.FirstOrDefaultAsync(m => m.Id == id);
 
             if (courseSection == null) return NotFound();
+            
+            CourseSectionId = courseSection.Id;
 
             Term = await Context.Terms
                 .Include(t => t.TermParts)
-                .Where(t => t.TermParts.Any(tp => tp.Id == CourseSection.TermPartId))
+                .Where(t => t.TermParts.Any(tp => tp.Id == courseSection.TermPartId))
                 .FirstOrDefaultAsync();
             
             TermPartIds = Context.TermParts
@@ -92,7 +98,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 });
 
             ScheduledMeetingTimes = Context.ScheduledMeetingTimes
-                .Where(smt => smt.CourseSectionId == CourseSection.Id)
+                .Where(smt => smt.CourseSectionId == courseSection.Id)
                 .Include(smt => smt.ScheduledMeetingTimeInstructors)
                 .ThenInclude(smti => smti.Instructor)
                 .Include(smt => smt.ScheduledMeetingTimeRooms)
