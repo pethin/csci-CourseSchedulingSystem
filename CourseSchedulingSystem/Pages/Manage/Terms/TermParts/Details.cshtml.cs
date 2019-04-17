@@ -20,7 +20,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
 
         [FromRoute] public Guid Id { get; set; }
         
-        [BindProperty] public TermPart TermPart { get; set; }
+        public TermPart TermPart { get; set; }
         
         public string ReturnUrl { get; set; }
 

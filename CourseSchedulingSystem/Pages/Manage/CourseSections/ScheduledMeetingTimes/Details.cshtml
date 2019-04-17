@@ -94,7 +94,7 @@
             <ul>
                 @foreach (var item in Model.ScheduledMeetingTime.ScheduledMeetingTimeRooms)
                 {
-                    <li><a asp-page="../../Rooms/Details" asp-route-id="@item.RoomId">@item.Room.Identifier</a></li>                    
+                    <li><a asp-page="../../Buildings/Rooms/Details" asp-route-id="@item.RoomId">@item.Room.Identifier</a></li>                    
                 }
             </ul>
         </dd>
