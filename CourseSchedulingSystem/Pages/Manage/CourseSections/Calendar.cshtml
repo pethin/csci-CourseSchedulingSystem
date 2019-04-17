@@ -23,13 +23,23 @@
         <button class="btn btn-primary btn-block" id="SU">S/U</button>
     </div>
 </div>
-<div id='calendar'></div>
+<div class="calendar-container">
+    <div id='calendar'></div>
+</div>
 <small>
     <a href="https://fullcalendar.io/scheduler">Made Possible by Full Calendar Scheduler</a>
 </small>
 
 @section Styles {
     <style>
+        body {
+            margin-bottom: 0;
+        }
+        
+        .calendar-container {
+            min-height: 90vh;
+        }
+        
         .fc-content tr td {
             border-top-width: 1px;
             border-top-color: #660000;
@@ -53,7 +63,7 @@
             $('#calendar').fullCalendar({
                 schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
                 themeSystem: 'bootstrap4',
-                height: "auto",
+                height: "parent",
                 header: {
                     left: 'today prev,next',
                     center: 'title',
