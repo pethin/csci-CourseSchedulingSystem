@@ -1,5 +1,5 @@
 ﻿@page "{id:Guid}"
-@model CourseSchedulingSystem.Pages.Manage.Rooms.DeleteModel
+@model CourseSchedulingSystem.Pages.Manage.Buildings.Rooms.DeleteModel
 
 @{
     ViewData["Title"] = $"Delete {Model.Room.Identifier}";
@@ -46,6 +46,6 @@
     
     <form method="post">
         <input type="submit" value="Delete" class="btn btn-danger" disabled="@(Model.InUse ? "" : null)"/> |
-        <a asp-page="./Index">Back to List</a>
+        <a asp-page="../Edit" asp-route-id="@Model.Room.BuildingId">Back to Building</a>
     </form>
 </div>

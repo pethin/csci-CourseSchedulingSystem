@@ -29,16 +29,38 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Building.IsEnabled)
         </dd>
-        <dt class="col-sm-12">Rooms</dt>
-        <dd class="col-sm-12">
-            <ul>
-                @foreach (var room in Model.Building.Rooms.OrderBy(r => r.Number))
-                {
-                    <li><a asp-page="../Rooms/Details" asp-route-id="@room.Id">@room.Number</a></li>
-                }
-            </ul>
-        </dd>
     </dl>
+    <hr/>
+    <h4>Rooms</h4>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Building.Rooms[0].Number)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Building.Rooms[0].Capacity)
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Building.Rooms)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Number)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Capacity)
+                </td>
+                <td>
+                    <a asp-page="./Rooms/Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.Id">Edit</a> |

@@ -1,22 +1,18 @@
-﻿@page
-@model CourseSchedulingSystem.Pages.Manage.Rooms.CreateModel
+﻿@page "{id:Guid}"
+@model CourseSchedulingSystem.Pages.Manage.Buildings.Rooms.EditModel
 
 @{
-    ViewData["Title"] = "Create Room";
+    ViewData["Title"] = $"Edit {Model.Room.Identifier}";
 }
 
-<h1>Create</h1>
+<h1>Edit</h1>
 
-<h4>Room</h4>
+<h4>@Model.Room.Building.Name - Room</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Room.BuildingId" class="control-label">Building Code</label>
-                <select asp-for="Room.BuildingId" class ="form-control" asp-items="Model.BuildingOptions"></select>
-            </div>
             <div class="form-group">
                 <label asp-for="Room.Number" class="control-label"></label>
                 <input asp-for="Room.Number" class="form-control" />
@@ -29,18 +25,18 @@
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Room.IsEnabled" checked="@(Model.Room?.IsEnabled ?? true ? "" : null)" /> @Html.DisplayNameFor(model => model.Room.IsEnabled)
+                    <input class="form-check-input" asp-for="Room.IsEnabled" /> @Html.DisplayNameFor(model => model.Room.IsEnabled)
                 </label>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-page="Index">Back to List</a>
+    <a asp-page="../Edit" asp-route-id="@Model.Room.BuildingId">Back to Building</a>
 </div>
 
 @section Scripts {

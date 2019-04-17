@@ -40,7 +40,7 @@ namespace CourseSchedulingSystem.Pages.Manage
                         new Row
                         {
                             Title = "Schedule Courses",
-                            Description = "Schedule course sections.",
+                            Description = "Schedule course sections and add scheduled meeting times.",
                             AddLink = Url.Page("CourseSections/SelectTerm", "AddSection"),
                             ManageLink = Url.Page("CourseSections/SelectTerm", "ManageSections")
                         }
@@ -99,7 +99,7 @@ namespace CourseSchedulingSystem.Pages.Manage
                         new Row
                         {
                             Title = "Instructors",
-                            Description = "Instructors are assigned to course sections.",
+                            Description = "Instructors are assigned to scheduled meeting times.",
                             AddLink = Url.Page("Instructors/Create"),
                             ManageLink = Url.Page("Instructors/Index")
                         }
@@ -112,17 +112,10 @@ namespace CourseSchedulingSystem.Pages.Manage
                     {
                         new Row
                         {
-                            Title = "Buildings",
-                            Description = "Buildings contain rooms.",
+                            Title = "Buildings and Rooms",
+                            Description = "Buildings contain rooms which are assigned to scheduled meeting times.",
                             AddLink = Url.Page("Buildings/Create"),
                             ManageLink = Url.Page("Buildings/Index")
-                        },
-                        new Row
-                        {
-                            Title = "Rooms",
-                            Description = "Rooms are assigned to applicable course sections.",
-                            AddLink = Url.Page("Rooms/Create"),
-                            ManageLink = Url.Page("Rooms/Index")
                         }
                     }
                 },

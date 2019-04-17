@@ -37,6 +37,33 @@
             @Html.DisplayFor(model => model.Building.IsEnabled)
         </dd>
     </dl>
+    <hr/>
+    <h4>Rooms</h4>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Building.Rooms[0].Number)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Building.Rooms[0].Capacity)
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Building.Rooms)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Number)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Capacity)
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
     
     <form method="post">
         <input type="submit" value="Delete" class="btn btn-danger" disabled="@(Model.InUse ? "" : null)"/> |

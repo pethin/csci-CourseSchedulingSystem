@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-namespace CourseSchedulingSystem.Pages.Manage.Buildings
+namespace CourseSchedulingSystem.Pages.Manage.Buildings.Rooms
 {
     public class DeleteModel : PageModel
     {
@@ -20,17 +20,17 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
 
         [FromRoute] public Guid Id { get; set; }
 
-        [BindProperty] public Building Building { get; set; }
+        [BindProperty] public Room Room { get; set; }
 
         public bool InUse { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            Building = await _context.Buildings
-                .Include(b => b.Rooms)
+            Room = await _context.Rooms
+                .Include(r => r.Building)
                 .FirstOrDefaultAsync(m => m.Id == Id);
 
-            if (Building == null)
+            if (Room == null)
             {
                 return NotFound();
             }
@@ -42,30 +42,24 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
 
         public async Task<IActionResult> OnPostAsync()
         {
-            Building = await _context.Buildings
-                .Include(b => b.Rooms)
-                .FirstOrDefaultAsync(m => m.Id == Id);
+            Room = await _context.Rooms.FindAsync(Id);
 
-            if (Building != null)
-            {
-                InUse = await InUseQueryAsync(Id);
-                if (InUse)
-                {
-                    return RedirectToPage();
-                }
+            if (Room == null) return NotFound();
 
-                _context.Buildings.Remove(Building);
-                await _context.SaveChangesAsync();
-            }
+            InUse = await InUseQueryAsync(Id);
+            if (InUse) return RedirectToPage();
 
-            return RedirectToPage("./Index");
+            _context.Rooms.Remove(Room);
+            await _context.SaveChangesAsync();
+
+            return RedirectToPage("../Edit", new {id = Room.BuildingId});
         }
 
         private async Task<bool> InUseQueryAsync(Guid id)
         {
-            return await _context.Buildings
-                .Where(b => b.Id == id)
-                .Where(b => b.Rooms.Any(r => r.ScheduledMeetingTimeRooms.Any()))
+            return await _context.Rooms
+                .Where(r => r.Id == id)
+                .Where(r => r.ScheduledMeetingTimeRooms.Any())
                 .AnyAsync();
         }
     }
