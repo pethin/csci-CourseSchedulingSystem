@@ -18,6 +18,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         {
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public Course Course { get; set; }
         
         [Display(Name = "Schedule Types")]
@@ -28,15 +30,13 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         [BindProperty]
         public IEnumerable<Guid> CourseAttributeIds { get; set; } = new List<Guid>();
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             Course = await Context.Courses
                 .Include(c => c.Subject)
                 .Include(c => c.CourseScheduleTypes)
                 .Include(c => c.CourseCourseAttributes)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Course == null) return NotFound();
 
@@ -46,7 +46,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
@@ -57,7 +57,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 .Include(c => c.Subject)
                 .Include(c => c.CourseScheduleTypes)
                 .Include(c => c.CourseCourseAttributes)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (await TryUpdateModelAsync(
                 course,

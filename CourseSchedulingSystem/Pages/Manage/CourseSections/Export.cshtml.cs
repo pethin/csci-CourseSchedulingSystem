@@ -23,18 +23,18 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         {
             _context = context;
         }
+        
+        [FromRoute] public Guid TermId { get; set; }
 
-        public async Task<IActionResult> OnGet(Guid? termId)
+        public async Task<IActionResult> OnGet()
         {
-            if (termId == null) return NotFound();
-
-            var term = await _context.Terms.FindAsync(termId);
+            var term = await _context.Terms.FindAsync(TermId);
 
             if (term == null) return NotFound();
 
             // Query DB
             var courseSections = await _context.CourseSections
-                .Where(cs => cs.TermPart.TermId == termId)
+                .Where(cs => cs.TermPart.TermId == TermId)
                 // Part of Term
                 .Include(cs => cs.TermPart)
                 // Course

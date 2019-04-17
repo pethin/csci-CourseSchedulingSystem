@@ -15,7 +15,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Room.BuildingId" class="control-label">Building Code</label>
-                <select asp-for="Room.BuildingId" class ="form-control" asp-items="ViewBag.BuildingId"></select>
+                <select asp-for="Room.BuildingId" class ="form-control" asp-items="Model.BuildingOptions"></select>
             </div>
             <div class="form-group">
                 <label asp-for="Room.Number" class="control-label"></label>

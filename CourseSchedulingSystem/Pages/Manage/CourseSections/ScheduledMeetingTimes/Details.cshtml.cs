@@ -17,17 +17,14 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTim
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         public ScheduledMeetingTime ScheduledMeetingTime { get; set; }
         
         public string ReturnUrl { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id, string returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             ScheduledMeetingTime = await _context.ScheduledMeetingTimes
                 .Include(s => s.CourseSection)
                 .ThenInclude(cs => cs.Course)
@@ -38,7 +35,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTim
                 .Include(smt => smt.ScheduledMeetingTimeRooms)
                 .ThenInclude(smtr => smtr.Room)
                 .ThenInclude(r => r.Building)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (ScheduledMeetingTime == null)
             {

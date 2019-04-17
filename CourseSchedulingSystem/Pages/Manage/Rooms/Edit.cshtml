@@ -13,10 +13,9 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Room.Id" />
             <div class="form-group">
                 <label asp-for="Room.BuildingId" class="control-label">Building Code</label>
-                <select asp-for="Room.BuildingId" class="form-control" asp-items="ViewBag.BuildingId"></select>
+                <select asp-for="Room.BuildingId" class="form-control" asp-items="Model.BuildingOptions"></select>
                 <span asp-validation-for="Room.BuildingId" class="text-danger"></span>
             </div>
             <div class="form-group">

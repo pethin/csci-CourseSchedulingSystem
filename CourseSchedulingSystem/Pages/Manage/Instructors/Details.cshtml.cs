@@ -19,14 +19,14 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         public Instructor Instructor { get; set; }
         public IEnumerable<Course> Courses { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
-            Instructor = await _context.Instructors.FirstOrDefaultAsync(m => m.Id == id);
+            Instructor = await _context.Instructors.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Instructor == null) return NotFound();
             
@@ -35,7 +35,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
                 .Where(c => c.CourseSections.Any(cs =>
                     cs.ScheduledMeetingTimes.Any(smt =>
                         smt.ScheduledMeetingTimeInstructors.Any(smti =>
-                            smti.InstructorId == id))));
+                            smti.InstructorId == Id))));
             
             return Page();
         }

@@ -1,5 +1,4 @@
 ﻿@page "{id:Guid}"
-@using Microsoft.EntityFrameworkCore
 @model CourseSchedulingSystem.Pages.Manage.CourseSections.EditModel
 
 @{
@@ -60,7 +59,7 @@
 <h4 class="mb-0">Scheduled Meeting Times</h4>
 <div class="mb-2"></div>
 <p>
-    <a asp-page="./ScheduledMeetingTimes/Create" asp-route-sectionId="@Model.CourseSectionId">Create New</a>
+    <a asp-page="./ScheduledMeetingTimes/Create" asp-route-sectionId="@Model.Id">Create New</a>
 </p>
 <table class="table">
     <thead>

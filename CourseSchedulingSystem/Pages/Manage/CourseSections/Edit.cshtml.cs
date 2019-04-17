@@ -16,31 +16,24 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         public EditModel(ApplicationDbContext context) : base(context)
         {
         }
+        
+        [FromRoute] public Guid Id { get; set; }
 
         [BindProperty]
         public CourseSection CourseSection { get; set; }
-        
-        public Guid CourseSectionId { get; set; }
-        
+
         public Term Term { get; set; }
         public IEnumerable<ScheduledMeetingTime> ScheduledMeetingTimes { get; set; }
         public string SuccessMessage { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            
-            CourseSection = await Context.CourseSections.FirstOrDefaultAsync(m => m.Id == id);
+            CourseSection = await Context.CourseSections.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (CourseSection == null)
             {
                 return NotFound();
             }
-
-            CourseSectionId = CourseSection.Id;
 
             Term = await Context.Terms
                 .Include(t => t.TermParts)
@@ -58,7 +51,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 });
 
             ScheduledMeetingTimes = Context.ScheduledMeetingTimes
-                .Where(smt => smt.CourseSectionId == CourseSection.Id)
+                .Where(smt => smt.CourseSectionId == Id)
                 .Include(smt => smt.ScheduledMeetingTimeInstructors)
                 .ThenInclude(smti => smti.Instructor)
                 .Include(smt => smt.ScheduledMeetingTimeRooms)
@@ -72,15 +65,11 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-            
-            var courseSection = await Context.CourseSections.FirstOrDefaultAsync(m => m.Id == id);
+            var courseSection = await Context.CourseSections.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (courseSection == null) return NotFound();
-            
-            CourseSectionId = courseSection.Id;
 
             Term = await Context.Terms
                 .Include(t => t.TermParts)
@@ -137,17 +126,12 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             return Page();
         }
         
-        public async Task<IActionResult> OnPostDuplicateMeetingTimeAsync(Guid? id, Guid? meetingTimeId)
+        public async Task<IActionResult> OnPostDuplicateMeetingTimeAsync(Guid? meetingTimeId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             if (meetingTimeId == null)
             {
                 ModelState.AddModelError(string.Empty, "Could not duplicate meeting time: missing ID.");
-                return await OnGetAsync(id);
+                return await OnGetAsync();
             }
 
             var scheduledMeetingTime = await Context.ScheduledMeetingTimes
@@ -161,7 +145,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             {
                 ModelState.AddModelError(string.Empty,
                     $"Could not duplicate meeting time: could not find scheduled meeting time with ID {meetingTimeId}.");
-                return await OnGetAsync(id);
+                return await OnGetAsync();
             }
             
             scheduledMeetingTime.Id = Guid.NewGuid();
@@ -177,7 +161,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             Context.ScheduledMeetingTimes.Add(scheduledMeetingTime);
             await Context.SaveChangesAsync();
 
-            return RedirectToAction("");
+            return RedirectToPage();
         }
     }
 }

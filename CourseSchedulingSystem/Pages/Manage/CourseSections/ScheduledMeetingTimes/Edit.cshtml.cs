@@ -20,6 +20,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTim
         {
         }
 
+        [FromRoute] public Guid Id { get; set; }
+
         [BindProperty] public ScheduledMeetingTime ScheduledMeetingTime { get; set; }
 
         public CourseSection CourseSection { get; set; }
@@ -53,20 +55,15 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTim
             ScheduledMeetingTime.ScheduledMeetingTimeRooms
                 .Select(smtr => smtr.RoomId);
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             ScheduledMeetingTime = await Context.ScheduledMeetingTimes
                 .Include(smt => smt.ScheduledMeetingTimeInstructors)
                 .Include(smt => smt.ScheduledMeetingTimeRooms)
                 .Include(smt => smt.CourseSection)
                 .ThenInclude(cs => cs.Course)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (ScheduledMeetingTime == null)
             {
@@ -78,20 +75,15 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTim
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var scheduledMeetingTime = await Context.ScheduledMeetingTimes
                 .Include(smt => smt.ScheduledMeetingTimeInstructors)
                 .Include(smt => smt.ScheduledMeetingTimeRooms)
                 .Include(smt => smt.CourseSection)
                 .ThenInclude(cs => cs.Course)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (scheduledMeetingTime == null)
             {

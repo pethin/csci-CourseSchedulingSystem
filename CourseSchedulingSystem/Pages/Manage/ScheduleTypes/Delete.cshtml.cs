@@ -18,37 +18,35 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public ScheduleType ScheduleType { get; set; }
 
         public bool InUse => ScheduleType.CourseScheduleTypes.Any();
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             ScheduleType = await _context.ScheduleTypes
                 .Include(st => st.CourseScheduleTypes)
                 .ThenInclude(cst => cst.Course)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (ScheduleType == null) return NotFound();
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-
             ScheduleType = await _context.ScheduleTypes
                 .Include(st => st.CourseScheduleTypes)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (ScheduleType != null)
             {
                 if (InUse)
                 {
-                    return Page();
+                    return RedirectToPage();
                 }
 
                 _context.ScheduleTypes.Remove(ScheduleType);

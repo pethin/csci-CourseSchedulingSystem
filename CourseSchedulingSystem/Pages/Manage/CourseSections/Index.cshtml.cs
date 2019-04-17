@@ -20,17 +20,14 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             _context = context;
         }
 
+        [FromRoute] public Guid TermId { get; set; }
+        
         public Term Term { get; set; }
         public IList<CourseSection> CourseSections { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? termId)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (termId == null)
-            {
-                return NotFound();
-            }
-
-            Term = await _context.Terms.Where(t => t.Id == termId).FirstOrDefaultAsync();
+            Term = await _context.Terms.Where(t => t.Id == TermId).FirstOrDefaultAsync();
 
             if (Term == null)
             {
@@ -52,17 +49,12 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             return Page();
         }
 
-        public async Task<IActionResult> OnPostDuplicateAsync(Guid? termId, Guid? sectionId)
+        public async Task<IActionResult> OnPostDuplicateAsync(Guid? sectionId)
         {
-            if (termId == null)
-            {
-                return NotFound();
-            }
-
             if (sectionId == null)
             {
                 ModelState.AddModelError(string.Empty, "Could not duplicate section: missing ID.");
-                return await OnGetAsync(termId);
+                return await OnGetAsync();
             }
 
             var courseSection = await _context.CourseSections
@@ -77,7 +69,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             {
                 ModelState.AddModelError(string.Empty,
                     $"Could not duplicate section: could not find section with ID {sectionId}.");
-                return await OnGetAsync(termId);
+                return await OnGetAsync();
             }
 
             courseSection.Id = Guid.NewGuid();

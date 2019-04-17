@@ -18,23 +18,20 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public TermPart TermPart { get; set; }
         
         public string ReturnUrl { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id, string returnUrl = null)
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             TermPart = await _context.TermParts
                 .Include(t => t.Term)
                 .Include(t => t.CourseSections)
                 .ThenInclude(cs => cs.Course)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (TermPart == null)
             {

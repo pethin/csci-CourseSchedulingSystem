@@ -3,6 +3,7 @@ using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -18,23 +19,23 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public ScheduleType ScheduleType { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
-            ScheduleType = await _context.ScheduleTypes.FirstOrDefaultAsync(m => m.Id == id);
+            ScheduleType = await _context.ScheduleTypes.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (ScheduleType == null) return NotFound();
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
-            var scheduleType = await _context.ScheduleTypes.FindAsync(id);
+            var scheduleType = await _context.ScheduleTypes.FindAsync(Id);
 
             if (await TryUpdateModelAsync(
                 scheduleType,
@@ -42,10 +43,7 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
                 st => st.Code,
                 st => st.Name))
             {
-                await scheduleType.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
+                await scheduleType.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
                 if (!ModelState.IsValid) return Page();
 

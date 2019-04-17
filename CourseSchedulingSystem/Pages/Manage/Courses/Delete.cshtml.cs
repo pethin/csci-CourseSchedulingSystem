@@ -15,14 +15,14 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         {
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public Course Course { get; set; }
         
         public IEnumerable<Instructor> Instructors { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             Course = await Context.Courses
                 .Include(c => c.Department)
                 .Include(c => c.Subject)
@@ -30,22 +30,20 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 .ThenInclude(cst => cst.ScheduleType)
                 .Include(c => c.CourseCourseAttributes)
                 .ThenInclude(cat => cat.CourseAttribute)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Course == null) return NotFound();
             
             Instructors = Context.Instructors
                 .Where(i => i.ScheduledMeetingTimeInstructors.Any(smti =>
-                    smti.ScheduledMeetingTime.CourseSection.CourseId == id));
+                    smti.ScheduledMeetingTime.CourseSection.CourseId == Id));
             
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-
-            Course = await Context.Courses.FindAsync(id);
+            Course = await Context.Courses.FindAsync(Id);
 
             if (Course != null)
             {

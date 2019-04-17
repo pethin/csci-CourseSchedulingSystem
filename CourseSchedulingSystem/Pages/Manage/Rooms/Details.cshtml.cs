@@ -1,40 +1,36 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
+using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Pages.Manage.Rooms
 {
     public class DetailsModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DetailsModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public DetailsModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+
         public Room Room { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             Room = await _context.Rooms
-                .Include(r => r.Building).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(r => r.Building).FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Room == null)
             {
                 return NotFound();
             }
+
             return Page();
         }
     }

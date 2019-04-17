@@ -18,39 +18,34 @@ namespace CourseSchedulingSystem.Pages.Manage.Departments
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public Department Department { get; set; }
 
         public bool InUse => Department.Courses.Any();
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             Department = await _context.Departments
                 .Include(d => d.DepartmentUsers)
                 .ThenInclude(du => du.User)
                 .Include(d => d.Courses)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Department == null) return NotFound();
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-
             Department = await _context.Departments
                 .Include(d => d.Courses)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Department != null)
             {
-                if (InUse)
-                {
-                    return Page();
-                }
+                if (InUse) return RedirectToPage();
 
                 _context.Departments.Remove(Department);
                 await _context.SaveChangesAsync();

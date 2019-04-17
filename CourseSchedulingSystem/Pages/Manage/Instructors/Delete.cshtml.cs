@@ -19,19 +19,19 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
         {
             _context = context;
         }
+        
+        [FromRoute] public Guid Id { get; set; }
 
         [BindProperty] public Instructor Instructor { get; set; }
 
         public IEnumerable<Course> Courses { get; set; }
         public bool InUse => Instructor.ScheduledMeetingTimeInstructors.Any();
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             Instructor = await _context.Instructors
                 .Include(i => i.ScheduledMeetingTimeInstructors)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Instructor == null) return NotFound();
 
@@ -40,22 +40,20 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
                 .Where(c => c.CourseSections.Any(cs =>
                     cs.ScheduledMeetingTimes.Any(smt =>
                         smt.ScheduledMeetingTimeInstructors.Any(smti =>
-                            smti.InstructorId == id))));
+                            smti.InstructorId == Id))));
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-
-            Instructor = await _context.Instructors.FindAsync(id);
+            Instructor = await _context.Instructors.FindAsync(Id);
 
             if (Instructor != null)
             {
                 if (InUse)
                 {
-                    return await OnGetAsync(id);
+                    return RedirectToPage();
                 }
                 
                 _context.Instructors.Remove(Instructor);

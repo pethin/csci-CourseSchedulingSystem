@@ -21,18 +21,18 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public ApplicationUser ApplicationUser { get; set; }
 
         public bool CanDelete { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             ApplicationUser = await _context.Users
                 .Include(u => u.DepartmentUsers)
                 .ThenInclude(du => du.Department)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (ApplicationUser == null) return NotFound();
 
@@ -41,18 +41,16 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-
-            ApplicationUser = await _userManager.FindByIdAsync(id.ToString());
+            ApplicationUser = await _userManager.FindByIdAsync(Id.ToString());
 
             if (ApplicationUser != null)
             {
                 CanDelete = await MoreThanOneActiveUser();
                 if (!CanDelete)
                 {
-                    return Page();
+                    return RedirectToPage();
                 }
 
                 var result = await _userManager.DeleteAsync(ApplicationUser);

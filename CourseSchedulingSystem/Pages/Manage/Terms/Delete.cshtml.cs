@@ -18,35 +18,33 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public Term Term { get; set; }
         
         public bool HasCourseSections { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             Term = await _context.Terms
                 .Include(t => t.TermParts)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Term == null) return NotFound();
 
             HasCourseSections = await _context.CourseSections
                 .Include(cs => cs.TermPart)
-                .Where(cs => cs.TermPart.TermId == id)
+                .Where(cs => cs.TermPart.TermId == Id)
                 .AnyAsync();
             
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-
             Term = await _context.Terms
                 .Include(t => t.TermParts)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Term != null)
             {

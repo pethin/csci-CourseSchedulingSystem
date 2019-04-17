@@ -58,7 +58,7 @@
             <ul>
                 @foreach (var cst in Model.Course.CourseScheduleTypes)
                 {
-                    <li><a asp-page="../ScheduleTypes/Detail" asp-route-id="@cst.ScheduleTypeId">@cst.ScheduleType.Name</a></li>
+                    <li><a asp-page="../ScheduleTypes/Details" asp-route-id="@cst.ScheduleTypeId">@cst.ScheduleType.Name</a></li>
                 }
             </ul>
         </dd>
@@ -67,7 +67,7 @@
             <ul>
                 @foreach (var cca in Model.Course.CourseCourseAttributes)
                 {
-                    <li><a asp-page="../CourseAttributes/Detail" asp-route-id="@cca.CourseAttributeId">@cca.CourseAttribute.Name</a></li>
+                    <li><a asp-page="../CourseAttributes/Details" asp-route-id="@cca.CourseAttributeId">@cca.CourseAttribute.Name</a></li>
                 }
             </ul>
         </dd>
@@ -83,7 +83,7 @@
     </dl>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.Course.Id">Edit</a> |
-    <a asp-page="./Delete" asp-route-id="@Model.Course.Id">Delete</a> |
+    <a asp-page="./Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-page="./Delete" asp-route-id="@Model.Id">Delete</a> |
     <a asp-page="./Index">Back to List</a>
 </div>

@@ -18,36 +18,34 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public Subject Subject { get; set; }
 
         public bool InUse => Subject.Courses.Any();
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             Subject = await _context.Subjects
                 .Include(s => s.Courses)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Subject == null) return NotFound();
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-
             Subject = await _context.Subjects
                 .Include(s => s.Courses)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Subject != null)
             {
                 if (InUse)
                 {
-                    return Page();
+                    return RedirectToPage();
                 }
 
                 _context.Subjects.Remove(Subject);

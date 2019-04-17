@@ -23,16 +23,16 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+
         [BindProperty] public Term Term { get; set; }
 
         public string SourceTermName { get; set; }
         public IEnumerable<TermPart> TermParts { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
-            Term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == id);
+            Term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Term == null) return NotFound();
 
@@ -42,21 +42,26 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
             var term = await _context.Terms
+                // Term Parts
                 .Include(t => t.TermParts)
+                // Course Sections
                 .ThenInclude(tp => tp.CourseSections)
+                // Scheduled Meeting Times
                 .ThenInclude(cs => cs.ScheduledMeetingTimes)
+                // Instructors
                 .ThenInclude(smt => smt.ScheduledMeetingTimeInstructors)
+                // Rooms
                 .Include(t => t.TermParts)
                 .ThenInclude(tp => tp.CourseSections)
                 .ThenInclude(cs => cs.ScheduledMeetingTimes)
                 .ThenInclude(smt => smt.ScheduledMeetingTimeRooms)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (term == null)
             {
@@ -64,10 +69,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
             }
 
             SourceTermName = term.Name;
-            
-            // Clone TermId
-            var termId = term.Id;
-            TermParts = _context.TermParts.Where(tp => tp.TermId == termId);
+
+            TermParts = _context.TermParts.Where(tp => tp.TermId == Id);
 
             term.Id = Guid.NewGuid();
             term.Name = Term.Name;

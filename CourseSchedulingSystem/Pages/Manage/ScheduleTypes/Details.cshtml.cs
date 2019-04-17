@@ -17,17 +17,17 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         public ScheduleType ScheduleType { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             ScheduleType = await _context.ScheduleTypes
                 .Include(st => st.CourseScheduleTypes)
                 .ThenInclude(cst => cst.Course)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (ScheduleType == null) return NotFound();
             return Page();

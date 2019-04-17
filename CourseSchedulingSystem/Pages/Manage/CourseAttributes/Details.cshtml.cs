@@ -17,17 +17,17 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseAttributes
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         public CourseAttribute CourseAttribute { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             CourseAttribute = await _context.CourseAttributes
                 .Include(ca => ca.CourseCourseAttributes)
                 .ThenInclude(cca => cca.Course)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (CourseAttribute == null) return NotFound();
             return Page();

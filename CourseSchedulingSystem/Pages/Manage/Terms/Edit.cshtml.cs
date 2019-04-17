@@ -22,42 +22,39 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public Term Term { get; set; }
         
-        public string SourceTermName { get; set; }
-        public Guid TermId { get; set; }
+        public string OriginalTermName { get; set; }
         public IEnumerable<TermPart> TermParts { get; set; }
 
         public string SuccessMessage { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
-            Term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == id);
+            Term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Term == null) return NotFound();
 
-            TermId = Term.Id;
-            SourceTermName = Term.Name;
+            OriginalTermName = Term.Name;
             TermParts = _context.TermParts.Where(tp => tp.TermId == Term.Id);
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
-            var term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == id);
+            var term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == Id);
 
-            if (Term == null)
+            if (term == null)
             {
                 return NotFound();
             }
             
-            TermId = term.Id;
-            SourceTermName = Term.Name;
+            OriginalTermName = term.Name;
             TermParts = _context.TermParts.Where(tp => tp.TermId == term.Id);
 
             if (await TryUpdateModelAsync(
@@ -71,8 +68,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
 
                 await _context.SaveChangesAsync();
 
+                OriginalTermName = term.Name;
                 SuccessMessage = "Name successfully updated!";
-                SourceTermName = term.Name;
                 return Page();
             }
 

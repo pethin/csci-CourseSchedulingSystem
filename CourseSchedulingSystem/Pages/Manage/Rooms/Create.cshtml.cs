@@ -1,34 +1,32 @@
-﻿using System;
-using System.Collections.Async;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
+using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Pages.Manage.Rooms
 {
     public class CreateModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public CreateModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public CreateModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        public SelectList BuildingOptions =>
+            new SelectList(_context.Buildings.Where(bd => bd.IsEnabled), "Id", "Code");
+
         public IActionResult OnGet()
         {
-        ViewData["BuildingId"] = new SelectList(_context.Buildings.Where(bd => bd.IsEnabled==true), "Id", "Code");
             return Page();
         }
 
-        [BindProperty]
-        public Room Room { get; set; }
+        [BindProperty] public Room Room { get; set; }
 
         public async Task<IActionResult> OnPostAsync()
         {
@@ -37,17 +35,11 @@ namespace CourseSchedulingSystem.Pages.Manage.Rooms
                 return Page();
             }
 
-            ViewData["BuildingId"] = new SelectList(_context.Buildings.Where(bd => bd.IsEnabled == true), "Id", "Code");
-
             var room = new Room();
 
             if (await TryUpdateModelAsync(room, "Room", rm => rm.Number, rm => rm.BuildingId))
             {
-                await room.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
-
+                await room.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
                 if (!ModelState.IsValid) return Page();
 

@@ -1,5 +1,4 @@
 ﻿@page "{sectionId:Guid}"
-@using Microsoft.EntityFrameworkCore
 @model CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTimes.CreateModel
 
 @{
@@ -90,6 +89,20 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label asp-for="InstructorIds" class="control-label"></label>
+                <select asp-for="InstructorIds" asp-items="Model.InstructorOptions" class="form-control"></select>
+                <span asp-validation-for="InstructorIds" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoomIds" class="control-label"></label>
+                <select asp-for="RoomIds" asp-items="Model.RoomOptions" class="form-control"></select>
+                <span asp-validation-for="RoomIds" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-4">
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary"/>
@@ -111,6 +124,9 @@
             $('#ScheduledMeetingTime_EndTime').timepicker({
                 uiLibrary: 'bootstrap4'
             });
+            
+            $("#InstructorIds").multiSelect();
+            $("#RoomIds").multiSelect();
         });
     </script>
 

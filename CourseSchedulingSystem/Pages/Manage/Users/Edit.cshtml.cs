@@ -25,6 +25,8 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+
         [BindProperty] public ApplicationUser ApplicationUser { get; set; }
 
         [Display(Name = "Departments")]
@@ -39,25 +41,23 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
                 Text = d.Name
             });
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             ApplicationUser = await _context.Users
                 .Include(u => u.DepartmentUsers)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (ApplicationUser == null) return NotFound();
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
             var user = await _context.Users
                 .Include(u => u.DepartmentUsers)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (await TryUpdateModelAsync(
                 user,
@@ -79,7 +79,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
                         du => du.DepartmentId);
 
                     await _context.SaveChangesAsync();
-                    
+
                     return RedirectToPage("./Index");
                 }
 

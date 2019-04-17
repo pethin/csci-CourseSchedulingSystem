@@ -23,26 +23,24 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             _context = context;
         }
 
+        [FromRoute] public Guid TermId { get; set; }
+        
         public Term Term { get; set; }
 
-        public async Task<IActionResult> OnGet(Guid? termId)
+        public async Task<IActionResult> OnGet()
         {
-            if (termId == null) return NotFound();
-
             Term = await _context.Terms
                 .Include(t => t.TermParts)
-                .FirstOrDefaultAsync(t => t.Id == termId);
+                .FirstOrDefaultAsync(t => t.Id == TermId);
 
             if (Term == null) return NotFound();
 
             return Page();
         }
 
-        public async Task<IActionResult> OnGetResourcesAsync(Guid? termId)
+        public async Task<IActionResult> OnGetResourcesAsync()
         {
             await Task.Yield();
-
-            if (termId == null) return NotFound();
 
             var rooms = _context.Rooms
                 .Include(r => r.Building)
@@ -51,7 +49,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 .ThenInclude(smt => smt.CourseSection)
                 .ThenInclude(cs => cs.TermPart)
                 .Where(r => r.ScheduledMeetingTimeRooms.Any(smtr =>
-                    smtr.ScheduledMeetingTime.CourseSection.TermPart.TermId == termId))
+                    smtr.ScheduledMeetingTime.CourseSection.TermPart.TermId == TermId))
                 .Select(room => new Resource
                 {
                     Id = room.Id,
@@ -62,9 +60,9 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             return new JsonResult(rooms);
         }
 
-        public async Task<IActionResult> OnGetEvents(Guid? termId, DateTime? start, DateTime? end)
+        public async Task<IActionResult> OnGetEventsAsync(DateTime? start, DateTime? end)
         {
-            if (termId == null || start == null || end == null) return NotFound();
+            if (start == null || end == null) return NotFound();
 
             var eventsByWeek = await _context.ScheduledMeetingTimeRooms
                 .Include(smtr => smtr.ScheduledMeetingTime)
@@ -74,7 +72,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 .ThenInclude(smt => smt.CourseSection)
                 .ThenInclude(cs => cs.Course)
                 .ThenInclude(c => c.Subject)
-                .Where(smtr => smtr.ScheduledMeetingTime.CourseSection.TermPart.TermId == termId)
+                .Where(smtr => smtr.ScheduledMeetingTime.CourseSection.TermPart.TermId == TermId)
                 .Where(smtr => smtr.ScheduledMeetingTime.CourseSection.TermPart.StartDate != null)
                 .Where(smtr => smtr.ScheduledMeetingTime.CourseSection.TermPart.EndDate != null)
                 .Where(smtr => smtr.ScheduledMeetingTime.StartTime != null)

@@ -1,5 +1,4 @@
 ﻿@page "{id:Guid}"
-@using Microsoft.EntityFrameworkCore
 @model CourseSchedulingSystem.Pages.Manage.CourseSections.DetailsModel
 
 @{
@@ -120,6 +119,6 @@
     </div>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.CourseSection.Id">Edit</a> |
+    <a asp-page="./Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-page="./Index" asp-route-termId="@Model.CourseSection.TermPart.TermId">Back to List</a>
 </div>

@@ -3,6 +3,7 @@ using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -18,33 +19,31 @@ namespace CourseSchedulingSystem.Pages.Manage.Departments
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public Department Department { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
-            Department = await _context.Departments.FirstOrDefaultAsync(m => m.Id == id);
+            Department = await _context.Departments.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Department == null) return NotFound();
+            
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
-            var department = await _context.Departments.FindAsync(id);
+            var department = await _context.Departments.FindAsync(Id);
 
             if (await TryUpdateModelAsync(
                 department,
                 "Department",
                 d => d.Code, d => d.Name))
             {
-                await department.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
+                await department.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
                 if (!ModelState.IsValid) return Page();
 

@@ -1,74 +1,64 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
+using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Pages.Manage.Rooms
 {
     public class DeleteModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DeleteModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public DeleteModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        [BindProperty]
-        public Room Room { get; set; }
-        
+        [FromRoute] public Guid Id { get; set; }
+
+        [BindProperty] public Room Room { get; set; }
+
         public bool InUse { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             Room = await _context.Rooms
                 .Include(r => r.Building)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Room == null)
             {
                 return NotFound();
             }
 
-            InUse = await InUseQueryAsync(id.Value);
-            
+            InUse = await InUseQueryAsync(Id);
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Room = await _context.Rooms.FindAsync(id);
+            Room = await _context.Rooms.FindAsync(Id);
 
             if (Room != null)
             {
-                InUse = await InUseQueryAsync(id.Value);
+                InUse = await InUseQueryAsync(Id);
                 if (InUse)
                 {
-                    return Page();
+                    return RedirectToPage();
                 }
-                
+
                 _context.Rooms.Remove(Room);
                 await _context.SaveChangesAsync();
             }
 
             return RedirectToPage("./Index");
         }
-        
+
         private async Task<bool> InUseQueryAsync(Guid id)
         {
             return await _context.Rooms

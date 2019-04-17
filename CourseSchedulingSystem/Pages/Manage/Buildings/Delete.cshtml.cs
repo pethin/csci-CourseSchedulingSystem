@@ -18,47 +18,38 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings
             _context = context;
         }
 
-        [BindProperty]
-        public Building Building { get; set; }
+        [FromRoute] public Guid Id { get; set; }
+
+        [BindProperty] public Building Building { get; set; }
 
         public bool InUse { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Building = await _context.Buildings.FirstOrDefaultAsync(m => m.Id == id);
+            Building = await _context.Buildings.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Building == null)
             {
                 return NotFound();
             }
 
-            InUse = await InUseQueryAsync(id.Value);
-            
+            InUse = await InUseQueryAsync(Id);
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Building = await _context.Buildings.FindAsync(id);
+            Building = await _context.Buildings.FindAsync(Id);
 
             if (Building != null)
             {
-                InUse = await InUseQueryAsync(id.Value);
+                InUse = await InUseQueryAsync(Id);
                 if (InUse)
                 {
-                    return Page();
+                    return RedirectToPage();
                 }
-                
+
                 _context.Buildings.Remove(Building);
                 await _context.SaveChangesAsync();
             }

@@ -17,16 +17,16 @@ namespace CourseSchedulingSystem.Pages.Manage.Subjects
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         public Subject Subject { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             Subject = await _context.Subjects
                 .Include(s => s.Courses)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Subject == null) return NotFound();
             return Page();
