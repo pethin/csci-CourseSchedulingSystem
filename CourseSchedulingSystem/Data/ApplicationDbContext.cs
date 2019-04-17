@@ -176,6 +176,11 @@ namespace CourseSchedulingSystem.Data
             {
                 b.HasIndex(cs => new {cs.TermPartId, cs.CourseId, cs.Section}).IsUnique();
 
+                b.HasOne(cs => cs.Course)
+                    .WithMany(c => c.CourseSections)
+                    .HasForeignKey(cs => cs.CourseId)
+                    .OnDelete(DeleteBehavior.Restrict);
+                
                 b.HasOne(cs => cs.InstructionalMethod)
                     .WithMany(i => i.CourseSections)
                     .HasForeignKey(cs => cs.InstructionalMethodId)

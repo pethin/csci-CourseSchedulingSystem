@@ -80,6 +80,15 @@
                 }
             </ul>
         </dd>
+        <dt class="col-sm-12">Terms</dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var term in Model.Terms)
+                {
+                    <li><a asp-page="../CourseSections/Index" asp-route-termId="@term.Id">@term.Name</a></li>
+                }
+            </ul>
+        </dd>
     </dl>
 </div>
 <div>

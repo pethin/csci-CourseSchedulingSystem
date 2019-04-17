@@ -16,10 +16,14 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         }
 
         [FromRoute] public Guid Id { get; set; }
-        
+
         [BindProperty] public Course Course { get; set; }
-        
-        public IEnumerable<Instructor> Instructors { get; set; }
+
+        public List<Instructor> Instructors { get; set; }
+
+        public List<Term> Terms { get; set; }
+
+        public bool InUse => Terms.Any();
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -33,11 +37,16 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Course == null) return NotFound();
-            
-            Instructors = Context.Instructors
+
+            Instructors = await Context.Instructors
                 .Where(i => i.ScheduledMeetingTimeInstructors.Any(smti =>
-                    smti.ScheduledMeetingTime.CourseSection.CourseId == Id));
-            
+                    smti.ScheduledMeetingTime.CourseSection.CourseId == Id))
+                .ToListAsync();
+
+            Terms = await Context.Terms
+                .Where(t => t.TermParts.Any(tp => tp.CourseSections.Any(cs => cs.CourseId == Id)))
+                .ToListAsync();
+
             return Page();
         }
 
