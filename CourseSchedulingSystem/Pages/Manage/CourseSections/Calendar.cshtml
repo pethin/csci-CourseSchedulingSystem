@@ -42,6 +42,14 @@
 @section Scripts {
     <script>
         $(document).ready(function() {
+            var onEventClick = function(calEvent, jsEvent, view) {
+                var scheduledMeetingTimeDetailsUrl = ' @Url.Page("./ScheduledMeetingTimes/Details", new {id = Guid.Empty})'.split('/');
+                scheduledMeetingTimeDetailsUrl.pop();
+                scheduledMeetingTimeDetailsUrl = scheduledMeetingTimeDetailsUrl.join('/');
+
+                window.location.href = scheduledMeetingTimeDetailsUrl + '/' + calEvent.scheduledMeetingTimeId;
+            };
+            
             $('#calendar').fullCalendar({
                 schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
                 themeSystem: 'bootstrap4',
@@ -66,6 +74,7 @@
                 resourceGroupField: 'building',
                 resources: '@Url.Page("", "Resources")',
                 events: '@Url.Page("", "Events")',
+                eventClick: onEventClick
             });
 
             $('#AllDays').click(function() {

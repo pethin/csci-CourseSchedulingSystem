@@ -86,6 +86,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 .Select(smtr => new EventWeekly
                 {
                     ResourceId = smtr.RoomId,
+                    SectionId = smtr.ScheduledMeetingTime.CourseSectionId,
+                    ScheduledMeetingTimeId = smtr.ScheduledMeetingTimeId,
                     Title = smtr.ScheduledMeetingTime.CourseSection.Course.Subject.Code +
                             smtr.ScheduledMeetingTime.CourseSection.Course.Number +
                             " " +
@@ -158,6 +160,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                         events.Add(new Event
                         {
                             ResourceId = weekly.ResourceId,
+                            SectionId = weekly.SectionId,
+                            ScheduledMeetingTimeId = weekly.ScheduledMeetingTimeId,
                             Title = weekly.Title,
                             Start = startDateTime.Value,
                             End = endDateTime.Value
@@ -179,6 +183,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         public class Event
         {
             public Guid ResourceId { get; set; }
+            public Guid SectionId { get; set; }
+            public Guid ScheduledMeetingTimeId { get; set; }
             public string Title { get; set; }
             public DateTime Start { get; set; }
             public DateTime End { get; set; }
@@ -187,6 +193,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         public class EventWeekly
         {
             public Guid ResourceId { get; set; }
+            public Guid SectionId { get; set; }
+            public Guid ScheduledMeetingTimeId { get; set; }
             public string Title { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
