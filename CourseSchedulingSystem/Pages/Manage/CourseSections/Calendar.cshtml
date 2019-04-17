@@ -57,7 +57,9 @@
                 scheduledMeetingTimeDetailsUrl.pop();
                 scheduledMeetingTimeDetailsUrl = scheduledMeetingTimeDetailsUrl.join('/');
 
-                window.location.href = scheduledMeetingTimeDetailsUrl + '/' + calEvent.scheduledMeetingTimeId;
+                var url = scheduledMeetingTimeDetailsUrl + '/' + calEvent.scheduledMeetingTimeId;
+                var newTab = window.open(url, '_blank');
+                newTab.focus();
             };
             
             $('#calendar').fullCalendar({
