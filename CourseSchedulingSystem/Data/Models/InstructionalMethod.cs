@@ -8,15 +8,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
+    /// <summary>Represents an instructional method, e.g., Classroom or Online.</summary>
+    /// <remarks>
+    /// <para>An instructional method must have a unique ID, unique Code, and unique Name.</para>
+    /// <para>An instructional method has many course sections.</para>
+    /// </remarks>
     public class InstructionalMethod
     {
         private string _code;
         private string _name;
 
+        /// <summary>Creates an instructional method with default fields.</summary>
         public InstructionalMethod()
         {
         }
 
+        /// <summary>Creates an instructional method with the specified fields.</summary>
         public InstructionalMethod(Guid id, string code, string name, bool requiresRoom = true)
         {
             Id = id;
@@ -25,8 +32,12 @@ namespace CourseSchedulingSystem.Data.Models
             IsRoomRequired = requiresRoom;
         }
 
+        /// <summary>Gets or sets the primary key for this department.</summary>
         public Guid Id { get; set; }
         
+        /// <summary>Gets or sets the code for this department.</summary>
+        /// <remarks>This field must be unique.</remarks>
+        /// <remarks>This field is indexed.</remarks>
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
         public string Code
@@ -35,6 +46,8 @@ namespace CourseSchedulingSystem.Data.Models
             set => _code = value?.Trim().ToUpperInvariant();
         }
 
+        /// <summary>Gets or sets the name for this department.</summary>
+        /// <remarks>The normalized version of this field must be unique.</remarks>
         [Required]
         public string Name
         {
@@ -46,14 +59,21 @@ namespace CourseSchedulingSystem.Data.Models
             }
         }
 
+        /// <summary>Gets the normalized name for this building.</summary>
+        /// <remarks>This field is automated.</remarks>
+        /// <remarks>This field must be unique.</remarks>
+        /// <remarks>This field is indexed.</remarks>
         public string NormalizedName { get; private set; }
 
+        /// <summary>Gets or sets the room requirement for this instructional method.</summary>
         [Required]
         [Display(Name = "Requires Room")]
         public bool IsRoomRequired { get; set; }
         
+        /// <summary>Navigation property for the course sections this instructional method has.</summary>
         public List<CourseSection> CourseSections { get; set; }
 
+        /// <summary>Returns validation errors for database constraints.</summary>
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -16,27 +17,34 @@ namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
         {
             _context = context;
         }
+        
+        [FromRoute] public Guid Id { get; set; }
 
         [BindProperty] public InstructionalMethod InstructionalMethod { get; set; }
+        
+        public bool InUse => InstructionalMethod.CourseSections.Any();
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
-            InstructionalMethod = await _context.InstructionalMethods.FirstOrDefaultAsync(m => m.Id == id);
+            InstructionalMethod = await _context.InstructionalMethods
+                .Include(im => im.CourseSections)
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (InstructionalMethod == null) return NotFound();
+            
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-
-            InstructionalMethod = await _context.InstructionalMethods.FindAsync(id);
+            InstructionalMethod = await _context.InstructionalMethods
+                .Include(im => im.CourseSections)
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (InstructionalMethod != null)
             {
+                if (InUse) return RedirectToPage();
+                
                 _context.InstructionalMethods.Remove(InstructionalMethod);
                 await _context.SaveChangesAsync();
             }

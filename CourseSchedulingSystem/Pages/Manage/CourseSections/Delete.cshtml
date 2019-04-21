@@ -109,7 +109,6 @@
     </div>
     
     <form method="post">
-        <input type="hidden" asp-for="CourseSection.Id" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-page="./Index" asp-route-termId="@Model.CourseSection.TermPart.TermId">Back to List</a>
     </form>

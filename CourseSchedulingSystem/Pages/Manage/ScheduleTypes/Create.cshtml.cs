@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -35,10 +36,7 @@ namespace CourseSchedulingSystem.Pages.Manage.ScheduleTypes
                 st => st.Code,
                 st => st.Name))
             {
-                await scheduleType.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
+                await scheduleType.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
                 if (!ModelState.IsValid) return Page();
 

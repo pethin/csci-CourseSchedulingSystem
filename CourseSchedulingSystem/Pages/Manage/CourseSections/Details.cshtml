@@ -1,5 +1,4 @@
 ﻿@page "{id:Guid}"
-@using Microsoft.EntityFrameworkCore
 @model CourseSchedulingSystem.Pages.Manage.CourseSections.DetailsModel
 
 @{
@@ -80,10 +79,15 @@
                     </th>
                     <th>Instructor</th>
                     <th>Location</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
-                @foreach (var item in Model.CourseSection.ScheduledMeetingTimes.OrderBy(smt => smt.MeetingType.Code))
+                @foreach (var item in Model.CourseSection
+                    .ScheduledMeetingTimes
+                    .OrderBy(smt => smt.MeetingType.Code)
+                    .ThenBy(smt => smt.StartTime)
+                    .ThenBy(smt => smt.EndTime))
                 {
                     <tr>
                         <td>
@@ -98,8 +102,15 @@
                         <td>
                             @Html.DisplayFor(modelItem => item.DaysOfWeek)
                         </td>
-                        <td>TODO</td>
-                        <td>TODO</td>
+                        <td>
+                            @item.InstructorsText
+                        </td>
+                        <td>
+                            @item.RoomsText
+                        </td>
+                        <td>
+                            <a asp-page="./ScheduledMeetingTimes/Details" asp-route-id="@item.Id" asp-route-returnUrl="@Url.Action("")">Details</a>
+                        </td>
                     </tr>
                 }
                 </tbody>
@@ -108,6 +119,6 @@
     </div>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.CourseSection.Id">Edit</a> |
+    <a asp-page="./Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-page="./Index" asp-route-termId="@Model.CourseSection.TermPart.TermId">Back to List</a>
 </div>

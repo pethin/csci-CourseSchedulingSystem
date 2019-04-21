@@ -3,6 +3,7 @@ using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -18,35 +19,31 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseAttributes
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public CourseAttribute CourseAttribute { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
-            CourseAttribute = await _context.CourseAttributes.FirstOrDefaultAsync(m => m.Id == id);
+            CourseAttribute = await _context.CourseAttributes.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (CourseAttribute == null) return NotFound();
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
-
-            var courseAttribute = await _context.CourseAttributes.FindAsync(id);
+            var courseAttribute = await _context.CourseAttributes.FindAsync(Id);
 
             if (await TryUpdateModelAsync(
                 courseAttribute,
                 "CourseAttribute",
                 at => at.Name))
             {
-                await courseAttribute.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
+                await courseAttribute.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
                 if (!ModelState.IsValid) return Page();
 

@@ -17,13 +17,13 @@ namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+
         public InstructionalMethod InstructionalMethod { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
-            InstructionalMethod = await _context.InstructionalMethods.FirstOrDefaultAsync(m => m.Id == id);
+            InstructionalMethod = await _context.InstructionalMethods.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (InstructionalMethod == null) return NotFound();
             return Page();

@@ -18,39 +18,37 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseAttributes
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public CourseAttribute CourseAttribute { get; set; }
 
         public bool InUse => CourseAttribute.CourseCourseAttributes.Any();
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             CourseAttribute = await _context.CourseAttributes
                 .Include(ca => ca.CourseCourseAttributes)
                 .ThenInclude(cca => cca.Course)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (CourseAttribute == null) return NotFound();
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-
             CourseAttribute = await _context.CourseAttributes
                 .Include(ca => ca.CourseCourseAttributes)
                 .ThenInclude(cca => cca.Course)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (CourseAttribute != null)
             {
                 if (InUse)
                 {
-                    return Page();
+                    return RedirectToPage();
                 }
                 
                 _context.CourseAttributes.Remove(CourseAttribute);

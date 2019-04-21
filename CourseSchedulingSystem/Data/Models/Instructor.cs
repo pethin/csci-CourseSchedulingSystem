@@ -9,14 +9,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
+    /// <summary>Represents an instructor.</summary>
+    /// <remarks>
+    /// <para>An instructor must have a unique ID and unique FullName.</para>
+    /// <para>An instructor has many scheduled meeting times.</para>
+    /// </remarks>
     public class Instructor
     {
         private string _firstName, _middle, _lastName;
 
+        /// <summary>Creates an instructional method with default fields.</summary>
         public Instructor()
         {
         }
 
+        /// <summary>Creates an instructional method with specified fields.</summary>
         public Instructor(string firstName, string lastName, string middle = null)
         {
             FirstName = firstName;
@@ -24,8 +31,10 @@ namespace CourseSchedulingSystem.Data.Models
             LastName = lastName;
         }
 
+        /// <summary>Gets or sets the primary key for this instructor.</summary>
         public Guid Id { get; set; }
 
+        /// <summary>Gets or sets the first name for this instructor.</summary>
         [Required]
         [Display(Name = "First Name")]
         public string FirstName
@@ -38,6 +47,7 @@ namespace CourseSchedulingSystem.Data.Models
             }
         }
 
+        /// <summary>Gets or sets the middle name for this instructor.</summary>
         public string Middle
         {
             get => _middle;
@@ -48,6 +58,7 @@ namespace CourseSchedulingSystem.Data.Models
             }
         }
 
+        /// <summary>Gets or sets the last name for this instructor.</summary>
         [Required]
         [Display(Name = "Last Name")]
         public string LastName
@@ -60,8 +71,15 @@ namespace CourseSchedulingSystem.Data.Models
             }
         }
 
+        /// <summary>Gets the normalized name for this building.</summary>
+        /// <remarks>
+        /// <para>This field is automated.</para>
+        /// <para>This field must be unique.</para>
+        /// <para>This field is indexed.</para>
+        /// </remarks>
         public string NormalizedName { get; private set; }
 
+        /// <summary>Gets the full name of this instructor.</summary>
         [NotMapped]
         [Display(Name = "Name")]
         public string FullName =>
@@ -69,12 +87,15 @@ namespace CourseSchedulingSystem.Data.Models
                 new List<String> {FirstName, Middle, LastName}
                     .Where(part => !string.IsNullOrWhiteSpace(part)));
         
+        /// <summary>Gets or sets the active status for this instructor.</summary>
         [Required]
         [Display(Name = "Active?")]
         public bool IsActive { get; set; }
         
+        /// <summary>Navigation property for the scheduled meeting time associations for this instructor.</summary>
         public List<ScheduledMeetingTimeInstructor> ScheduledMeetingTimeInstructors { get; set; }
 
+        /// <summary>Returns validation errors for database constraints.</summary>
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )
@@ -91,9 +112,10 @@ namespace CourseSchedulingSystem.Data.Models
             });
         }
 
+        /// <summary>Updates the NormalizedName property.</summary>
         private void UpdateNormalizedName()
         {
-            NormalizedName = FullName.ToUpper();
+            NormalizedName = FullName.ToUpperInvariant();
         }
     }
 }

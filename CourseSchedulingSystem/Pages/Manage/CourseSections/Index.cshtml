@@ -4,12 +4,19 @@
 
 @{
     ViewData["Title"] = $"{Model.Term.Name} - Course Sections";
+    ViewData["Fluid"] = true;
 }
 
 <h1><a asp-page="../Terms/Details" asp-route-id="@Model.Term.Id">@Model.Term.Name</a> - Course Sections</h1>
 
 <p>
+    <a asp-page="Calendar" asp-route-termId="@Model.Term.Id">View Calendar</a>
+</p>
+<p>
     <a asp-page="Create" asp-route-termId="@Model.Term.Id">Create New</a>
+</p>
+<p>
+    <a asp-page="Export" target="_blank" asp-route-termId="@Model.Term.Id">Export</a>
 </p>
 <table class="table">
     <thead>
@@ -69,6 +76,10 @@
                 @Html.DisplayFor(modelItem => item.TermPart.EndDate)
             </td>
             <td>
+                <form method="post" class="d-inline">
+                    <input type="hidden" name="sectionId" value="@item.Id"/>
+                    <input value="Duplicate" class="btn btn-link p-0 cancel" type="submit" asp-page-handler="Duplicate">
+                </form> |
                 <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>

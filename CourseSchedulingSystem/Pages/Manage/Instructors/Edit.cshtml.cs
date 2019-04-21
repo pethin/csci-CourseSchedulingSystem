@@ -18,24 +18,24 @@ namespace CourseSchedulingSystem.Pages.Manage.Instructors
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public Instructor Instructor { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
-            Instructor = await _context.Instructors.FirstOrDefaultAsync(m => m.Id == id);
+            Instructor = await _context.Instructors.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Instructor == null) return NotFound();
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
-            var instructor = await _context.Instructors.FindAsync(id);
+            var instructor = await _context.Instructors.FindAsync(Id);
 
             if (await TryUpdateModelAsync(
                 instructor,

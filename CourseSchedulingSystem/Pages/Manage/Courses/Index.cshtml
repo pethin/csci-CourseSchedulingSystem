@@ -63,6 +63,7 @@
             var grid = $('#grid').grid({
                 uiLibrary: 'bootstrap4',
                 dataSource: "@Url.Page("Index", "data")",
+                autoLoad: false,
                 paramNames: {
                     page: 'pageNumber'
                 },
@@ -76,14 +77,19 @@
                 pager: { limit: 20 }
             });
             var reloadGrid = function () {
-                grid.reload({
+                var params = {
                     departments: $('#departmentFilter').val(),
                     identifier: $('#identifierFilter').val(),
                     title: $('#nameFilter').val(),
                     creditHours: $('#creditHoursFilter').val(),
                     scheduleTypes: $('#scheduleTypesFilter').val(),
                     courseAttributes: $('#courseAttributesFilter').val()
-                });
+                };
+                
+                grid.reload(params);
+
+                var query = $.param(params);
+                window.history.replaceState({}, "", decodeURIComponent(`${location.pathname}?${query}`));
             };
 
             $('#departmentFilter').chosen();
@@ -101,6 +107,8 @@
 
             $('#courseAttributesFilter').chosen();
             $('#courseAttributesFilter').on('change', reloadGrid);
+
+            reloadGrid();
         });
     </script>
 }

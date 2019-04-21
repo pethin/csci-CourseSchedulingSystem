@@ -3,6 +3,7 @@ using System.Collections.Async;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
+using CourseSchedulingSystem.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -18,24 +19,24 @@ namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public InstructionalMethod InstructionalMethod { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
-            InstructionalMethod = await _context.InstructionalMethods.FirstOrDefaultAsync(m => m.Id == id);
+            InstructionalMethod = await _context.InstructionalMethods.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (InstructionalMethod == null) return NotFound();
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
-            var instructionalMethod = await _context.InstructionalMethods.FindAsync(id);
+            var instructionalMethod = await _context.InstructionalMethods.FindAsync(Id);
 
             if (await TryUpdateModelAsync(
                 instructionalMethod,
@@ -44,10 +45,7 @@ namespace CourseSchedulingSystem.Pages.Manage.InstructionalMethods
                 im => im.Name,
                 im => im.IsRoomRequired))
             {
-                await instructionalMethod.DbValidateAsync(_context).ForEachAsync(result =>
-                {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                });
+                await instructionalMethod.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
                 if (!ModelState.IsValid) return Page();
 

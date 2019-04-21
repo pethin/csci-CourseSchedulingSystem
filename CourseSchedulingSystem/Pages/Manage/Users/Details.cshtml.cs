@@ -17,17 +17,17 @@ namespace CourseSchedulingSystem.Pages.Manage.Users
         {
             _context = context;
         }
+        
+        [FromRoute] public Guid Id { get; set; }
 
         public ApplicationUser ApplicationUser { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
             ApplicationUser = await _context.Users
                 .Include(u => u.DepartmentUsers)
                 .ThenInclude(du => du.Department)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (ApplicationUser == null) return NotFound();
             

@@ -28,7 +28,7 @@
             <ul>
                 @foreach (var du in Model.Department.DepartmentUsers)
                 {
-                    <li><a asp-page="../Users/Detail" asp-route-id="@du.UserId">@du.User.UserName</a></li>
+                    <li><a asp-page="../Users/Details" asp-route-id="@du.UserId">@du.User.UserName</a></li>
                 }
             </ul>
         </dd>
@@ -37,13 +37,13 @@
             <ul>
                 @foreach (var course in Model.Department.Courses)
                 {
-                    <li><a asp-page="../Course/Detail" asp-route-id="@course.Id">@course.Identifier - @course.Title</a></li>
+                    <li><a asp-page="../Course/Details" asp-route-id="@course.Id">@course.Identifier - @course.Title</a></li>
                 }
             </ul>
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.Department.Id">Edit</a> |
+    <a asp-page="./Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>

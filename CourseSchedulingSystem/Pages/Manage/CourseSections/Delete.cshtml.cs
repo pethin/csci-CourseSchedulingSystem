@@ -17,15 +17,12 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public CourseSection CourseSection { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             CourseSection = await _context.CourseSections
                 .Include(c => c.TermPart)
                 .ThenInclude(tp => tp.Term)
@@ -35,7 +32,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 .Include(c => c.ScheduleType)
                 .Include(c => c.ScheduledMeetingTimes)
                 .ThenInclude(smt => smt.MeetingType)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (CourseSection == null)
             {
@@ -45,16 +42,11 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             CourseSection = await _context.CourseSections
                 .Include(cs => cs.TermPart)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (CourseSection == null)
             {

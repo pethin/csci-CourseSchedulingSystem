@@ -210,17 +210,20 @@ namespace CourseSchedulingSystem.Data.Migrations
 
                     b.Property<Guid>("CourseId");
 
+                    b.Property<string>("Footnotes");
+
                     b.Property<Guid>("InstructionalMethodId");
 
                     b.Property<int>("MaximumCapacity");
-
-                    b.Property<string>("Notes");
 
                     b.Property<Guid>("ScheduleTypeId");
 
                     b.Property<int>("Section");
 
                     b.Property<Guid>("TermPartId");
+
+                    b.Property<string>("_SchedulingNotifications")
+                        .HasColumnName("SchedulingNotifications");
 
                     b.HasKey("Id");
 
@@ -426,6 +429,9 @@ namespace CourseSchedulingSystem.Data.Migrations
 
                     b.Property<bool>("Wednesday");
 
+                    b.Property<string>("_SchedulingNotifications")
+                        .HasColumnName("SchedulingNotifications");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CourseSectionId");
@@ -526,6 +532,10 @@ namespace CourseSchedulingSystem.Data.Migrations
                     b.Property<Guid>("TermId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EndDate");
+
+                    b.HasIndex("StartDate");
 
                     b.HasIndex("TermId", "NormalizedName")
                         .IsUnique()
@@ -659,9 +669,9 @@ namespace CourseSchedulingSystem.Data.Migrations
             modelBuilder.Entity("CourseSchedulingSystem.Data.Models.CourseSection", b =>
                 {
                     b.HasOne("CourseSchedulingSystem.Data.Models.Course", "Course")
-                        .WithMany()
+                        .WithMany("CourseSections")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CourseSchedulingSystem.Data.Models.InstructionalMethod", "InstructionalMethod")
                         .WithMany("CourseSections")
@@ -674,7 +684,7 @@ namespace CourseSchedulingSystem.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("CourseSchedulingSystem.Data.Models.TermPart", "TermPart")
-                        .WithMany()
+                        .WithMany("CourseSections")
                         .HasForeignKey("TermPartId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

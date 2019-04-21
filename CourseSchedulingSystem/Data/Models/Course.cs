@@ -8,23 +8,40 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data.Models
 {
+    /// <summary>Represents a course, e.g, CSCI 101.</summary>
+    /// <remarks>
+    /// <para>A course must have a unique ID, and unique (Subject, Number).</para>
+    /// <para>A course belongs to a department and subject.</para>
+    /// <para>A course has many schedule types, course attributes, and course sections.</para>
+    /// <para>A Course is scheduled as a CourseSection.</para>
+    /// </remarks>
     public class Course : IValidatableObject
     {
         private string _number;
         private string _title;
 
+        /// <summary>Gets or sets the primary key for this course.</summary>
         public Guid Id { get; set; }
 
+        /// <summary>Gets or sets the department ID for this course.</summary>
+        /// <remarks>This field is a foreign key relation.</remarks>
         [Required]
         [Display(Name = "Department")]
         public Guid DepartmentId { get; set; }
+        
+        /// <summary>Navigation property for the department this course belongs to.</summary>
         public Department Department { get; set; }
 
+        /// <summary>Gets or sets the subject ID for this course.</summary>
+        /// <remarks>This field is a foreign key relation.</remarks>
         [Required]
         [Display(Name = "Subject")]
         public Guid SubjectId { get; set; }
+        
+        /// <summary>Navigation property for the subject this course belongs to.</summary>
         public Subject Subject { get; set; }
 
+        /// <summary>Gets or sets the course number.</summary>
         [Required]
         [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Only letters and numbers are allowed.")]
         public string Number
@@ -33,6 +50,7 @@ namespace CourseSchedulingSystem.Data.Models
             set => _number = value?.Trim().ToUpperInvariant();
         }
 
+        /// <summary>Gets or sets the title/name for this course.</summary>
         [Required]
         public string Title
         {
@@ -40,8 +58,11 @@ namespace CourseSchedulingSystem.Data.Models
             set => _title = value?.Trim();
         }
 
+        /// <summary>Gets the identifier for the course.</summary>
+        /// <remarks>Preferably use `Course.Subject.Code + Course.Number` in LINQ.</remarks>
         [NotMapped] public string Identifier => Subject?.Code + Number;
 
+        /// <summary>Gets or sets the credit hours for this course.</summary>
         [Required]
         [Column(TypeName = "decimal(5, 3)")]
         [Range(0.000, double.MaxValue, ErrorMessage = "Credit hours must be between greater than or equal to zero.")]
@@ -49,21 +70,31 @@ namespace CourseSchedulingSystem.Data.Models
         [DisplayFormat(DataFormatString = "{0:F3}", ApplyFormatInEditMode = true)]
         public decimal CreditHours { get; set; }
 
+        /// <summary>Gets or sets the undergraduate requirement for this course.</summary>
         [Required]
         [Display(Name = "Undergraduate")]
         public bool IsUndergraduate { get; set; }
 
+        /// <summary>Gets or sets the graduate requirement for this course.</summary>
         [Required]
         [Display(Name = "Graduate")]
         public bool IsGraduate { get; set; }
 
+        /// <summary>Gets or sets the enabled flag for this course.</summary>
         [Required]
         [Display(Name = "Enabled")]
         public bool IsEnabled { get; set; }
 
+        /// <summary>Navigation property for the schedule type associations for this course.</summary>
         public List<CourseScheduleType> CourseScheduleTypes { get; set; }
+        
+        /// <summary>Navigation property for the course attribute associations for this course.</summary>
         public List<CourseCourseAttribute> CourseCourseAttributes { get; set; }
+        
+        /// <summary>Navigation property for the course sections this course has.</summary>
+        public List<CourseSection> CourseSections { get; set; }
 
+        /// <summary>Returns validation errors this course excluding database constraints.</summary>
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (!IsUndergraduate && !IsGraduate)
@@ -72,6 +103,7 @@ namespace CourseSchedulingSystem.Data.Models
                     new[] {"IsUndergraduate", "IsGraduate"});
         }
 
+        /// <summary>Returns validation errors for database constraints.</summary>
         public System.Collections.Async.IAsyncEnumerable<ValidationResult> DbValidateAsync(
             ApplicationDbContext context
         )

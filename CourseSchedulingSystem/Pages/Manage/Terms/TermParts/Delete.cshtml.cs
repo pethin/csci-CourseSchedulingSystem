@@ -18,21 +18,18 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public TermPart TermPart { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             TermPart = await _context.TermParts
                 .Include(t => t.Term)
                 .Include(t => t.CourseSections)
                 .ThenInclude(cs => cs.Course)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (TermPart == null)
             {
@@ -42,16 +39,14 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-
             TermPart = await _context.TermParts
                 .Include(t => t.Term)
                 .Include(t => t.CourseSections)
                 .ThenInclude(cs => cs.Course)
                 .ThenInclude(c => c.Subject)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (TermPart == null) return NotFound();
 

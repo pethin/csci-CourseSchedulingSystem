@@ -1,39 +1,38 @@
-﻿@page
+﻿@page "{id:Guid}"
 @model CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTimes.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    var course = Model.ScheduledMeetingTime.CourseSection.Course.Identifier;
+    var courseSection = Html.DisplayFor(model => model.ScheduledMeetingTime.CourseSection.Section);
+    var sectionNumber = Model.ScheduledMeetingTime.CourseSection.Section.ToString("D3");
+    
+    ViewData["Title"] = $"Details {course} {sectionNumber}";
 }
 
 <h1>Details</h1>
 
 <div>
-    <h4>Scheduled Meeting Time</h4>
+    <h4>@course @courseSection - Scheduled Meeting Time</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ScheduledMeetingTime.CourseSection)
+            @Html.DisplayNameFor(model => model.ScheduledMeetingTime.MeetingTypeId)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ScheduledMeetingTime.CourseSection.Id)
+            @Html.DisplayFor(model => model.ScheduledMeetingTime.MeetingType.Code) -
+            @Html.DisplayFor(model => model.ScheduledMeetingTime.MeetingType.Name)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ScheduledMeetingTime.MeetingType)
+            @Html.DisplayNameFor(model => model.ScheduledMeetingTime.StartTimeText)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ScheduledMeetingTime.MeetingType.Code)
+            @Html.DisplayFor(model => model.ScheduledMeetingTime.StartTimeText)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ScheduledMeetingTime.StartTime)
+            @Html.DisplayNameFor(model => model.ScheduledMeetingTime.EndTimeText)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ScheduledMeetingTime.StartTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ScheduledMeetingTime.EndTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ScheduledMeetingTime.EndTime)
+            @Html.DisplayFor(model => model.ScheduledMeetingTime.EndTimeText)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ScheduledMeetingTime.Monday)
@@ -77,9 +76,31 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ScheduledMeetingTime.Sunday)
         </dd>
+        <dt class="col-sm-12">
+            Instructors
+        </dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var item in Model.ScheduledMeetingTime.ScheduledMeetingTimeInstructors)
+                {
+                    <li><a asp-page="../../Instructors/Details" asp-route-id="@item.InstructorId">@item.Instructor.FullName</a></li>                    
+                }
+            </ul>
+        </dd>
+        <dt class="col-sm-12">
+            Locations
+        </dt>
+        <dd class="col-sm-12">
+            <ul>
+                @foreach (var item in Model.ScheduledMeetingTime.ScheduledMeetingTimeRooms)
+                {
+                    <li><a asp-page="../../Buildings/Rooms/Details" asp-route-id="@item.RoomId">@item.Room.Identifier</a></li>                    
+                }
+            </ul>
+        </dd>
     </dl>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.ScheduledMeetingTime.Id">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a href="@Model.ReturnUrl">Back to Course Section</a>
 </div>

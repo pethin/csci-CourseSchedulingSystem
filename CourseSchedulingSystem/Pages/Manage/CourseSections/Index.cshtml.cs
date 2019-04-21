@@ -20,23 +20,20 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             _context = context;
         }
 
+        [FromRoute] public Guid TermId { get; set; }
+        
         public Term Term { get; set; }
-        public IList<CourseSection> CourseSections { get;set; }
+        public IList<CourseSection> CourseSections { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? termId)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (termId == null)
-            {
-                return NotFound();
-            }
-
-            Term = await _context.Terms.Where(t => t.Id == termId).FirstOrDefaultAsync();
+            Term = await _context.Terms.Where(t => t.Id == TermId).FirstOrDefaultAsync();
 
             if (Term == null)
             {
                 return NotFound();
             }
-            
+
             CourseSections = await _context.CourseSections
                 .Include(c => c.TermPart)
                 .Where(c => c.TermPart.TermId == Term.Id)
@@ -50,6 +47,66 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 .ToListAsync();
 
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostDuplicateAsync(Guid? sectionId)
+        {
+            if (sectionId == null)
+            {
+                ModelState.AddModelError(string.Empty, "Could not duplicate section: missing ID.");
+                return await OnGetAsync();
+            }
+
+            var courseSection = await _context.CourseSections
+                .Include(cs => cs.ScheduledMeetingTimes)
+                .ThenInclude(smt => smt.ScheduledMeetingTimeInstructors)
+                .Include(cs => cs.ScheduledMeetingTimes)
+                .ThenInclude(smt => smt.ScheduledMeetingTimeRooms)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (courseSection == null)
+            {
+                ModelState.AddModelError(string.Empty,
+                    $"Could not duplicate section: could not find section with ID {sectionId}.");
+                return await OnGetAsync();
+            }
+
+            courseSection.Id = Guid.NewGuid();
+
+            // Get next section number
+            var term = await _context.Terms
+                .Include(t => t.TermParts)
+                .Where(t => t.TermParts.Any(tp => tp.Id == courseSection.TermPartId))
+                .FirstOrDefaultAsync();
+
+            int nextSectionNumber = await _context.CourseSections
+                                        .Include(cs => cs.TermPart)
+                                        .Where(cs => cs.TermPart.TermId == term.Id)
+                                        .Where(cs => cs.CourseId == courseSection.CourseId)
+                                        // Ignore contract courses and restricted courses
+                                        .Where(cs =>
+                                            (cs.Section < 80) || (cs.Section >= 90 && cs.Section < 600) ||
+                                            (cs.Section >= 700))
+                                        .OrderByDescending(cs => cs.Section)
+                                        .Select(cs => cs.Section)
+                                        .FirstOrDefaultAsync() + 1;
+
+            // Update section number
+            courseSection.Section = nextSectionNumber;
+
+            courseSection.ScheduledMeetingTimes.ForEach(smt =>
+            {
+                smt.Id = Guid.NewGuid();
+                smt.CourseSectionId = courseSection.Id;
+                smt.ScheduledMeetingTimeInstructors.ForEach(smti => smti.ScheduledMeetingTimeId = smt.Id);
+                smt.ScheduledMeetingTimeRooms.ForEach(smtr => smtr.ScheduledMeetingTimeId = smt.Id);
+            });
+
+            _context.CourseSections.Add(courseSection);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("");
         }
     }
 }

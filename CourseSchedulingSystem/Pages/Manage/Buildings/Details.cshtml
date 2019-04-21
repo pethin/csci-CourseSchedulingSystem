@@ -30,14 +30,39 @@
             @Html.DisplayFor(model => model.Building.IsEnabled)
         </dd>
     </dl>
-    <h5>Rooms</h5>
-    <table>
+    <hr/>
+    <h4>Rooms</h4>
+    <table class="table">
         <thead>
-        <tr>@Html.DisplayNameFor(model => model.Building.Rooms[0])</tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Building.Rooms[0].Number)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Building.Rooms[0].Capacity)
+            </th>
+            <th></th>
+        </tr>
         </thead>
+        <tbody>
+        @foreach (var item in Model.Building.Rooms)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Number)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Capacity)
+                </td>
+                <td>
+                    <a asp-page="./Rooms/Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+        </tbody>
     </table>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.Building.Id">Edit</a> |
+    <a asp-page="./Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-page="./Index">Back to List</a>
 </div>

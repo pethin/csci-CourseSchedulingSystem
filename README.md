@@ -29,6 +29,7 @@ This will create the local database if it's not yet created.
 In the server project directory, run:
 ```powershell
 dotnet run seed
+dotnet run seed ExcelSeeder
 ```
 
 ### Add your username
@@ -38,23 +39,24 @@ dotnet run adduser <YOUR_USERNAME>
 ```
 
 ### Starting the development server
-1. Open a terminal in the server project directory
-2. Run the command:
+1. In the server project directory, run:
     ```powershell
     dotnet run
     # or to automatically restart the server on changes
     dotnet watch run
     ```
-3. The project will run at http://localhost:5000 and https://localhost:5001. It will automatically redirect to the HTTPS server.
+2. The project will run at http://localhost:5000 and https://localhost:5001. It will automatically redirect to the HTTPS server.
 
 ### Running tests
-1. Open a terminal in the tests project directory
-2. Run the command:
-    ```powershell
-    dotnet test
-    # or to automatically rerun tests on changes
-    dotnet watch test
-    ```
+In the server project directory, run:
+```powershell
+dotnet test
+# or to automatically rerun tests on changes
+dotnet watch test
+```
 
 ### Managing JS dependencies
 JS dependencies are managed via [LibMan](https://docs.microsoft.com/en-us/aspnet/core/client-side/libman/libman-cli)
+
+### Additional Documentation
+Additional documentation on the design and implementation can be found in the `/Development` directory.

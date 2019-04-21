@@ -11,6 +11,12 @@
 <div>
     <h4>Instructional Method</h4>
     <hr/>
+    @if (Model.InUse)
+    {
+        <div class="alert alert-primary">
+            This instructional method can not be deleted. It is currently in use by the listed courses.
+        </div>
+    }
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.InstructionalMethod.Code)
@@ -33,8 +39,7 @@
     </dl>
 
     <form method="post">
-        <input type="hidden" asp-for="InstructionalMethod.Id"/>
-        <input type="submit" value="Delete" class="btn btn-danger"/> |
+        <input type="submit" value="Delete" class="btn btn-danger" disabled="@(Model.InUse ? "" : null)"/> |
         <a asp-page="./Index">Back to List</a>
     </form>
 </div>

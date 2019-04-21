@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseSchedulingSystem.Data
 {
+    /// <summary>
+    /// The ApplicationDbContext represents the database. The DbSet attributes represent tables. The context
+    /// also represents a unit of work. The unit is committed using SaveChangesAsync().
+    /// </summary>
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -30,7 +34,7 @@ namespace CourseSchedulingSystem.Data
         public DbSet<InstructionalMethod> InstructionalMethods { get; set; }
         public DbSet<Building> Buildings { get; set; }
         public DbSet<Room> Rooms { get; set; }
-        
+
         public DbSet<CourseSection> CourseSections { get; set; }
         public DbSet<ScheduledMeetingTime> ScheduledMeetingTimes { get; set; }
         public DbSet<MeetingType> MeetingTypes { get; set; }
@@ -85,7 +89,7 @@ namespace CourseSchedulingSystem.Data
             builder.Entity<Course>(b =>
             {
                 // Course >>-- Subject
-                b.HasIndex(c => new {c.SubjectId, Level = c.Number}).IsUnique();
+                b.HasIndex(c => new {c.SubjectId, c.Number}).IsUnique();
 
                 b.HasOne(c => c.Department)
                     .WithMany(d => d.Courses)
@@ -134,12 +138,15 @@ namespace CourseSchedulingSystem.Data
             // TermPart >>-- Term
             builder.Entity<TermPart>(b =>
             {
-                b.HasIndex(c => new { c.TermId, c.NormalizedName }).IsUnique();
+                b.HasIndex(c => new {c.TermId, c.NormalizedName}).IsUnique();
 
                 b.HasOne(tp => tp.Term)
                     .WithMany(t => t.TermParts);
+
+                b.HasIndex(tp => tp.StartDate).IsUnique(false);
+                b.HasIndex(tp => tp.EndDate).IsUnique(false);
             });
-            
+
             // Instructor
             builder.Entity<Instructor>()
                 .HasIndex(i => i.NormalizedName)
@@ -151,7 +158,7 @@ namespace CourseSchedulingSystem.Data
                 b.HasIndex(im => im.Code).IsUnique();
                 b.HasIndex(im => im.NormalizedName).IsUnique();
             });
-            
+
             // Building
             builder.Entity<Building>(b =>
             {
@@ -161,32 +168,45 @@ namespace CourseSchedulingSystem.Data
 
             // Room >>-- Building
             builder.Entity<Room>()
-                .HasIndex(rm => new { rm.BuildingId, rm.Number })
+                .HasIndex(rm => new {rm.BuildingId, rm.Number})
                 .IsUnique();
-            
+
             // Course Section >>-- Course
             builder.Entity<CourseSection>(b =>
             {
                 b.HasIndex(cs => new {cs.TermPartId, cs.CourseId, cs.Section}).IsUnique();
 
+                b.HasOne(cs => cs.Course)
+                    .WithMany(c => c.CourseSections)
+                    .HasForeignKey(cs => cs.CourseId)
+                    .OnDelete(DeleteBehavior.Restrict);
+                
                 b.HasOne(cs => cs.InstructionalMethod)
                     .WithMany(i => i.CourseSections)
                     .HasForeignKey(cs => cs.InstructionalMethodId)
                     .OnDelete(DeleteBehavior.Restrict);
-                
+
                 b.HasOne(cs => cs.ScheduleType)
                     .WithMany(st => st.CourseSections)
                     .HasForeignKey(cs => cs.ScheduleTypeId)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                b.Property(cs => cs._SchedulingNotifications)
+                    .HasColumnName("SchedulingNotifications");
             });
-            
+
             // Meeting Time
             builder.Entity<MeetingType>(b =>
             {
                 b.HasIndex(mt => mt.Code).IsUnique();
                 b.HasIndex(mt => mt.NormalizedName).IsUnique();
             });
-            
+
+            // Scheduled Meeting Time
+            builder.Entity<ScheduledMeetingTime>()
+                .Property(b => b._SchedulingNotifications)
+                .HasColumnName("SchedulingNotifications");
+
             // Scheduled Meeting Time >>--<< Instructor
             builder.Entity<ScheduledMeetingTimeInstructor>(b =>
             {
@@ -201,7 +221,7 @@ namespace CourseSchedulingSystem.Data
                     .HasForeignKey(smti => smti.InstructorId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
-                
+
             // Scheduled Meeting Time >>--<< Room
             builder.Entity<ScheduledMeetingTimeRoom>(b =>
             {
@@ -210,13 +230,12 @@ namespace CourseSchedulingSystem.Data
                 b.HasOne(smtr => smtr.ScheduledMeetingTime)
                     .WithMany(smt => smt.ScheduledMeetingTimeRooms)
                     .HasForeignKey(smtr => smtr.ScheduledMeetingTimeId);
-                
+
                 b.HasOne(smtr => smtr.Room)
                     .WithMany(r => r.ScheduledMeetingTimeRooms)
                     .HasForeignKey(smtr => smtr.RoomId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }
-
     }
 }

@@ -1,0 +1,109 @@
+@page "{termId:Guid}"
+@model CourseSchedulingSystem.Pages.Manage.CourseSections.Calendar
+
+@{
+    ViewData["Title"] = "Calendar";
+    ViewData["Fluid"] = true;
+}
+
+<div>
+    <a asp-page="Index" asp-route-termId="@Model.TermId">Back to List</a>
+</div>
+<div class="row mb-2">
+    <div class="col-sm-2">
+        <button class="btn btn-primary btn-block" id="AllDays">All Days of Week</button>
+    </div>
+    <div class="col-sm-2">
+        <button class="btn btn-primary btn-block" id="MWF">M/W/F</button>
+    </div>
+    <div class="col-sm-1">
+        <button class="btn btn-primary btn-block" id="TR">T/R</button>
+    </div>
+    <div class="col-sm-1">
+        <button class="btn btn-primary btn-block" id="SU">S/U</button>
+    </div>
+</div>
+<div class="calendar-container">
+    <div id='calendar'></div>
+</div>
+<small>
+    <a href="https://fullcalendar.io/scheduler">Made Possible by Full Calendar Scheduler</a>
+</small>
+
+@section Styles {
+    <style>
+        body {
+            margin-bottom: 0;
+        }
+        
+        .calendar-container {
+            min-height: 90vh;
+        }
+        
+        .fc-content tr td {
+            border-top-width: 1px;
+            border-top-color: #660000;
+            border-bottom-width: 1px;
+            border-bottom-color: #660000;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var onEventClick = function(calEvent, jsEvent, view) {
+                var scheduledMeetingTimeDetailsUrl = ' @Url.Page("./ScheduledMeetingTimes/Details", new {id = Guid.Empty})'.split('/');
+                scheduledMeetingTimeDetailsUrl.pop();
+                scheduledMeetingTimeDetailsUrl = scheduledMeetingTimeDetailsUrl.join('/');
+
+                var url = scheduledMeetingTimeDetailsUrl + '/' + calEvent.scheduledMeetingTimeId;
+                var newTab = window.open(url, '_blank');
+                newTab.focus();
+            };
+            
+            $('#calendar').fullCalendar({
+                schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
+                themeSystem: 'bootstrap4',
+                height: "parent",
+                header: {
+                    left: 'today prev,next',
+                    center: 'title',
+                    right: 'timelineDay,timelineWeek,listWeek'
+                },
+                titleFormat: 'ddd MMM D YYYY',
+                defaultDate: '@Model.Term.StartDate.Value.ToString()',
+                validRange: {
+                    start: '@Model.Term.StartDate.Value.ToString("yyyy-MM-dd")',
+                    end: '@Model.Term.EndDate.Value.ToString("yyyy-MM-dd")'
+                },
+                // TODO: Get min time and max time from DB
+                minTime: '08:00:00',
+                maxTime: '22:00:00',
+                defaultView: 'timelineWeek',
+                resourceAreaWidth: "10em",
+                resourceLabelText: 'Rooms',
+                resourceGroupField: 'building',
+                resources: '@Url.Page("", "Resources")',
+                events: '@Url.Page("", "Events")',
+                eventClick: onEventClick
+            });
+
+            $('#AllDays').click(function() {
+                $('#calendar').fullCalendar('option', { hiddenDays: [] });
+            });
+            
+            $('#MWF').click(function() {
+                $('#calendar').fullCalendar('option', { hiddenDays: [0, 2, 4, 6] });
+            });
+            
+            $('#TR').click(function() {
+                $('#calendar').fullCalendar('option', { hiddenDays: [0, 1, 3, 5, 6] });
+            });
+            
+            $('#SU').click(function() {
+                $('#calendar').fullCalendar('option', { hiddenDays: [1, 2, 3, 4, 5] });
+            });
+        });
+    </script>
+}

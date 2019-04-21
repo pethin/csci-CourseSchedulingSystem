@@ -20,26 +20,24 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms.TermParts
             _context = context;
         }
 
+        [FromRoute] public Guid TermId { get; set; }
+        
         [BindProperty] public TermPart TermPart { get; set; }
 
         public Term Term { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? termId)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (termId == null) return NotFound();
-
-            Term = await _context.Terms.FirstOrDefaultAsync(t => t.Id == termId);
+            Term = await _context.Terms.FirstOrDefaultAsync(t => t.Id == TermId);
 
             if (Term == null) return NotFound();
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? termId)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (termId == null) return NotFound();
-
-            Term = await _context.Terms.FirstOrDefaultAsync(t => t.Id == termId);
+            Term = await _context.Terms.FirstOrDefaultAsync(t => t.Id == TermId);
 
             if (Term == null) return NotFound();
 

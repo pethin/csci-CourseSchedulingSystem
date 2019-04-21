@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
 using CourseSchedulingSystem.Data.Models;
@@ -13,12 +15,18 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
         {
         }
 
+        [FromRoute] public Guid Id { get; set; }
+
         [BindProperty] public Course Course { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
-        {
-            if (id == null) return NotFound();
+        public List<Instructor> Instructors { get; set; }
 
+        public List<Term> Terms { get; set; }
+
+        public bool InUse => Terms.Any();
+
+        public async Task<IActionResult> OnGetAsync()
+        {
             Course = await Context.Courses
                 .Include(c => c.Department)
                 .Include(c => c.Subject)
@@ -26,17 +34,25 @@ namespace CourseSchedulingSystem.Pages.Manage.Courses
                 .ThenInclude(cst => cst.ScheduleType)
                 .Include(c => c.CourseCourseAttributes)
                 .ThenInclude(cat => cat.CourseAttribute)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Course == null) return NotFound();
+
+            Instructors = await Context.Instructors
+                .Where(i => i.ScheduledMeetingTimeInstructors.Any(smti =>
+                    smti.ScheduledMeetingTime.CourseSection.CourseId == Id))
+                .ToListAsync();
+
+            Terms = await Context.Terms
+                .Where(t => t.TermParts.Any(tp => tp.CourseSections.Any(cs => cs.CourseId == Id)))
+                .ToListAsync();
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (id == null) return NotFound();
-
-            Course = await Context.Courses.FindAsync(id);
+            Course = await Context.Courses.FindAsync(Id);
 
             if (Course != null)
             {

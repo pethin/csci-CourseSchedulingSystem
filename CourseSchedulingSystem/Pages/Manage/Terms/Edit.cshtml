@@ -2,7 +2,7 @@
 @model CourseSchedulingSystem.Pages.Manage.Terms.EditModel
 
 @{
-    ViewData["Title"] = $"Edit {Model.SourceTermName}";
+    ViewData["Title"] = $"Edit {Model.OriginalTermName}";
 }
 
 <h1>Edit</h1>
@@ -33,7 +33,7 @@
 <small>Course Sections are scheduled to a Part of Term.</small>
 <div class="mb-2"></div>
 <p>
-    <a asp-page="./TermParts/Create" asp-route-termId="@Model.Term.Id">Create New</a>
+    <a asp-page="./TermParts/Create" asp-route-termId="@Model.Id">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -51,7 +51,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model.Term.TermParts)
+    @foreach (var item in Model.TermParts)
     {
         <tr>
             <td>

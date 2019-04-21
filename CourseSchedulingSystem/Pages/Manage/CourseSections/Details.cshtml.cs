@@ -17,30 +17,41 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         public CourseSection CourseSection { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             CourseSection = await _context.CourseSections
+                // Term Part
                 .Include(c => c.TermPart)
                 .ThenInclude(tp => tp.Term)
+                // Course
                 .Include(c => c.Course)
                 .ThenInclude(c => c.Subject)
+                // Instructional Method and Schedule Type
                 .Include(c => c.InstructionalMethod)
                 .Include(c => c.ScheduleType)
+                // Meeting Type
                 .Include(c => c.ScheduledMeetingTimes)
                 .ThenInclude(smt => smt.MeetingType)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                // Instructors
+                .Include(c => c.ScheduledMeetingTimes)
+                .ThenInclude(smt => smt.ScheduledMeetingTimeInstructors)
+                .ThenInclude(smti => smti.Instructor)
+                // Rooms
+                .Include(c => c.ScheduledMeetingTimes)
+                .ThenInclude(smt => smt.ScheduledMeetingTimeRooms)
+                .ThenInclude(smtr => smtr.Room)
+                .ThenInclude(r => r.Building)
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (CourseSection == null)
             {
                 return NotFound();
             }
+
             return Page();
         }
     }

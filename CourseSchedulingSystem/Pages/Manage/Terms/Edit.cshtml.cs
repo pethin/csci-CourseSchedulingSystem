@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Async;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CourseSchedulingSystem.Data;
@@ -21,51 +22,53 @@ namespace CourseSchedulingSystem.Pages.Manage.Terms
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         [BindProperty] public Term Term { get; set; }
-
-        public string SourceTermName { get; set; }
+        
+        public string OriginalTermName { get; set; }
+        public IEnumerable<TermPart> TermParts { get; set; }
 
         public string SuccessMessage { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync()
         {
-            if (id == null) return NotFound();
-
-            Term = await _context.Terms
-                .Include(t => t.TermParts)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            Term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == Id);
 
             if (Term == null) return NotFound();
 
-            SourceTermName = Term.Name;
+            OriginalTermName = Term.Name;
+            TermParts = _context.TermParts.Where(tp => tp.TermId == Term.Id);
 
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid) return Page();
 
-            Term = await _context.Terms
-                .Include(t => t.TermParts)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var term = await _context.Terms.FirstOrDefaultAsync(m => m.Id == Id);
 
-            if (Term != null)
+            if (term == null)
             {
-                SourceTermName = Term.Name;
+                return NotFound();
             }
+            
+            OriginalTermName = term.Name;
+            TermParts = _context.TermParts.Where(tp => tp.TermId == term.Id);
 
             if (await TryUpdateModelAsync(
-                Term,
+                term,
                 "Term",
                 s => s.Name))
             {
-                await Term.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
+                await term.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
                 if (!ModelState.IsValid) return Page();
 
                 await _context.SaveChangesAsync();
 
+                OriginalTermName = term.Name;
                 SuccessMessage = "Name successfully updated!";
                 return Page();
             }

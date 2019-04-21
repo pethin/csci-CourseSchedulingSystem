@@ -1,41 +1,56 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using CourseSchedulingSystem.Data;
+using CourseSchedulingSystem.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using CourseSchedulingSystem.Data;
-using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTimes
 {
     public class DetailsModel : PageModel
     {
-        private readonly CourseSchedulingSystem.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DetailsModel(CourseSchedulingSystem.Data.ApplicationDbContext context)
+        public DetailsModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        [FromRoute] public Guid Id { get; set; }
+        
         public ScheduledMeetingTime ScheduledMeetingTime { get; set; }
+        
+        public string ReturnUrl { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             ScheduledMeetingTime = await _context.ScheduledMeetingTimes
                 .Include(s => s.CourseSection)
-                .Include(s => s.MeetingType).FirstOrDefaultAsync(m => m.Id == id);
+                .ThenInclude(cs => cs.Course)
+                .ThenInclude(c => c.Subject)
+                .Include(s => s.MeetingType)
+                .Include(smt => smt.ScheduledMeetingTimeInstructors)
+                .ThenInclude(smti => smti.Instructor)
+                .Include(smt => smt.ScheduledMeetingTimeRooms)
+                .ThenInclude(smtr => smtr.Room)
+                .ThenInclude(r => r.Building)
+                .FirstOrDefaultAsync(m => m.Id == Id);
 
             if (ScheduledMeetingTime == null)
             {
                 return NotFound();
             }
+            
+            if (returnUrl == null || !Url.IsLocalUrl(returnUrl))
+            {
+                ReturnUrl = Url.Page("../Details", new {id = ScheduledMeetingTime.CourseSectionId});
+            }
+            else
+            {
+                ReturnUrl = returnUrl;
+            }
+            
             return Page();
         }
     }
