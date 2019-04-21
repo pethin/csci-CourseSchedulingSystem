@@ -47,7 +47,7 @@ namespace CourseSchedulingSystem.Pages.Manage.Buildings.Rooms
                 BuildingId = Building.Id
             };
 
-            if (await TryUpdateModelAsync(room, "Room", rm => rm.Number, rm => rm.Capacity))
+            if (await TryUpdateModelAsync(room, "Room", rm=>rm.IsEnabled, rm => rm.Number, rm => rm.Capacity))
             {
                 await room.DbValidateAsync(_context).AddErrorsToModelState(ModelState);
 
