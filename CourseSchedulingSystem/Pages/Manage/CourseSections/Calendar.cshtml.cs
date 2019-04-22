@@ -106,6 +106,7 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
 
             var events = new ConcurrentBag<Event>();
 
+            // Expand day of week pattern
             await eventsByWeek.ParallelForEachAsync(async weekly =>
             {
                 await Task.Yield();
