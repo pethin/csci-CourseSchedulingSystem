@@ -225,6 +225,7 @@ namespace CourseSchedulingSystem.Data.Models
                 {
                     if (await context.ScheduledMeetingTimes
                         .Where(smt => smt.Id != Id)
+                        .Where(smt => smt.CourseSectionId == CourseSectionId)
                         .Where(smt => smt.MeetingTypeId == MeetingType.ClassMeetingType.Id)
                         .AnyAsync())
                         await yield.ReturnAsync(
