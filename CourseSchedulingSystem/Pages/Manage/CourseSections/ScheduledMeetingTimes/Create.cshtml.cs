@@ -88,6 +88,9 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTim
                     }));
 
                 await Context.SaveChangesAsync();
+                
+                // TODO: Recalculate SchedulingNotifications
+                
                 return RedirectToPage("../Edit", new {id = CourseSection.Id});
             }
 

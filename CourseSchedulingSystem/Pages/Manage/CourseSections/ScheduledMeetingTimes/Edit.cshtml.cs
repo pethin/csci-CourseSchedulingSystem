@@ -110,6 +110,9 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTim
                     smtr => smtr.RoomId);
 
                 await Context.SaveChangesAsync();
+                
+                // TODO: Recalculate SchedulingNotifications
+                
                 return RedirectToPage("../Edit", new {id = scheduledMeetingTime.CourseSectionId});
             }
 

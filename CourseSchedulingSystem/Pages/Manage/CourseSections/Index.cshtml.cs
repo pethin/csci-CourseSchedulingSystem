@@ -175,6 +175,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             _context.CourseSections.Add(courseSection);
             await _context.SaveChangesAsync();
 
+            // TODO: Recalculate SchedulingNotifications
+            
             return RedirectToAction("");
         }
     }

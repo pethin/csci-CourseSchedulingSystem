@@ -55,6 +55,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
 
             _context.CourseSections.Remove(CourseSection);
             await _context.SaveChangesAsync();
+            
+            // TODO: Recalculate SchedulingNotifications
 
             return RedirectToPage("./Index", new {termId = CourseSection.TermPart.TermId});
         }

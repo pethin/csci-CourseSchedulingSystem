@@ -54,6 +54,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections.ScheduledMeetingTim
 
             _context.ScheduledMeetingTimes.Remove(ScheduledMeetingTime);
             await _context.SaveChangesAsync();
+            
+            // TODO: Recalculate SchedulingNotifications
 
             return RedirectToPage("../Edit", new {id = ScheduledMeetingTime.CourseSectionId});
         }

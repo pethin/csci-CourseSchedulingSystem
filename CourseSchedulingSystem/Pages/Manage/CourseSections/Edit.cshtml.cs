@@ -119,6 +119,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
 
                 await Context.SaveChangesAsync();
                 
+                // TODO: Recalculate SchedulingNotifications
+                
                 SuccessMessage = "Course section successfully updated!";
                 return Page();
             }
@@ -161,6 +163,8 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
             Context.ScheduledMeetingTimes.Add(scheduledMeetingTime);
             await Context.SaveChangesAsync();
 
+            // TODO: Recalculate SchedulingNotifications
+            
             return RedirectToPage();
         }
     }

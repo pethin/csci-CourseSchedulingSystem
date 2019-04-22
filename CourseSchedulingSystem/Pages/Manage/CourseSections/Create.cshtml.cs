@@ -107,6 +107,9 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
 
                 Context.CourseSections.Add(courseSection);
                 await Context.SaveChangesAsync();
+                
+                // TODO: Recalculate SchedulingNotifications
+                
                 return RedirectToPage("./Edit", new {id = courseSection.Id});
             }
 
