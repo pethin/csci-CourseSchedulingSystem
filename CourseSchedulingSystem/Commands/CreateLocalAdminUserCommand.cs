@@ -9,7 +9,12 @@ using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem.Commands
 {
-    [Command("createlocaladminuser", Description = "Create an local Administrator user")]
+    /// <summary>
+    /// Creates a local admin user. The user can be logged in at "/Identity/Account/LocalLogin".
+    /// </summary>
+    /// <remarks>Will prompt user for password.</remarks>
+    /// <param name="Username">The username of the user.</param>
+    [Command("createlocaladminuser", Description = "Create an local Administrator user. Login page at /Identity/Account/LocalLogin")]
     [HelpOption("--help")]
     public class CreateLocalAdminUserCommand : ICommand
     {

@@ -7,6 +7,9 @@ using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Data.Seeders
 {
+    /// <summary>
+    /// Seeds departments, subject, schedule types, and course attributes.
+    /// </summary>
     public class CourseSchemaSeeder : ISeeder
     {
         /// <summary>

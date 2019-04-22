@@ -40,6 +40,18 @@ namespace CourseSchedulingSystem.Services.TestingAuthentication
                 configureOptions);
         }
 
+        /// <summary>
+        /// Adds the TestingOrIdentity scheme. If the "Authorization" header is detected in the request,
+        /// the TestingAuthentication handler will be executed. Otherwise, the ASP.NET Core Identity handler will be
+        /// called. 
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="authenticationScheme"></param>
+        /// <param name="configureOptions"></param>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TUser"></typeparam>
+        /// <typeparam name="TGroup"></typeparam>
+        /// <returns></returns>
         public static AuthenticationBuilder AddTesting<TKey, TUser, TGroup>(
             this AuthenticationBuilder builder,
             string authenticationScheme,

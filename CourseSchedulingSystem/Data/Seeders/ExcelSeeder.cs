@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem.Data.Seeders
 {
+    /// <summary>
+    /// Runs seeders that import data from excel fixtures.
+    /// </summary>
     public class ExcelSeeder : ISeeder
     {
         private readonly ILogger _logger;

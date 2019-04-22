@@ -6,6 +6,9 @@ using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Data.Seeders
 {
+    /// <summary>
+    /// Seeds instructional methods and meeting types.
+    /// </summary>
     public class SchedulingSchemaSeeder : ISeeder
     {
         /// <summary>

@@ -9,6 +9,11 @@ using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem.Commands
 {
+    /// <summary>
+    /// Command to add a password-less user to the system. If the user already exists and the user is locked out,
+    /// the lockout will be removed.
+    /// </summary>
+    /// <param name="Username">The username of the user.</param>
     [Command("adduser", Description =
         "Add a user with no password. If the user exists, the user lockout will be removed.")]
     [HelpOption("--help")]

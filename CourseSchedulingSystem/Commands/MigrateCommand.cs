@@ -9,6 +9,9 @@ using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem.Commands
 {
+    /// <summary>
+    /// Command to help manage the database schema.
+    /// </summary>
     [Command("migrate", Description = "Updates the database to a specified migration.")]
     [HelpOption("--help")]
     public class MigrateCommand : ICommand

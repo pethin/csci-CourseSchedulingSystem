@@ -5,6 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem.Data.Seeders
 {
+    /// <summary>
+    /// The default seeder.
+    /// </summary>
     public class DatabaseSeeder : ISeeder
     {
         private readonly ILogger<DatabaseSeeder> _logger;
@@ -25,7 +28,7 @@ namespace CourseSchedulingSystem.Data.Seeders
         }
 
         /// <summary>
-        ///     Runs a seeder.
+        /// Runs a seeder.
         /// </summary>
         /// <param name="seeder"></param>
         /// <returns></returns>

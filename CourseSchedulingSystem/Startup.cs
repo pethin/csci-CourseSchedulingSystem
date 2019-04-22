@@ -45,6 +45,7 @@ namespace CourseSchedulingSystem
 
             var authenticationBuilder = services.AddAuthentication(options =>
             {
+                // If the application is running in a testing environment, use the TestingAuthentication scheme
                 if (IsTestingEnvironment)
                 {
                     options.DefaultScheme = TestingAuthenticationDefaults.IdentityFallbackScheme;
@@ -53,11 +54,13 @@ namespace CourseSchedulingSystem
                 }
             });
 
+            // If the application is running in a testing environment, use the TestingAuthentication scheme
             if (IsTestingEnvironment)
             {
                 authenticationBuilder.AddTesting<Guid, ApplicationUser, ApplicationRole>();
             }
 
+            // Add WS-Federation auth
             authenticationBuilder.AddWsFederation(AuthenticationConstants.WinthropScheme, "Sign in with Winthrop",
                 options =>
                 {
@@ -90,6 +93,7 @@ namespace CourseSchedulingSystem
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
             });
 
+            // Needed for ASP.NET Core Identity with custom UI
             services.AddSingleton<IEmailSender, EmailSender>();
         }
 

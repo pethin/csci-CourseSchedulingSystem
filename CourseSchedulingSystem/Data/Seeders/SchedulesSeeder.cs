@@ -19,6 +19,9 @@ using NPOI.XSSF.UserModel;
 
 namespace CourseSchedulingSystem.Data.Seeders
 {
+    /// <summary>
+    /// Seeds 2018 Summer, 2018 Fall, and 2019 Spring course sections. 
+    /// </summary>
     public class SchedulesSeeder : ISeeder
     {
         private readonly ApplicationDbContext _context;

@@ -32,6 +32,12 @@ ProjectSection(SolutionItems) = preProject
 	Documentation\Design\Authentication and Authorization.md = Documentation\Design\Authentication and Authorization.md
 EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deployment", "Deployment", "{CCFBC3A7-C764-43C9-8533-B54B21FF1DF1}"
+ProjectSection(SolutionItems) = preProject
+	Documentation\Deployment\Authentication and Authorization.md = Documentation\Deployment\Authentication and Authorization.md
+	Documentation\Deployment\Deployment.md = Documentation\Deployment\Deployment.md
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -54,6 +60,7 @@ Global
 		{8DC2DF2A-3F3A-4E0D-BAC1-6F1C0EE9817C} = {77CF712E-0BF5-4562-A398-4559EAD74516}
 		{A86E4726-907F-48A2-9841-5E2B324B2249} = {8DC2DF2A-3F3A-4E0D-BAC1-6F1C0EE9817C}
 		{65F77E17-A515-4A3E-A62A-5DACABDCAC4D} = {8DC2DF2A-3F3A-4E0D-BAC1-6F1C0EE9817C}
+		{CCFBC3A7-C764-43C9-8533-B54B21FF1DF1} = {8DC2DF2A-3F3A-4E0D-BAC1-6F1C0EE9817C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EF87EBD8-C508-4799-B5FE-9A08947C5A8F}

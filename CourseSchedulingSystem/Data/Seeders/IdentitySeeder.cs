@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CourseSchedulingSystem.Data.Seeders
 {
+    /// <summary>
+    /// Seeds application roles.
+    /// </summary>
     public class IdentitySeeder : ISeeder
     {
         /// <summary>

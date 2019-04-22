@@ -6,6 +6,9 @@ using CourseSchedulingSystem.Data.Models;
 
 namespace CourseSchedulingSystem.Data.Seeders
 {
+    /// <summary>
+    /// Seeds buildings.
+    /// </summary>
     public class InfrastructureSeeder : ISeeder
     {
         /// <summary>

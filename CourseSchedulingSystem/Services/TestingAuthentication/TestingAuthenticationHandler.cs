@@ -13,6 +13,12 @@ using Microsoft.Net.Http.Headers;
 
 namespace CourseSchedulingSystem.Services.TestingAuthentication
 {
+    /// <summary>
+    /// Basic auth handler for Testing environment. Does not check password and creates user if it does not exist.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TUser"></typeparam>
+    /// <typeparam name="TGroup"></typeparam>
     public class TestingAuthenticationHandler<TKey, TUser, TGroup> : AuthenticationHandler<TestingAuthenticationOptions>
         where TKey : IEquatable<TKey>
         where TUser : IdentityUser<TKey>, new()

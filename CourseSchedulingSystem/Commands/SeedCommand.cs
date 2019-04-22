@@ -9,6 +9,12 @@ using Microsoft.Extensions.Logging;
 
 namespace CourseSchedulingSystem.Commands
 {
+    /// <summary>
+    /// Command to seed the database.
+    /// </summary>
+    /// <remarks>By default this command runs the DatabaseSeeder seeder.</remarks>
+    /// <param name="Seeder">(Optional) Seeder class name.</param>
+    /// <param name="List">(Optional) Flag to list all available seeders.</param>
     [Command("seed", Description = "Seed the database", ExtendedHelpText = @"
 Remarks:
   By default this command runs the DatabaseSeeder seeder.
@@ -32,33 +38,49 @@ Remarks:
 
         public async Task OnExecute()
         {
+            // If the list flag was set
             if (List)
             {
+                // Get all classes that implement ISeeder interface in CourseSchedulingSystem.Data.Seeders namespace
+                // and for each class print the class name.
                 Assembly.GetExecutingAssembly().GetTypes()
                     .Where(type => type.IsClass && type.Namespace == typeof(DatabaseSeeder).Namespace)
                     .Where(type => type.GetInterfaces().Contains(typeof(ISeeder)))
                     .ToList()
                     .ForEach(seeder => Console.WriteLine(seeder.Name));
             }
-            else if (Seeder != null)
+            // If a specific seeder was specified
+            else if (!string.IsNullOrWhiteSpace(Seeder))
             {
-                var seederClassPath = $"{typeof(DatabaseSeeder).Namespace}.{Seeder}";
-                var seederType = Type.GetType(seederClassPath);
+                // Try to find the seeder
+                var seederType = Assembly.GetExecutingAssembly().GetTypes()
+                    .Where(type => type.IsClass && type.Namespace == typeof(DatabaseSeeder).Namespace)
+                    .Where(type => type.GetInterfaces().Contains(typeof(ISeeder)))
+                    .FirstOrDefault(type => type.Name == Seeder);
 
                 if (seederType == null)
                 {
-                    _logger.LogError($"Could not find seeder: {seederClassPath}");
+                    _logger.LogError($"Could not find seeder: ${Seeder}");
                     throw new ArgumentException("Seeder not found.");
                 }
 
+                // Run the seeder
                 await RunSeederAsync(_serviceProvider, seederType);
             }
+            // If no specific seeder was specified
             else
             {
+                // Run the DatabaseSeeder
                 await RunSeederAsync(_serviceProvider, typeof(DatabaseSeeder));
             }
         }
 
+        /// <summary>
+        /// Runs the seeder in a new service provider scope.
+        /// </summary>
+        /// <param name="serviceProvider">The service provider to use.</param>
+        /// <param name="seederType">The Type of the seeder.</param>
+        /// <returns></returns>
         private async Task RunSeederAsync(IServiceProvider serviceProvider, Type seederType)
         {
             using (var scope = serviceProvider.CreateScope())
