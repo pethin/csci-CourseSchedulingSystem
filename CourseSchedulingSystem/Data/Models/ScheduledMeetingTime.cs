@@ -19,6 +19,9 @@ namespace CourseSchedulingSystem.Data.Models
     /// </remarks>
     public class ScheduledMeetingTime : IValidatableObject
     {
+        [NotMapped]
+        private static readonly string EmptySchedulingNotifications = JsonConvert.SerializeObject(new SchedulingNotifications());
+        
         /// <summary>Gets or sets the primary key for this course section.</summary>
         public Guid Id { get; set; }
 
@@ -175,7 +178,7 @@ namespace CourseSchedulingSystem.Data.Models
         }
 
         /// <summary>Internal serialized JSON of notifications object for this scheduled meeting time.</summary>
-        internal string _SchedulingNotifications { get; set; }
+        internal string _SchedulingNotifications { get; set; } = EmptySchedulingNotifications;
 
         /// <summary>Gets or sets the notifications for this scheduled meeting time.</summary>
         /// <remarks>After modifying the notifications this setter must be used to actually store the changes.</remarks>

@@ -19,6 +19,9 @@ namespace CourseSchedulingSystem.Data.Models
     /// </remarks>
     public class CourseSection
     {
+        [NotMapped]
+        private static readonly string EmptySchedulingNotifications = JsonConvert.SerializeObject(new SchedulingNotifications());
+        
         /// <summary>Gets or sets the primary key for this course section.</summary>
         public Guid Id { get; set; }
 
@@ -68,7 +71,7 @@ namespace CourseSchedulingSystem.Data.Models
         public string Footnotes { get; set; }
 
         /// <summary>Internal column for scheduling notifications property.</summary>
-        internal string _SchedulingNotifications { get; set; }
+        internal string _SchedulingNotifications { get; set; } = EmptySchedulingNotifications;
         
         /// <summary>Gets or sets the scheduling notifications for this course section.</summary>
         [NotMapped]

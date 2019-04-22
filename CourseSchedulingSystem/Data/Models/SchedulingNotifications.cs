@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore.Internal;
+using Newtonsoft.Json;
 
 namespace CourseSchedulingSystem.Data.Models
 {
@@ -15,5 +17,7 @@ namespace CourseSchedulingSystem.Data.Models
         /// <summary>Gets or sets the errors in the notification.</summary>
         [Required]
         public List<string> Errors { get; set; } = new List<string>();
+
+        [JsonIgnore] public bool HasNotifications => Warnings.Any() || Errors.Any();
     }
 }

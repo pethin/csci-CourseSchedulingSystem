@@ -1,0 +1,24 @@
+@model CourseSchedulingSystem.Data.Models.SchedulingNotifications
+
+@if (Model.Errors.Any())
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in Model.Errors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
+@if (Model.Warnings.Any())
+{
+    <div class="alert alert-warning">
+        <ul>
+            @foreach (var warning in Model.Warnings)
+            {
+                <li>@warning</li>
+            }
+        </ul>
+    </div>
+}

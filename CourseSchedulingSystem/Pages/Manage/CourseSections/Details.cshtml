@@ -1,4 +1,5 @@
 ﻿@page "{id:Guid}"
+@using Microsoft.EntityFrameworkCore
 @model CourseSchedulingSystem.Pages.Manage.CourseSections.DetailsModel
 
 @{
@@ -19,6 +20,7 @@
         @Html.DisplayFor(model => model.CourseSection.Section)
     </h4>
     <hr/>
+    @await Html.PartialAsync("_SchedulingNotifications", Model.CourseSection.SchedulingNotifications)
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CourseSection.TermPartId)

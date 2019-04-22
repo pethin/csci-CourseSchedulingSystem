@@ -20,36 +20,38 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CourseSections[0].CourseId)
-            </th>
-            <th class="text-right">
-                @Html.DisplayNameFor(model => model.CourseSections[0].Section)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CourseSections[0].ScheduleTypeId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CourseSections[0].InstructionalMethodId)
-            </th>
-            <th class="text-right">
-                @Html.DisplayNameFor(model => model.CourseSections[0].MaximumCapacity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CourseSections[0].TermPartId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CourseSections[0].TermPart.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CourseSections[0].TermPart.EndDate)
-            </th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.CourseSections[0].CourseId)
+        </th>
+        <th class="text-right">
+            @Html.DisplayNameFor(model => model.CourseSections[0].Section)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CourseSections[0].ScheduleTypeId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CourseSections[0].InstructionalMethodId)
+        </th>
+        <th class="text-right">
+            @Html.DisplayNameFor(model => model.CourseSections[0].MaximumCapacity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CourseSections[0].TermPartId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CourseSections[0].TermPart.StartDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CourseSections[0].TermPart.EndDate)
+        </th>
+        <th>Errors</th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.CourseSections) {
+    @foreach (var item in Model.CourseSections)
+    {
         <tr>
             <td>
                 <a asp-page="../Courses/Details" asp-route-id="@item.CourseId">@Html.DisplayFor(modelItem => item.Course.Identifier)</a>
@@ -76,6 +78,22 @@
                 @Html.DisplayFor(modelItem => item.TermPart.EndDate)
             </td>
             <td>
+                @{
+                    var buttonColorClass = item.SchedulingNotifications.Errors.Any()
+                        ? "btn-danger"
+                        : "btn-warning";
+                }
+                @if (item.SchedulingNotifications.HasNotifications)
+                {
+                    <button type="button"
+                            class="btn @buttonColorClass"
+                            data-toggle="popover"
+                            data-popover-content="#@item.Id">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </button>
+                }
+            </td>
+            <td>
                 <form method="post" class="d-inline">
                     <input type="hidden" name="sectionId" value="@item.Id"/>
                     <input value="Duplicate" class="btn btn-link p-0 cancel" type="submit" asp-page-handler="Duplicate">
@@ -85,6 +103,32 @@
                 <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
-}
+    }
     </tbody>
 </table>
+
+@foreach (var item in Model.CourseSections)
+{
+    if (item.SchedulingNotifications.HasNotifications)
+    {
+        <div class="hidden" id="@item.Id">
+            <div class="popover-body">
+                @await Html.PartialAsync("_SchedulingNotifications", item.SchedulingNotifications)
+            </div>
+        </div>
+    }
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $("[data-toggle=popover]").popover({
+                html: true,
+                content: function() {
+                    var content = $(this).attr("data-popover-content");
+                    return $(content).children(".popover-body").html();
+                }
+            });
+        })
+    </script>
+}

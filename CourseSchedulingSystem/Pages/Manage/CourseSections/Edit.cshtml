@@ -13,6 +13,7 @@
 {
     <div class="alert alert-success">@Model.SuccessMessage</div>
 }
+@await Html.PartialAsync("_SchedulingNotifications", Model.CourseSection.SchedulingNotifications)
 <div class="row">
     <div class="col-md-8">
         <form method="post">
