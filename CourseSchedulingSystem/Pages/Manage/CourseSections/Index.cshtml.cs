@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -21,9 +22,9 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
         }
 
         [FromRoute] public Guid TermId { get; set; }
-        
+
         public Term Term { get; set; }
-        public IList<CourseSection> CourseSections { get; set; }
+        public IList<CourseViewModel> CourseSections { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -34,17 +35,85 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
                 return NotFound();
             }
 
-            CourseSections = await _context.CourseSections
-                .Include(c => c.TermPart)
-                .Where(c => c.TermPart.TermId == Term.Id)
-                .Include(c => c.Course)
-                .ThenInclude(c => c.Subject)
-                .Include(c => c.InstructionalMethod)
-                .Include(c => c.ScheduleType)
-                .OrderBy(c => c.Course.Subject.Code)
-                .ThenBy(c => c.Course.Number)
-                .ThenBy(c => c.Section)
-                .ToListAsync();
+            CourseSections = (await _context.CourseSections
+                    .Where(cs => cs.TermPart.TermId == TermId)
+                    // Part of Term
+                    .Include(cs => cs.TermPart)
+                    // Course
+                    .Include(cs => cs.Course)
+                    .ThenInclude(c => c.Subject)
+                    // Department
+                    .Include(cs => cs.Course)
+                    .ThenInclude(c => c.Department)
+                    // Instructional Method
+                    .Include(cs => cs.InstructionalMethod)
+                    // Schedule Type
+                    .Include(cs => cs.ScheduleType)
+                    // MeetingType
+                    .Include(cs => cs.ScheduledMeetingTimes)
+                    .ThenInclude(smt => smt.MeetingType)
+                    // Instructors
+                    .Include(cs => cs.ScheduledMeetingTimes)
+                    .ThenInclude(smt => smt.ScheduledMeetingTimeInstructors)
+                    .ThenInclude(smti => smti.Instructor)
+                    // Rooms
+                    .Include(cs => cs.ScheduledMeetingTimes)
+                    .ThenInclude(smt => smt.ScheduledMeetingTimeRooms)
+                    .ThenInclude(smtr => smtr.Room)
+                    .ThenInclude(r => r.Building)
+                    .ToListAsync())
+                .Select(section =>
+                {
+                    var classScheduledMeetingTime =
+                        section.ScheduledMeetingTimes.FirstOrDefault(smt =>
+                            smt.MeetingType.Id == MeetingType.ClassMeetingType.Id);
+
+                    if (classScheduledMeetingTime == null)
+                    {
+                        return new CourseViewModel
+                        {
+                            Id = section.Id,
+                            CourseId = section.CourseId,
+                            CourseIdentifier = section.Course.Subject.Code + section.Course.Number,
+                            Section = section.Section,
+                            CreditHours = section.Course.CreditHours,
+                            CourseTitle = section.Course.Title,
+                            Instructor = "TBA",
+                            InstructionalMethod = section.InstructionalMethod.Code,
+                            ScheduleType = section.ScheduleType.Code,
+                            Department = section.Course.Department.Code,
+                            Location = "TBA",
+                            Time = "TBA",
+                            Days = "TBA",
+                            Capacity = section.MaximumCapacity,
+                            PartOfTerm = section.TermPart.Name,
+                            SchedulingNotifications = section.SchedulingNotifications
+                        };
+                    }
+
+                    return new CourseViewModel
+                    {
+                        Id = section.Id,
+                        CourseId = section.CourseId,
+                        CourseIdentifier = section.Course.Subject.Code + section.Course.Number,
+                        Section = section.Section,
+                        CreditHours = section.Course.CreditHours,
+                        CourseTitle = section.Course.Title,
+                        Instructor = classScheduledMeetingTime.InstructorsText,
+                        InstructionalMethod = section.InstructionalMethod.Code,
+                        ScheduleType = section.ScheduleType.Code,
+                        Department = section.Course.Department.Code,
+                        Location = classScheduledMeetingTime.RoomsText,
+                        Time = classScheduledMeetingTime.StartTime != null && classScheduledMeetingTime.EndTime != null
+                            ? classScheduledMeetingTime.StartTimeText + " - " + classScheduledMeetingTime.EndTimeText
+                            : "TBA",
+                        Days = classScheduledMeetingTime.DaysOfWeek,
+                        Capacity = section.MaximumCapacity,
+                        PartOfTerm = section.TermPart.Name,
+                        SchedulingNotifications = section.SchedulingNotifications
+                    };
+                })
+                .ToList();
 
             return Page();
         }
@@ -108,5 +177,43 @@ namespace CourseSchedulingSystem.Pages.Manage.CourseSections
 
             return RedirectToAction("");
         }
+    }
+
+    public class CourseViewModel
+    {
+        public Guid Id { get; set; }
+        public Guid CourseId { get; set; }
+
+        [Display(Name = "Course")] public string CourseIdentifier { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:D3}", ApplyFormatInEditMode = true)]
+        public int Section { get; set; }
+
+        [Display(Name = "Credit Hours")]
+        [DisplayFormat(DataFormatString = "{0:F3}", ApplyFormatInEditMode = true)]
+        public decimal CreditHours { get; set; }
+
+        [Display(Name = "Course Title")] public string CourseTitle { get; set; }
+
+        [Display(Name = "Instructor")] public string Instructor { get; set; }
+
+        [Display(Name = "Instructional Method")]
+        public string InstructionalMethod { get; set; }
+
+        [Display(Name = "Schedule Type")] public string ScheduleType { get; set; }
+
+        [Display(Name = "Dept")] public string Department { get; set; }
+
+        [Display(Name = "Location")] public string Location { get; set; }
+
+        [Display(Name = "Time")] public string Time { get; set; }
+
+        [Display(Name = "Days")] public string Days { get; set; }
+
+        [Display(Name = "Capacity")] public int Capacity { get; set; }
+
+        [Display(Name = "Part Of Term")] public string PartOfTerm { get; set; }
+
+        [Display(Name = "Errors")] public SchedulingNotifications SchedulingNotifications { get; set; }
     }
 }
